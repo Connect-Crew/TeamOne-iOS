@@ -7,19 +7,15 @@
 //
 
 import UIKit
+import Core
 
-class ViewController: UIViewController {
-    
+class TESTViewController: ViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        let label = UILabel()
-        label.frame = CGRect(x: 50, y: 50, width: 300, height: 300)
-        label.text = "TEST"
-        label.textColor = .black
-        
-        view.backgroundColor = .white
-        
-        view.addSubview(label)
+
+        let tmpView = UIView(frame: CGRect(x: 0, y: 0, width: 100, height: 100))
+        tmpView.backgroundColor = .red
+
+        view.addSubview(tmpView)
     }
 }
