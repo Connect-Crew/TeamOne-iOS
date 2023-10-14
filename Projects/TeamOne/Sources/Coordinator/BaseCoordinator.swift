@@ -62,4 +62,5 @@ class BaseCoordinator<ResultType> {
             navigationController.popViewController(animated: animated)
         }
     }
+    
 }

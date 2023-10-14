@@ -1,4 +1,5 @@
 import ProjectDescription
+import Foundation
 import EnvPlugin
 import ConfigPlugin
 
@@ -42,7 +43,7 @@ public extension Project {
                                 sources: "Sources/**/*.swift",
                                 resources: [.glob(pattern: "Resources/**", excluding: [])],
 //                                entitlements: "\(name).entitlements",
-                                scripts: [],
+                                scripts: [.pre(path: .relativeToRoot("Scripts/SwiftLintRunScript.sh"), arguments: [], name: "SwiftLint")],
                                 dependencies: [
                                     internalDependencies,
                                     externalDependencies,
@@ -65,6 +66,7 @@ public extension Project {
                 infoPlist: .default,
                 sources: ["Tests/Sources/**/*.swift"],
                 resources: [.glob(pattern: "Tests/Resources/**", excluding: [])],
+                scripts: [.pre(path: .relativeToRoot("Scripts/SwiftLintRunScript.sh"), arguments: [], name: "SwiftLint")],
                 dependencies: [
                     deps,
                     [
