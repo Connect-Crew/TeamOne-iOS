@@ -31,6 +31,27 @@ public extension Project {
                     ],
                 ]
             ]
+        ],
+
+        // 824892478094-oo9loraifcq96hg9lkmf1rs65fgschi9.apps.googleusercontent.com
+        "CFBundleURLTypes": [
+            [
+                "CFBundleTypeRole": "Editor",
+                "CFBundleURLName": "kakao",
+                "CFBundleURLSchemes": ["kakaof846269cfc5b4132aeeb49a24a15db78"]
+            ]
+        ],
+        "CFBundleURLTypes": [
+            [
+                "CFBundleTypeRole": "Editor",
+                "CFBundleURLName": "google",
+                "CFBundleURLSchemes": ["com.googleusercontent.apps.824892478094-oo9loraifcq96hg9lkmf1rs65fgschi9"]
+            ]
+        ],
+        "UIBackgroundModes": ["remote-notification"],
+        "LSApplicationQueriesSchemes": [
+            "kakaompassauth",
+            "kakaolink"
         ]
     ]
 }
