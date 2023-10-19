@@ -9,7 +9,7 @@
 import UIKit
 import RxSwift
 
-public class BaseCoordinator<ResultType> {
+open class BaseCoordinator<ResultType> {
     public typealias CoordinationResult = ResultType
 
     private let identifier = String(describing: ResultType.self)
@@ -23,7 +23,7 @@ public class BaseCoordinator<ResultType> {
         self.navigationController = navigationController
     }
 
-    public func start() -> Observable<ResultType> {
+    open func start() -> Observable<ResultType> {
         fatalError("Start method should be implemented!!")
     }
 
@@ -37,7 +37,7 @@ public class BaseCoordinator<ResultType> {
         childCoordinators[coordinator.identifier] = nil
     }
 
-    public func coordinated<T>(to coordinator: BaseCoordinator<T>) -> Observable<T> {
+    public func coordinate<T>(to coordinator: BaseCoordinator<T>) -> Observable<T> {
         append(coordinator: coordinator)
         return coordinator.start()
             .do(onNext: { [weak self] _ in
@@ -47,7 +47,7 @@ public class BaseCoordinator<ResultType> {
 
     // MARK: - Push ∙ Pop
 
-    func push(_ viewController: UIViewController, animated: Bool, isRoot: Bool = false) {
+    public func push(_ viewController: UIViewController, animated: Bool, isRoot: Bool = false) {
         if isRoot {
             navigationController.viewControllers = [viewController]
         } else {
@@ -55,14 +55,14 @@ public class BaseCoordinator<ResultType> {
         }
     }
 
-    func pushTabbar(_ viewController: UIViewController, animated: Bool) {
+    public func pushTabbar(_ viewController: UIViewController, animated: Bool) {
         navigationController.tabBarController?.navigationController?.pushViewController(
             viewController,
             animated: animated
         )
     }
 
-    func pop(animated: Bool) {
+    public func pop(animated: Bool) {
         if navigationController.viewControllers.count == 1 {
             navigationController.viewControllers = []
         } else {
@@ -70,17 +70,17 @@ public class BaseCoordinator<ResultType> {
         }
     }
 
-    func popTabbar(animated: Bool) {
+    public func popTabbar(animated: Bool) {
         navigationController.tabBarController?.navigationController?.popViewController(animated: animated)
     }
 
     // MARK: - Present ∙ Dismiss
 
-    func presentTabbar(_ viewController: UIViewController, animated: Bool) {
+    public func presentTabbar(_ viewController: UIViewController, animated: Bool) {
         navigationController.tabBarController?.present(viewController, animated: animated)
     }
 
-    func dismissTabbar(animated: Bool) {
+    public func dismissTabbar(animated: Bool) {
         navigationController.tabBarController?.dismiss(animated: animated)
     }
 

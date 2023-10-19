@@ -44,7 +44,7 @@ file_length:
 ### min_length 및 max_length에 대한 warning/error를 설정할 수 있습니다.
 ### 규칙에 제외되는 특수한 이름도 지정할 수 있습니다.
 type_name:
-  min_length: 4 # only warning
+  min_length: 3 # only warning
   max_length: # warning and error
     warning: 40
     error: 50
@@ -53,7 +53,7 @@ type_name:
 
 identifier_name:
   min_length: # only min_length
-    error: 4 # only error
+    error: 3 # only error
   excluded: # excluded via string array
     - id
     - URL
