@@ -49,6 +49,13 @@ public extension Project {
         "LSApplicationQueriesSchemes": [
             "kakaompassauth",
             "kakaolink"
+        ],
+        "UIAppFonts": [
+            "Item 0": "SpoqaHanSansNeo-Bold.ttf",
+            "Item 1": "SpoqaHanSansNeo-Regular.ttf",
+            "Item 2": "SpoqaHanSansNeo-Light.ttf",
+            "Item 3": "SpoqaHanSansNeo-Medium.ttf",
+            "Item 4": "SpoqaHanSansNeo-Thin.ttf"
         ]
     ]
 }
