@@ -7,6 +7,8 @@
 //
 
 import UIKit
+import Core
+import DSKit
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -14,7 +16,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication,
                      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
 
+        #if DEV
+        print("Develop")
+        #else
+        print("Product")
+        #endif
+
+        // 의존성 생성
+
         registerDependencies()
+
+        // 폰트생성
+
+        Fonts.fontInitialize()
         
         return true
     }

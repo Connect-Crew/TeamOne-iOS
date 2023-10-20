@@ -25,27 +25,27 @@ public enum SansNeo: String {
     public var font: String {
         switch self {
         case .largeTitle:
-            return "SpoqaHanSansNeo-Bold"
+            return "SpoqaHanSans-Bold"
         case .title1:
-            return "SpoqaHanSansNeo-Bold"
+            return "SpoqaHanSans-Bold"
         case .title2:
-            return "SpoqaHanSansNeo-Regular"
+            return "SpoqaHanSans-Regular"
         case .body1:
-            return "SpoqaHanSansNeo-Regular"
+            return "SpoqaHanSans-Regular"
         case .body2:
-            return "SpoqaHanSansNeo-Bold"
+            return "SpoqaHanSans-Bold"
         case .body3:
-            return "SpoqaHanSansNeo-Regular"
+            return "SpoqaHanSans-Regular"
         case .body4:
-            return "SpoqaHanSansNeo-Bold"
+            return "SpoqaHanSans-Bold"
         case .button1:
-            return "SpoqaHanSansNeo-Bold"
+            return "SpoqaHanSans-Bold"
         case .button2:
-            return "SpoqaHanSansNeo-Regular"
+            return "SpoqaHanSans-Regular"
         case .caption1:
-            return "SpoqaHanSansNeo-Regular"
+            return "SpoqaHanSans-Regular"
         case .caption2:
-            return "SpoqaHanSansNeo-Regular"
+            return "SpoqaHanSans-Regular"
         }
     }
 

@@ -51,11 +51,10 @@ public extension Project {
             "kakaolink"
         ],
         "UIAppFonts": [
-            "Item 0": "SpoqaHanSansNeo-Bold.ttf",
-            "Item 1": "SpoqaHanSansNeo-Regular.ttf",
-            "Item 2": "SpoqaHanSansNeo-Light.ttf",
-            "Item 3": "SpoqaHanSansNeo-Medium.ttf",
-            "Item 4": "SpoqaHanSansNeo-Thin.ttf"
+            "Item 0": "SpoqaHanSans-Bold.ttf",
+            "Item 1": "SpoqaHanSans-Regular.ttf",
+            "Item 2": "SpoqaHanSans-Light.ttf",
+            "Item 3": "SpoqaHanSans-Thin.ttf"
         ]
     ]
 }

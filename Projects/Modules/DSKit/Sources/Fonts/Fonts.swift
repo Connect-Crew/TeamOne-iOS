@@ -12,11 +12,10 @@ import UIKit
 
 public struct Fonts {
     public static func fontInitialize() {
-        guard let regularUrl = Bundle.module.url(forResource: "SpoqaHanSansNeo-Regular", withExtension: "ttf"),
-              let lightUrl = Bundle.module.url(forResource: "SpoqaHanSansNeo-Light", withExtension: "ttf"),
-              let boldUrl = Bundle.module.url(forResource: "SpoqaHanSansNeo-Bold", withExtension: "ttf"),
-              let mediumUrl = Bundle.module.url(forResource: "SpoqaHanSansNeo-Medium", withExtension: "ttf"),
-              let thinUrl = Bundle.module.url(forResource: "SpoqaHanSansNeo-Thin", withExtension: "ttf")
+        guard let regularUrl = Bundle.module.url(forResource: "SpoqaHanSans-Regular", withExtension: "ttf"),
+              let lightUrl = Bundle.module.url(forResource: "SpoqaHanSans-Light", withExtension: "ttf"),
+              let boldUrl = Bundle.module.url(forResource: "SpoqaHanSans-Bold", withExtension: "ttf"),
+              let thinUrl = Bundle.module.url(forResource: "SpoqaHanSans-Thin", withExtension: "ttf")
         else {
             print("Failed to locate font")
             return
@@ -25,7 +24,6 @@ public struct Fonts {
         guard let regularProvider = CGDataProvider(url: regularUrl as CFURL),
               let lightProvider = CGDataProvider(url: lightUrl as CFURL),
               let boldProvider = CGDataProvider(url: boldUrl as CFURL),
-              let mediumProvider = CGDataProvider(url: mediumUrl as CFURL),
               let thinProvider = CGDataProvider(url: thinUrl as CFURL)
         else {
             print("Failed to read font")
@@ -35,7 +33,6 @@ public struct Fonts {
         guard let regularFont = CGFont(regularProvider),
               let lightFont = CGFont(lightProvider),
               let boldFont = CGFont(boldProvider),
-              let mediumFont = CGFont(mediumProvider),
               let thinFont = CGFont(thinProvider)
         else {
             print("Failed to load font")
@@ -54,11 +51,6 @@ public struct Fonts {
         }
 
         if !CTFontManagerRegisterGraphicsFont(boldFont, &error) {
-            print("Failed to register font: \(error!.takeRetainedValue())")
-            return
-        }
-
-        if !CTFontManagerRegisterGraphicsFont(mediumFont, &error) {
             print("Failed to register font: \(error!.takeRetainedValue())")
             return
         }
