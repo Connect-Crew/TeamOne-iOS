@@ -16,6 +16,7 @@ let spm = SwiftPackageManagerDependencies([
     .remote(url: "https://github.com/devxoul/Then.git", requirement: .exact("3.0.0")),
     .remote(url: "https://github.com/RxSwiftCommunity/RxKeyboard.git", requirement: .exact("2.0.1")),
     .remote(url: "https://github.com/SnapKit/SnapKit.git", requirement: .exact("5.6.0")),
+    .remote(url: "https://github.com/krzysztofzablocki/Inject.git", requirement: .exact("1.2.4"))
 ], baseSettings: Settings.settings(
     configurations: XCConfig.framework
 ))

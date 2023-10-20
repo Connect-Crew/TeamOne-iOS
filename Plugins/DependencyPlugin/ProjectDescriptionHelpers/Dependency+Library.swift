@@ -21,6 +21,7 @@ public extension TargetDependency.SPM {
     static let RxRelay = TargetDependency.external(name: "RxRelay")
     static let RxKeyboard = TargetDependency.external(name: "RxKeyboard")
     static let SnapKit = TargetDependency.external(name: "SnapKit")
+    static let Inject = TargetDependency.external(name: "Inject")
 }
 
 public extension TargetDependency.Carthage {

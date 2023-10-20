@@ -20,7 +20,8 @@ let project = Project.makeModule(
         .SPM.RxKeyboard,
         .SPM.Swinject,
         .SPM.Then,
-        .SPM.SnapKit
+        .SPM.SnapKit,
+        .SPM.Inject,
     ]
 )
 
