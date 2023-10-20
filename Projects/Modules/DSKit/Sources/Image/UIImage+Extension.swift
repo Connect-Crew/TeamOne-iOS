@@ -38,6 +38,9 @@ public enum DSKitImage {
     case myteamline
     case profileline
 
+    case slider
+    case search
+
     var toName: String {
         switch self {
         case .homeSolid:
@@ -60,6 +63,10 @@ public enum DSKitImage {
             return "myteam_line"
         case .profileline:
             return "profile_line"
+        case .slider:
+            return "slider"
+        case .search:
+            return "search"
         }
     }
 }
