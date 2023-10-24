@@ -35,7 +35,7 @@ final class TabCoordinator: BaseCoordinator<TabCoordinatorResult> {
             rootViewControllers.append(navigationController)
 
             switch $0 {
-            case .home: break
+            case .home: showHome(navigationController)
             case .community: break
             case .recruitment: break
             case .myteam: break
@@ -61,6 +61,16 @@ final class TabCoordinator: BaseCoordinator<TabCoordinatorResult> {
         navigationController.isNavigationBarHidden = true
 
         return navigationController
+    }
+
+    private func showHome(_ root: UINavigationController) {
+        let child = HomeCoordinator(root)
+
+        coordinate(to: child)
+            .subscribe(onNext: { _ in
+
+            })
+            .disposed(by: disposeBag)
     }
 
 }
