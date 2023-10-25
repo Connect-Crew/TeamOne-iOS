@@ -98,13 +98,11 @@ extension StickyHeaderView: UIScrollViewDelegate {
         // scrollView.contentOffset.y이 음수인 경우는 스크롤이 시작되지 않았거나 스크롤이 최상단인경우
         // scrollView.contentOffset.y이 N >= 0 스크롤이 내려가는경우
         let remainTopSpacingoffset = -scrollView.contentOffset.y - headerMinHeight
-//        let percentage = (remainTopSpacingoffset - headerMinHeight) / headerMinHeight
 
-//        print("remainTopSpacingoffset: \(remainTopSpacingoffset)")
-//        print("percentage: \(percentage)")
-//
-//        print("headerMinHeight: \(headerMinHeight)")
-//        print("headerMaxHeight: \(headerMaxHeight)")
+        print("remainTopSpacingoffset: \(remainTopSpacingoffset)")
+
+        print("headerMinHeight: \(headerMinHeight)")
+        print("headerMaxHeight: \(headerMaxHeight)")
 
         if remainTopSpacingoffset < headerMaxHeight {
             beforeHeaderView.snp.updateConstraints {
@@ -112,10 +110,8 @@ extension StickyHeaderView: UIScrollViewDelegate {
             }
         } else {
             beforeHeaderView.snp.updateConstraints {
-                $0.height.equalTo(headerMinHeight)
+                $0.height.equalTo(remainTopSpacingoffset)
             }
         }
-
-//        beforeHeaderView.alpha = percentage
     }
 }
