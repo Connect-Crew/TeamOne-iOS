@@ -12,21 +12,32 @@ import SnapKit
 
 open class StickyHeaderView: UIView {
 
-    let headerMaxHeight = 100.0
-    let headerMinHeight = 100.0
+    // before과 after의 높이를 각 각 100으로 설정한 경우의 예시 수치
+    // 최대높이는 Beforeheight + Afterheight
+    // 최소높이는 Afterheight
+//    lazy var headerMaxHeight = 200.0
+//    lazy var headerMinHeight = 100.0
+
+    var headerMaxHeight: CGFloat {
+        return beforeHeaderViewInitHeight + afterHeaderViewInitHeight
+    }
+
+    var headerMinHeight: CGFloat {
+        return afterHeaderViewInitHeight
+    }
 
     private lazy var scrollView = UIScrollView().then {
         $0.backgroundColor = .lightGray
         $0.contentInset = .init(top: self.headerMaxHeight, left: 0, bottom: 0, right: 0)
     }
 
-    private let beforeHeaderView = UIView().then {
-        $0.backgroundColor = .blue
-    }
+    private let beforeHeaderViewInitHeight: CGFloat
 
-    private let afterHeaderView = UIView().then {
-        $0.backgroundColor = .yellow
-    }
+    private let afterHeaderViewInitHeight: CGFloat
+
+    private let beforeHeaderView: UIView
+
+    private let afterHeaderView: UIView
 
     private let stackView = UIStackView().then {
         $0.axis = .vertical
@@ -39,8 +50,14 @@ open class StickyHeaderView: UIView {
         $0.font = .systemFont(ofSize: 36)
     }
 
-    public override init(frame: CGRect) {
-        super.init(frame: frame)
+    public init(beforeHeaderView: UIView, afterHeaderView: UIView, beforeHeaderViewInitHeight: CGFloat, afterHeaderViewInitHeight: CGFloat) {
+
+        self.beforeHeaderView = beforeHeaderView
+        self.afterHeaderView = afterHeaderView
+        self.beforeHeaderViewInitHeight = beforeHeaderViewInitHeight
+        self.afterHeaderViewInitHeight = afterHeaderViewInitHeight
+
+        super.init(frame: .zero)
 
         scrollView.delegate = self
 
@@ -52,13 +69,13 @@ open class StickyHeaderView: UIView {
 
         beforeHeaderView.snp.makeConstraints {
             $0.top.left.right.equalToSuperview()
-            $0.height.equalTo(80)
+            $0.height.equalTo(beforeHeaderViewInitHeight)
         }
 
         afterHeaderView.snp.makeConstraints {
             $0.top.equalTo(beforeHeaderView.snp.bottom)
             $0.left.right.equalToSuperview()
-            $0.height.equalTo(80)
+            $0.height.equalTo(afterHeaderViewInitHeight)
         }
 
         scrollView.snp.makeConstraints {
@@ -80,14 +97,16 @@ extension StickyHeaderView: UIScrollViewDelegate {
     public func scrollViewDidScroll(_ scrollView: UIScrollView) {
         // scrollView.contentOffset.y이 음수인 경우는 스크롤이 시작되지 않았거나 스크롤이 최상단인경우
         // scrollView.contentOffset.y이 N >= 0 스크롤이 내려가는경우
-        let remainTopSpacingoffset = -scrollView.contentOffset.y
-        let percentage = (remainTopSpacingoffset-80) / 50
+        let remainTopSpacingoffset = -scrollView.contentOffset.y - headerMinHeight
+//        let percentage = (remainTopSpacingoffset - headerMinHeight) / headerMinHeight
 
-        print("remainTopSpacingoffset: \(remainTopSpacingoffset)")
-        print("percentage: \(percentage)")
+//        print("remainTopSpacingoffset: \(remainTopSpacingoffset)")
+//        print("percentage: \(percentage)")
+//
+//        print("headerMinHeight: \(headerMinHeight)")
+//        print("headerMaxHeight: \(headerMaxHeight)")
 
-
-        if remainTopSpacingoffset < headerMinHeight {
+        if remainTopSpacingoffset < headerMaxHeight {
             beforeHeaderView.snp.updateConstraints {
                 $0.height.equalTo(remainTopSpacingoffset)
             }

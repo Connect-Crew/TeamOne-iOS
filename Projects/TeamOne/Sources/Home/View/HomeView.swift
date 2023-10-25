@@ -25,9 +25,14 @@ final class HomeView: UIView {
         $0.setButton(image: .search)
     }
 
-//    let goToSeeProjectView = GoToSeeProjectView()
+    let goToSeeProjectView = GoToSeeProjectView()
 
-    let stickyHeaderView = StickyHeaderView(frame: .zero)
+    lazy var stickyHeaderView = StickyHeaderView(
+        beforeHeaderView: goToSeeProjectView,
+        afterHeaderView: UIView().then { $0.backgroundColor = .red },
+        beforeHeaderViewInitHeight: 150.0,
+        afterHeaderViewInitHeight: 89.0
+    )
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -63,19 +68,9 @@ final class HomeView: UIView {
         addSubview(stickyHeaderView)
 
         stickyHeaderView.snp.makeConstraints {
-            $0.top.equalTo(titleLabel.snp.bottom)
+            $0.top.equalTo(titleLabel.snp.bottom).offset(17)
             $0.leading.trailing.equalToSuperview()
             $0.bottom.equalTo(safeAreaLayoutGuide.snp.bottom)
         }
-
-//        addSubview(goToSeeProjectView)
-//
-//        goToSeeProjectView.snp.makeConstraints {
-//            $0.top.equalTo(titleLabel.snp.bottom).offset(17)
-//            $0.leading.trailing.equalToSuperview()
-//            $0.height.equalTo(160)
-//        }
-
-
     }
 }

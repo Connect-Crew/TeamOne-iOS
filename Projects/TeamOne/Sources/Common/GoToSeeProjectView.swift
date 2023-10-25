@@ -14,24 +14,19 @@ import SnapKit
 final class GoToSeeProjectView: UIView {
 
     let titleLabel = UILabel().then {
-        $0.setLabel(text: "이번달에 완성된 프로젝트 보러가기 (준비 중)", typo: .body2, color: .teamOne.white)
+        $0.setLabel(text: "프로젝트 구경하러가기 (준비 중)", typo: .body2, color: .teamOne.white)
     }
 
     let descriptionLabel = UILabel().then {
-        $0.setLabel(text: "프로젝트를 구경하고 직접 커피챗을 보내세요!", typo: .caption1, color: .teamOne.white)
-    }
-
-    let hyperlinkButton = UIButton().then {
-        $0.setButton(text: "커뮤니티 바로가기 >>", typo: .caption1, color: .teamOne.white)
-    }
-
-    let contentView = UIView().then {
-        $0.backgroundColor = .clear
+        $0.numberOfLines = 0
+        $0.setLabel(text: "이번 달에 완성된 프로젝트를 구경하고 \n직접 커피챗을 보내세요!", typo: .caption1, color: .teamOne.white)
     }
 
     override init(frame: CGRect) {
         super.init(frame: frame)
         layout()
+
+        clipsToBounds = true
     }
 
     required init?(coder: NSCoder) {
@@ -39,39 +34,21 @@ final class GoToSeeProjectView: UIView {
     }
 
     func layout() {
-
         backgroundColor = .teamOne.mainBlue
 
-        addSubview(contentView)
-
-        contentView.snp.makeConstraints {
-            $0.top.equalToSuperview().inset(29)
-            $0.leading.equalToSuperview().inset(20)
-            $0.trailing.equalToSuperview().offset(20)
-            $0.bottom.equalToSuperview().inset(25)
-        }
-
-        contentView.addSubview(titleLabel)
+        addSubview(titleLabel)
 
         titleLabel.snp.makeConstraints {
-            $0.top.equalToSuperview()
-            $0.leading.equalToSuperview()
+            $0.top.equalToSuperview().offset(48)
+            $0.leading.equalToSuperview().offset(20)
         }
 
-        contentView.addSubview(descriptionLabel)
+        addSubview(descriptionLabel)
 
         descriptionLabel.snp.makeConstraints {
-            $0.top.equalTo(titleLabel.snp.bottom).offset(8)
-            $0.leading.equalToSuperview()
+            $0.top.equalTo(titleLabel.snp.bottom).offset(6)
+            $0.leading.equalTo(titleLabel)
         }
-
-        contentView.addSubview(hyperlinkButton)
-
-        hyperlinkButton.snp.makeConstraints {
-            $0.bottom.equalToSuperview()
-            $0.leading.equalToSuperview()
-        }
-
     }
 
 }
