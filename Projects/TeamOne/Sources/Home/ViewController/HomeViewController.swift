@@ -18,17 +18,25 @@ final class HomeViewController: ViewController {
 
     // MARK: - Properties
 
-    let viewModel: HomeViewModel
+    private let viewModel: HomeViewModel
+
+    private let mainView = HomeView()
 
     // MARK: - LifeCycle
+
+    override func loadView() {
+        self.view = mainView
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        let zview = UIView()
-        zview.frame = CGRect(x: 100, y: 100, width: 100, height: 300)
-        zview.backgroundColor = .red
-        view.addSubview(zview)
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+//        navigationController?.isNavigationBarHidden = false
     }
 
     // MARK: - Inits
@@ -41,4 +49,7 @@ final class HomeViewController: ViewController {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+
+    // MARK: - Methods
+
 }

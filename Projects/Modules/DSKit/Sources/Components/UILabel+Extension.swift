@@ -10,9 +10,10 @@ import UIKit
 
 public extension UILabel {
     @discardableResult
-    func setLabel(text: String, typo: SansNeo) -> Self {
+    func setLabel(text: String, typo: SansNeo, color: UIColor) -> Self {
         self.text = text
         self.font = .setFont(font: typo)
+        self.textColor = color
 
         return self
     }

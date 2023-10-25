@@ -102,7 +102,15 @@ public extension Project {
         }
         
         // MARK: - Scheme
-        var scheme = targets.contains(.app) ? appSchemes : schemes
+        let additionalSchemes = targets.contains(.demo)
+        ? [Scheme.makeScheme(configs: configurationName, name: name),
+           Scheme.makeDemoScheme(configs: configurationName, name: name)]
+        : [Scheme.makeScheme(configs: configurationName, name: name)]
+        schemes += additionalSchemes
+
+        var scheme = targets.contains(.app)
+        ? appSchemes
+        : schemes
         
         return Project(
             name: name,
@@ -111,6 +119,44 @@ public extension Project {
             settings: .settings(configurations: XCConfig.project),
             targets: projectTargets,
             schemes: schemes
+        )
+    }
+}
+
+// MARK: - Scheme Extension
+extension Scheme {
+    /// Scheme 생성하는 method
+    static func makeScheme(configs: ConfigurationName, name: String) -> Scheme {
+        return Scheme(
+            name: name,
+            shared: true,
+            buildAction: .buildAction(targets: ["\(name)"]),
+            testAction: .targets(
+                ["\(name)Tests"],
+                configuration: configs,
+                options: .options(coverage: true, codeCoverageTargets: ["\(name)"])
+            ),
+            runAction: .runAction(configuration: configs),
+            archiveAction: .archiveAction(configuration: configs),
+            profileAction: .profileAction(configuration: configs),
+            analyzeAction: .analyzeAction(configuration: configs)
+        )
+    }
+
+    static func makeDemoScheme(configs: ConfigurationName, name: String) -> Scheme {
+        return Scheme(
+            name: "\(name)Demo",
+            shared: true,
+            buildAction: .buildAction(targets: ["\(name)Demo"]),
+            testAction: .targets(
+                ["\(name)Tests"],
+                configuration: configs,
+                options: .options(coverage: true, codeCoverageTargets: ["\(name)Demo"])
+            ),
+            runAction: .runAction(configuration: configs),
+            archiveAction: .archiveAction(configuration: configs),
+            profileAction: .profileAction(configuration: configs),
+            analyzeAction: .analyzeAction(configuration: configs)
         )
     }
 }

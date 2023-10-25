@@ -18,12 +18,15 @@ extension AppDelegate {
 
         // MARK: - Repository
 
-
         // MARK: - UseCase
-
         
         // MARK: - ViewModel
 
+        container.register(interface: HomeViewModel.self) { resolver in
+            let viewModel = HomeViewModel()
+
+            return viewModel
+        }
 
     }
 }

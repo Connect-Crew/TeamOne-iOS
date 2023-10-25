@@ -9,8 +9,14 @@
 import UIKit
 
 public extension UIButton {
-    func setButton(text: String, typo: SansNeo) {
+    func setButton(text: String, typo: SansNeo, color: UIColor) {
         self.setTitle(text, for: .normal)
         self.titleLabel?.font = .setFont(font: typo)
+        self.titleLabel?.textColor = color
+    }
+
+    func setButton(image: DSKitImage) {
+        guard let image = UIImage(named: image.toName, in: Bundle.module, compatibleWith: nil) else { return }
+        self.setImage(image, for: .normal)
     }
 }
