@@ -86,7 +86,7 @@ final class LoginView: UIView {
     }
      
     
-    
+    print("로그인 브랜치 생성 테스트")
     
     
 }
