@@ -22,8 +22,8 @@ extension AppDelegate {
         
         // MARK: - ViewModel
 
-        container.register(interface: HomeViewModel.self) { resolver in
-            let viewModel = HomeViewModel()
+        container.register(interface:LoginViewModel.self) { resolver in
+            let viewModel = LoginViewModel()
 
             return viewModel
         }

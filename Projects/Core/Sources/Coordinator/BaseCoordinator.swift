@@ -19,6 +19,8 @@ open class BaseCoordinator<ResultType> {
 
     public let disposeBag = DisposeBag()
 
+   
+    
     public init(_ navigationController: UINavigationController) {
         self.navigationController = navigationController
     }
