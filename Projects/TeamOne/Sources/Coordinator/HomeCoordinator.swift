@@ -33,8 +33,7 @@ final class HomeCoordinator: BaseCoordinator<HomeCoordinatorResult> {
             })
             .disposed(by: disposeBag)
 
-    //   let viewController = Inject.ViewControllerHost(HomeViewController(viewModel: viewModel))
-      //  let viewController = Inject.ViewControllerHost(TestViewController())
-     //   push(viewController, animated: true, isRoot: true)
+       let viewController = Inject.ViewControllerHost(HomeViewController(viewModel: viewModel))
+        push(viewController, animated: true, isRoot: true)
     }
 }
