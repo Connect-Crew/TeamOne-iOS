@@ -41,6 +41,30 @@ public enum DSKitImage {
     case slider
     case search
 
+    case categoryall
+    case categorycustomerservice
+    case categorydesign
+    case categorydevelop
+    case categoryengineering
+    case categorymarketing
+    case categorymedia
+    case categoryothers
+    case categoryplanning
+    case categorysales
+    case categoryspecialize
+
+    case categoryfillall
+    case categoryfillcustomerservice
+    case categoryfilldesign
+    case categoryfilldevelop
+    case categoryfillengineering
+    case categoryfillmarketing
+    case categoryfillmedia
+    case categoryfillothers
+    case categoryfillplanning
+    case categoryfillsales
+    case categoryfillspecialize
+
     var toName: String {
         switch self {
         case .homeSolid:
@@ -67,6 +91,52 @@ public enum DSKitImage {
             return "slider"
         case .search:
             return "search"
+
+        case .categoryall:
+            return "categoryall"
+        case .categorycustomerservice:
+            return "categorycustomerservice"
+        case .categorydesign:
+            return "categorydesign"
+        case .categorydevelop:
+            return "categorydevelop"
+        case .categoryengineering:
+            return "categoryengineering"
+        case .categorymarketing:
+            return "categorymarketing"
+        case .categorymedia:
+            return "categorymedia"
+        case .categoryothers:
+            return "categoryothers"
+        case .categoryplanning:
+            return "categoryplanning"
+        case .categorysales:
+            return "categorysales"
+        case .categoryspecialize:
+            return "categoryspecialize"
+
+        case .categoryfillall:
+            return "categoryfillall"
+        case .categoryfillcustomerservice:
+            return "categoryfillcustomerservice"
+        case .categoryfilldesign:
+            return "categoryfilldesign"
+        case .categoryfilldevelop:
+            return "categoryfilldevelop"
+        case .categoryfillengineering:
+            return "categoryfillengineering"
+        case .categoryfillmarketing:
+            return "categoryfillmarketing"
+        case .categoryfillmedia:
+            return "categoryfillmedia"
+        case .categoryfillothers:
+            return "categoryfillothers"
+        case .categoryfillplanning:
+            return "categoryfillplanning"
+        case .categoryfillsales:
+            return "categoryfillsales"
+        case .categoryfillspecialize:
+            return "categoryfillspecialize"
         }
     }
 }
