@@ -7,3 +7,11 @@
 //
 
 import Foundation
+
+public protocol CellIdentifiable {
+    static var identifier: String { get }
+}
+
+public extension CellIdentifiable {
+    static var identifier : String { "\(self)" }
+}
