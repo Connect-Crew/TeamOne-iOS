@@ -10,11 +10,12 @@ import UIKit
 import Then
 import SnapKit
 
-class HomeCategoryView: UIScrollView {
+final class HomeCategoryView: UIScrollView {
 
     private var stackView = UIStackView().then {
+        $0.distribution = .equalSpacing
         $0.axis = .horizontal
-        $0.spacing = 0
+        $0.spacing = 12
         $0.backgroundColor = .clear
     }
 
@@ -54,7 +55,6 @@ class HomeCategoryView: UIScrollView {
             let button = UIButton()
             button.setImage($0.image, for: .normal)
             button.setImage($0.selectedImage, for: .selected)
-            button.imageEdgeInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
             button.addTarget(self, action: #selector(categoryButtonTapped(_:)), for: .touchUpInside)
             button.tag = dataSource?.firstIndex(of: $0) ?? 0
 
@@ -62,7 +62,7 @@ class HomeCategoryView: UIScrollView {
             buttons.append(button)
 
             button.snp.makeConstraints {
-                $0.height.width.equalTo(snp.height)
+                $0.height.equalTo(snp.height)
             }
         }
     }
@@ -77,7 +77,16 @@ class HomeCategoryView: UIScrollView {
 
 }
 
-struct HomeCategoryModel: Equatable {
+protocol CategoryViewProtocol {
+    associatedtype EnumType
+    var type: EnumType { get }
+    var image: UIImage? { get }
+    var selectedImage: UIImage? { get }
+}
+
+
+
+struct HomeCategoryModel: CategoryViewProtocol, Equatable {
     enum CategoryModelType: String {
         case all
         case develop
@@ -110,7 +119,7 @@ struct HomeCategoryModel: Equatable {
         switch type {
         case .all: return .image(dsimage: .categoryfillall)
         case .develop: return .image(dsimage: .categoryfilldevelop)
-        case .planning:return .image(dsimage: .categoryfillplanning)
+        case .planning: return .image(dsimage: .categoryfillplanning)
         case .design: return .image(dsimage: .categoryfilldesign)
         case .marketing: return .image(dsimage: .categoryfillmarketing)
         case .sales: return .image(dsimage: .categoryfillsales)
@@ -131,4 +140,3 @@ struct HomeCategoryMocks {
         ]
     }
 }
-

@@ -22,6 +22,10 @@ final class HomeViewController: ViewController {
 
     private let mainView = HomeView()
 
+    var homeTableView: UITableView {
+        return mainView.homeTableView
+    }
+
     // MARK: - LifeCycle
 
     override func loadView() {
@@ -44,6 +48,9 @@ final class HomeViewController: ViewController {
     init(viewModel: HomeViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
+
+        mainView.homeTableView.dataSource = self
+        mainView.homeTableView.delegate = self
     }
 
     required init?(coder: NSCoder) {
@@ -52,4 +59,46 @@ final class HomeViewController: ViewController {
 
     // MARK: - Methods
 
+}
+
+extension HomeViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        158
+    }
+
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        let remainTopSpacingoffset = -homeTableView.contentOffset.y - mainView.headerMinHeight
+
+        print("remainTopSpacingoffset: \(remainTopSpacingoffset)")
+
+        print("headerMinHeight: \(mainView.headerMinHeight)")
+        print("headerMaxHeight: \(mainView.headerMaxHeight)")
+
+        if remainTopSpacingoffset < mainView.headerMaxHeight {
+            mainView.goToSeeProjectView.snp.updateConstraints {
+                $0.height.equalTo(remainTopSpacingoffset)
+            }
+        } else {
+            mainView.goToSeeProjectView.snp.updateConstraints {
+                $0.height.equalTo(remainTopSpacingoffset)
+            }
+        }
+    }
+}
+
+extension HomeViewController: UITableViewDataSource {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        5
+    }
+
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let cell = homeTableView.dequeueReusableCell(
+            withIdentifier: HomeTableViewCell.identifier,
+            for: indexPath
+        ) as? HomeTableViewCell else { return UITableViewCell() }
+
+        cell.selectionStyle = .none
+
+        return cell
+    }
 }
