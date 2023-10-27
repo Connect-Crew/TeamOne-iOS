@@ -93,50 +93,50 @@ public enum DSKitImage {
             return "search"
 
         case .categoryall:
-            return "categoryall"
+            return "category.all"
         case .categorycustomerservice:
-            return "categorycustomerservice"
+            return "category.customerservice"
         case .categorydesign:
-            return "categorydesign"
+            return "category.design"
         case .categorydevelop:
-            return "categorydevelop"
+            return "category.develop"
         case .categoryengineering:
-            return "categoryengineering"
+            return "category.engineering"
         case .categorymarketing:
-            return "categorymarketing"
+            return "category.marketing"
         case .categorymedia:
-            return "categorymedia"
+            return "category.media"
         case .categoryothers:
-            return "categoryothers"
+            return "category.others"
         case .categoryplanning:
-            return "categoryplanning"
+            return "category.planning"
         case .categorysales:
-            return "categorysales"
+            return "category.sales"
         case .categoryspecialize:
-            return "categoryspecialize"
+            return "category.specialized"
 
         case .categoryfillall:
-            return "categoryfillall"
+            return "category.fill.all"
         case .categoryfillcustomerservice:
-            return "categoryfillcustomerservice"
+            return "category.fill.customerservice"
         case .categoryfilldesign:
-            return "categoryfilldesign"
+            return "category.fill.design"
         case .categoryfilldevelop:
-            return "categoryfilldevelop"
+            return "category.fill.develop"
         case .categoryfillengineering:
-            return "categoryfillengineering"
+            return "category.fill.engineering"
         case .categoryfillmarketing:
-            return "categoryfillmarketing"
+            return "category.fill.marketing"
         case .categoryfillmedia:
-            return "categoryfillmedia"
+            return "category.fill.media"
         case .categoryfillothers:
-            return "categoryfillothers"
+            return "category.fill.others"
         case .categoryfillplanning:
-            return "categoryfillplanning"
+            return "category.fill.planning"
         case .categoryfillsales:
-            return "categoryfillsales"
+            return "category.fill.sales"
         case .categoryfillspecialize:
-            return "categoryfillspecialize"
+            return "category.fill.specialized"
         }
     }
 }
