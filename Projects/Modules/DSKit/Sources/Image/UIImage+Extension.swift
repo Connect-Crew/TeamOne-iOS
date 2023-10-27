@@ -65,6 +65,8 @@ public enum DSKitImage {
     case categoryfillsales
     case categoryfillspecialize
 
+    case place
+
     var toName: String {
         switch self {
         case .homeSolid:
@@ -137,6 +139,8 @@ public enum DSKitImage {
             return "category.fill.sales"
         case .categoryfillspecialize:
             return "category.fill.specialized"
+        case .place:
+            return "place"
         }
     }
 }
