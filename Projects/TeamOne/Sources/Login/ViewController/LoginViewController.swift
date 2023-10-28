@@ -21,6 +21,8 @@ final class LoginViewController: ViewController {
     private let viewModel: LoginViewModel
 
     private let mainView = LoginView()
+    
+   
 
     // MARK: - LifeCycle
 
@@ -31,6 +33,8 @@ final class LoginViewController: ViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
+        
+        
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -52,5 +56,6 @@ final class LoginViewController: ViewController {
 
     // MARK: - Methods
 
-}
+    }
+
 

@@ -15,7 +15,7 @@ open class ReusableButton: UIButton {
 
     override public init(frame: CGRect) {
         super.init(frame: frame)
-         print(#fileID,#function,#line,"_ ")
+         print(#fileID, #function, #line,"_")
     }
 
     required public init?(coder: NSCoder) {
@@ -30,9 +30,10 @@ open class ReusableButton: UIButton {
                      cornerRadius: CGFloat = 8,
                      width:CGFloat = 307,
                      height:CGFloat = 57,
-                     icon:UIImage? = nil,
-                     iconWidth: CGFloat = 57, // 이미지 뷰의 너비
-                     iconHeight: CGFloat = 57 // 이미지 뷰의 높이
+                     image: UIImage? = nil
+//                     icon:UIImage? = nil,
+//                     iconWidth: CGFloat = 57, // 이미지 뷰의 너비
+//                     iconHeight: CGFloat = 57 // 이미지 뷰의 높이
                      
      ){
         self.init(type: .custom)
@@ -41,12 +42,24 @@ open class ReusableButton: UIButton {
         self.backgroundColor = bgColor
         self.tintColor = tintColor
         self.layer.cornerRadius = cornerRadius
-        self.setImage(icon, for: .normal)
+        //self.setImage(icon, for: .normal)
         self.imageView?.contentMode = .scaleAspectFit
         self.widthAnchor.constraint(equalToConstant: width).isActive = true
         self.heightAnchor.constraint(equalToConstant: height).isActive = true
-        self.imageView?.widthAnchor.constraint(equalToConstant: width).isActive = true
-        self.imageView?.heightAnchor.constraint(equalToConstant: height).isActive = true
+        if let image = image {
+                let imageView = UIImageView(image: image)
+                imageView.contentMode = .scaleAspectFit
+                imageView.translatesAutoresizingMaskIntoConstraints = false
+                self.addSubview(imageView)
+
+                // 이미지 뷰의 constraint를 버튼과 일치시킴
+                imageView.topAnchor.constraint(equalTo: self.topAnchor).isActive = true
+                imageView.leadingAnchor.constraint(equalTo: self.leadingAnchor).isActive = true
+                imageView.trailingAnchor.constraint(equalTo: self.trailingAnchor).isActive = true
+                imageView.bottomAnchor.constraint(equalTo: self.bottomAnchor).isActive = true
+            }
+//        self.imageView?.widthAnchor.constraint(equalToConstant: width).isActive = true
+//        self.imageView?.heightAnchor.constraint(equalToConstant: height).isActive = true
 //        self.layer.borderWidth = 0.5 // Border 너비 설정
 //        self.layer.borderColor = UIColor.black.cgColor
 
@@ -55,7 +68,7 @@ open class ReusableButton: UIButton {
         super.layoutSubviews()
         print(#fileID,#function,#line,"_ ")
 
-        alignIconLeading()
+        //alignIconLeading()
        
     }
 }

@@ -19,6 +19,7 @@ enum LoginNavigation {
 
 final class LoginViewModel: ViewModel {
 
+    
     struct Input {
 
     }
