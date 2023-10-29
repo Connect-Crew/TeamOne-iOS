@@ -1,25 +1,30 @@
 //
-//  LoginViewController.swift
+//  SignUpCompleteViewController.swift
 //  TeamOne
 //
-//  Created by 임재현 on 2023/10/26.
+//  Created by 임재현 on 2023/10/29.
 //  Copyright © 2023 TeamOne. All rights reserved.
 //
 
+import Foundation
 import UIKit
 import Core
+
 import RxSwift
 import RxCocoa
 import SnapKit
 import Then
 
-final class LoginViewController: ViewController {
+final class SignUpCompleteViewController: ViewController {
 
     // MARK: - Properties
 
-    private let viewModel: LoginViewModel
-    private let mainView = LoginView()
+    private let viewModel: SignUpCompleteViewModel
+
+    private let mainView = SignUpCompleteView()
     
+   
+
     // MARK: - LifeCycle
 
     override func loadView() {
@@ -29,14 +34,10 @@ final class LoginViewController: ViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
-//        mainView.kakaoButton.rx.tap
-//                    .subscribe(onNext: { [weak self] in
-//                        self?.handleButtonTap()
-//                    })
-//                    .disposed(by: disposeBag)
-           }
         
-    
+        
+    }
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
@@ -45,7 +46,7 @@ final class LoginViewController: ViewController {
 
     // MARK: - Inits
 
-    init(viewModel: LoginViewModel) {
+    init(viewModel: SignUpCompleteViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
@@ -55,10 +56,8 @@ final class LoginViewController: ViewController {
     }
 
     // MARK: - Methods
-    func handleButtonTap() {
-           print("Button tapped in ViewController")
-           // Perform actions or handle logic when the button is tapped
-       }
+
     }
+
 
 

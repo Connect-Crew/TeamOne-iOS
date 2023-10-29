@@ -26,6 +26,7 @@ final class LoginCoordinator: BaseCoordinator<LoginCoordinatorResult> {
 
     func showLogin() {
         let viewModel = DIContainer.shared.resolve(LoginViewModel.self)
+       // let viewModel = DIContainer.shared.resolve(SignUpCompleteViewModel.self)
 
         viewModel.navigation
             .subscribe(onNext: { _ in
@@ -34,6 +35,7 @@ final class LoginCoordinator: BaseCoordinator<LoginCoordinatorResult> {
             .disposed(by: disposeBag)
 
        let viewController = Inject.ViewControllerHost(LoginViewController(viewModel: viewModel))
+      // let viewController = Inject.ViewControllerHost(SignUpCompleteViewController(viewModel: viewModel))
         
        push(viewController, animated: true, isRoot: true)
     }
