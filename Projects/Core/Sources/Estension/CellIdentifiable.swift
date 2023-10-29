@@ -7,9 +7,11 @@
 //
 
 import Foundation
+import RxSwift
 
 public protocol CellIdentifiable {
     static var identifier: String { get }
+    var disposeBag: DisposeBag { get }
 }
 
 public extension CellIdentifiable {
