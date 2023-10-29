@@ -66,6 +66,8 @@ public enum DSKitImage {
     case categoryfillspecialize
 
     case place
+    case tagGray
+    case tagRed
 
     var toName: String {
         switch self {
@@ -139,8 +141,13 @@ public enum DSKitImage {
             return "category.fill.sales"
         case .categoryfillspecialize:
             return "category.fill.specialized"
+            
         case .place:
             return "place"
+        case.tagGray:
+            return "tag_gray"
+        case.tagRed:
+            return "tag_red"
         }
     }
 }
@@ -148,6 +155,7 @@ public enum DSKitImage {
 public extension UIImage {
     static func image(dsimage: DSKitImage) -> UIImage? {
         guard let image = UIImage(named: dsimage.toName, in: Bundle.module, compatibleWith: .none) else {
+            print("DEBUG: image load 실패")
             return nil
         }
 
