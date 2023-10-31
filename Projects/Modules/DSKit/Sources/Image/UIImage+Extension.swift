@@ -27,6 +27,7 @@ public enum Tablist: Int, CaseIterable {
 }
 
 public enum DSKitImage {
+
     case homeSolid
     case communitySolid
     case recruitmentSolid
@@ -81,6 +82,13 @@ public enum DSKitImage {
     case tagRed
     case upTwo
     case downTow
+
+    case homeHeader
+
+    // MARK: - 홈 네비게이션
+
+    case notification
+    case notificationnew
 
     var toName: String {
         switch self {
@@ -176,6 +184,14 @@ public enum DSKitImage {
             return "up_2"
         case .downTow:
             return "down_2"
+
+        case .homeHeader:
+            return "homeHeader"
+
+        case .notification:
+            return "notification"
+        case .notificationnew:
+            return "notification_new"
         }
     }
 }
