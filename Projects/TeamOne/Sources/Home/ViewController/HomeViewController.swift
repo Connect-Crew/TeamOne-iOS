@@ -40,7 +40,6 @@ final class HomeViewController: ViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-//        navigationController?.isNavigationBarHidden = false
     }
 
     // MARK: - Inits
@@ -49,12 +48,39 @@ final class HomeViewController: ViewController {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
 
-        mainView.homeTableView.dataSource = self
-        mainView.homeTableView.delegate = self
+        homeTableView.delegate = self
     }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    override func bind() {
+        let input = HomeViewModel.Input()
+
+        let output = viewModel.transform(input: input)
+
+        bindHomeTableView(output: output)
+    }
+
+    func bindHomeTableView(output: HomeViewModel.Output) {
+
+        output.projects
+            .drive(homeTableView.rx.items) { tableView, index, project in
+                guard let cell = tableView.dequeueReusableCell(
+                    withIdentifier: HomeTableViewCell.identifier,
+                    for: IndexPath(row: index, section: 0)) as? HomeTableViewCell
+                else {
+                    return UITableViewCell()
+                }
+
+                cell.selectionStyle = .none
+                cell.prepareForReuse()
+                cell.config(project: project)
+
+                return cell
+            }
+            .disposed(by: disposeBag)
     }
 
     // MARK: - Methods
@@ -63,16 +89,13 @@ final class HomeViewController: ViewController {
 
 extension HomeViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        158
+        let baseHeight: CGFloat = 158
+
+        return baseHeight
     }
 
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         let remainTopSpacingoffset = -homeTableView.contentOffset.y - mainView.headerMinHeight
-
-        print("remainTopSpacingoffset: \(remainTopSpacingoffset)")
-
-        print("headerMinHeight: \(mainView.headerMinHeight)")
-        print("headerMaxHeight: \(mainView.headerMaxHeight)")
 
         if remainTopSpacingoffset < mainView.headerMaxHeight {
             mainView.goToSeeProjectView.snp.updateConstraints {
@@ -83,22 +106,5 @@ extension HomeViewController: UITableViewDelegate {
                 $0.height.equalTo(remainTopSpacingoffset)
             }
         }
-    }
-}
-
-extension HomeViewController: UITableViewDataSource {
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        5
-    }
-
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = homeTableView.dequeueReusableCell(
-            withIdentifier: HomeTableViewCell.identifier,
-            for: indexPath
-        ) as? HomeTableViewCell else { return UITableViewCell() }
-
-        cell.selectionStyle = .none
-
-        return cell
     }
 }

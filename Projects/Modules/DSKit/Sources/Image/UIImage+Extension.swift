@@ -41,6 +41,8 @@ public enum DSKitImage {
     case slider
     case search
 
+    // MARK: - HomeCategories
+
     case categoryall
     case categorycustomerservice
     case categorydesign
@@ -65,9 +67,20 @@ public enum DSKitImage {
     case categoryfillsales
     case categoryfillspecialize
 
+    // MARK: - logo
+
+    case logo
+
+    // MARK: - 홈 셀
+
     case place
+    case count
+    case heartline
+    case heartsolid
     case tagGray
     case tagRed
+    case upTwo
+    case downTow
 
     var toName: String {
         switch self {
@@ -148,6 +161,21 @@ public enum DSKitImage {
             return "tag_gray"
         case.tagRed:
             return "tag_red"
+
+        case .logo:
+            return "임시로고"
+
+        case .count:
+            return "count"
+        case .heartline:
+            return "heart_line"
+        case .heartsolid:
+            return "heart_solid"
+
+        case .upTwo:
+            return "up_2"
+        case .downTow:
+            return "down_2"
         }
     }
 }
@@ -155,7 +183,7 @@ public enum DSKitImage {
 public extension UIImage {
     static func image(dsimage: DSKitImage) -> UIImage? {
         guard let image = UIImage(named: dsimage.toName, in: Bundle.module, compatibleWith: .none) else {
-            print("DEBUG: image load 실패")
+            print("DEBUG: image \(dsimage.toName) load 실패")
             return nil
         }
 

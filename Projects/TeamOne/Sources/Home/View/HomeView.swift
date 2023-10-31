@@ -47,7 +47,7 @@ final class HomeView: UIView {
     lazy var homeTableView = UITableView().then {
         $0.contentInset = .init(top: self.headerMaxHeight, left: 0, bottom: 0, right: 0)
         $0.register(HomeTableViewCell.self, forCellReuseIdentifier: HomeTableViewCell.identifier)
-        $0.backgroundColor = .lightGray
+        $0.backgroundColor = .teamOne.background
         $0.separatorStyle = .none
     }
 

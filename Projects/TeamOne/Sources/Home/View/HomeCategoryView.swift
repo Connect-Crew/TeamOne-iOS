@@ -45,7 +45,8 @@ final class HomeCategoryView: UIScrollView {
 
         addSubview(stackView)
         stackView.snp.makeConstraints {
-            $0.leading.trailing.equalToSuperview()
+            $0.leading.equalToSuperview().offset(20)
+            $0.trailing.equalToSuperview().inset(20)
             $0.top.bottom.equalToSuperview()
         }
     }
@@ -83,8 +84,6 @@ protocol CategoryViewProtocol {
     var image: UIImage? { get }
     var selectedImage: UIImage? { get }
 }
-
-
 
 struct HomeCategoryModel: CategoryViewProtocol, Equatable {
     enum CategoryModelType: String {
