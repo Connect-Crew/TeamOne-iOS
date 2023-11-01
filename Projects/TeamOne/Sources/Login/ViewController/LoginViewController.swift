@@ -18,7 +18,7 @@ final class LoginViewController: ViewController {
     // MARK: - Properties
 
     private let viewModel: LoginViewModel
-    private let mainView = LoginView()
+    private let mainView = TosView()
     
     // MARK: - LifeCycle
 
@@ -36,7 +36,6 @@ final class LoginViewController: ViewController {
 //                    .disposed(by: disposeBag)
            }
         
-    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
