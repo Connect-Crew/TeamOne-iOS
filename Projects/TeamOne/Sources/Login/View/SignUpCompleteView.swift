@@ -10,8 +10,12 @@ import UIKit
 import Then
 import DSKit
 import SnapKit
+import RxCocoa
+import RxSwift
 
 final class SignUpCompleteView: UIView {
+    let startButtonAction = PublishSubject<Void>()
+    let disposeBag = DisposeBag()
     
     let logoImageView = UIImageView().then {
         $0.contentMode = .scaleAspectFit
@@ -19,10 +23,10 @@ final class SignUpCompleteView: UIView {
         $0.layer.borderColor = UIColor.black.cgColor
         $0.layer.borderWidth = 1
         $0.backgroundColor = UIColor.blue // 이미지가 없을 때 보일 배경 색
-       
+        
     }
     let completeLabel = UILabel().then {
-        $0.setLabel(text: "회원가입 완료!", typo: .body2, color: .lightGray)
+        $0.setLabel(text: "회원가입 완료!", typo: .body2, color: .teamOne.grayscaleFive)
     }
     
     let titleLabel = UILabel().then {
@@ -30,14 +34,21 @@ final class SignUpCompleteView: UIView {
         
     }
     
- //   let buttonColor = #colorLiteral(red: 0.9333333333, green: 0.3019607843, blue: 0.3019607843, alpha: 1)
+    //   let buttonColor = #colorLiteral(red: 0.9333333333, green: 0.3019607843, blue: 0.3019607843, alpha: 1)
     
-    let startButton = ReusableButton(buttonTitle: "시작하기",bgColor: .teamOne.mainBlue,textColor: .white,cornerRadius:10,width: 340,height:52)
+    //    let startButton = ReusableButton(buttonTitle: "시작하기",bgColor: .teamOne.mainBlue,textColor: .white,cornerRadius:10,width: 340,height:52)
+    
+    let startButton = UIButton().then {
+        $0.setButton(text: "시작하기", typo: .button1, color: .black)
+    }
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        backgroundColor = .red
         layout()
+//        startButton.rx.tap
+//                    .bind(to: startButtonAction)
+//                    .disposed(by: disposeBag)
+//        
     }
     
     override func layoutSubviews() {
@@ -51,11 +62,10 @@ final class SignUpCompleteView: UIView {
     }
     
     private func layout() {
-        
         addSubview(logoImageView)
         
         logoImageView.snp.makeConstraints {
-            $0.top.equalToSuperview().offset(179)
+            $0.top.equalToSuperview().offset(137)
             $0.centerX.equalToSuperview()
             $0.height.width.equalTo(176)
         }
@@ -67,7 +77,7 @@ final class SignUpCompleteView: UIView {
         addSubview(titleLabel)
         titleLabel.snp.makeConstraints {
             $0.top.equalTo(completeLabel.snp.bottom).offset(50)
-//            $0.leading.equalToSuperview().offset(129)
+            //  $0.leading.equalToSuperview().offset(129)
             $0.centerX.equalToSuperview()
             
         }
@@ -75,31 +85,13 @@ final class SignUpCompleteView: UIView {
         
         addSubview(startButton)
         startButton.snp.makeConstraints {
-            //$0.leading.trailing.equalToSuperview().offset(25)
+            $0.leading.trailing.equalToSuperview().inset(25)
             $0.centerX.equalToSuperview()
-            $0.top.equalTo(titleLabel.snp.bottom).offset(167)
+            $0.bottom.equalTo(safeAreaLayoutGuide).inset(20)
+            $0.height.equalTo(52)
         }
-//        addSubview(kakaoSignUpButton)
-//        kakaoSignUpButton.snp.makeConstraints {
-//            $0.leading.equalToSuperview().offset(53)
-//            $0.top.equalTo(titleLabel.snp.bottom).offset(55)
-//            $0.centerX.equalToSuperview()
-//
-//        }
-//        buttonStacks.addArrangedSubview(kakaoButton)
-//        buttonStacks.addArrangedSubview(googleButton)
-//        buttonStacks.addArrangedSubview(appleButton)
-//        buttonStacks.axis = .vertical
-//        buttonStacks.spacing = 10
-//        buttonStacks.distribution = .fillEqually
-//        addSubview(buttonStacks)
-//        buttonStacks.snp.makeConstraints {
-//            $0.top.equalTo(kakaoSignUpButton.snp.bottom).offset(18)
-//            $0.leading.equalTo(safeAreaLayoutGuide).offset(45)
-//            $0.trailing.equalTo(safeAreaLayoutGuide).offset(-45)
-//        }
+        startButton.backgroundColor = .teamOne.mainBlue
     }
-        
     
 }
 

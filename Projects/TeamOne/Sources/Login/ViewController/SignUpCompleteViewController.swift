@@ -20,8 +20,8 @@ final class SignUpCompleteViewController: ViewController {
     // MARK: - Properties
 
     private let viewModel: SignUpCompleteViewModel
-
     private let mainView = SignUpCompleteView()
+   // let buttonTapObservable2 = PublishSubject<Void>()
     // MARK: - LifeCycle
 
     override func loadView() {
@@ -31,6 +31,16 @@ final class SignUpCompleteViewController: ViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
+        mainView.startButton.rx.tap
+                   .bind(to: mainView.startButtonAction)
+                   .disposed(by: disposeBag)
+
+               mainView.startButtonAction
+                   .subscribe(onNext: { [weak self] in
+                       self?.startButtonTapped()
+
+                   })
+                   .disposed(by: disposeBag)
         
         
     }
@@ -53,7 +63,13 @@ final class SignUpCompleteViewController: ViewController {
     }
 
     // MARK: - Methods
+    @objc func startButtonTapped() {
+           print("Kakao button tapped")
+          let viewcontroller = HomeViewController(viewModel: HomeViewModel())
+        self.navigationController?.pushViewController(viewcontroller, animated: true)
 
+
+       }
     }
 
 

@@ -47,9 +47,9 @@ final class LoginView: UIView {
         super.init(frame: frame)
         backgroundColor = .red
         layout()
-        kakaoButton.rx.tap
-                    .bind(to: kakaoButtonAction)
-                    .disposed(by: disposeBag)
+//        kakaoButton.rx.tap
+//                    .bind(to: kakaoButtonAction)
+//                    .disposed(by: disposeBag)
         
     }
     

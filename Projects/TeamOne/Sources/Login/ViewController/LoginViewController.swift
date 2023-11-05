@@ -38,7 +38,7 @@ final class LoginViewController: ViewController {
                mainView.kakaoButtonAction
                    .subscribe(onNext: { [weak self] in
                        self?.kakaoButtonTapped()
-                      
+
                    })
                    .disposed(by: disposeBag)
     }
@@ -61,9 +61,10 @@ final class LoginViewController: ViewController {
     // MARK: - Methods
 
     @objc func kakaoButtonTapped() {
-           print("Kakao button tapped")
+           print("Kakao button tapped2")
           let viewcontroller = SignUpCompleteViewController(viewModel: SignUpCompleteViewModel())
-           present(viewcontroller, animated: true)
+          // present(viewcontroller, animated: true)
+        self.navigationController?.pushViewController(viewcontroller, animated: true)
 
        }
     
