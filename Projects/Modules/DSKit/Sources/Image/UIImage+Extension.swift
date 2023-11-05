@@ -14,7 +14,7 @@ public enum Tablist: Int, CaseIterable {
     case recruitment
     case myteam
     case profile
-
+    
     public var title: String {
         switch self {
         case .home: return "홈"
@@ -37,10 +37,16 @@ public enum DSKitImage {
     case recruitmentline
     case myteamline
     case profileline
-
+    
     case slider
     case search
-
+    
+    case kakaoButton
+    case kakaoSignUpButton
+    case googleButton
+    case appleButton
+    
+    
     var toName: String {
         switch self {
         case .homeSolid:
@@ -67,19 +73,29 @@ public enum DSKitImage {
             return "slider"
         case .search:
             return "search"
+        case .kakaoButton:
+            return "kakaoButton"
+        case .kakaoSignUpButton:
+            return "kakaoSignUpButton"
+        case .appleButton:
+            return "appleButton"
+        case .googleButton:
+            return "googleButton"
         }
+        
     }
 }
+
 
 public extension UIImage {
     static func image(dsimage: DSKitImage) -> UIImage? {
         guard let image = UIImage(named: dsimage.toName, in: Bundle.module, compatibleWith: .none) else {
             return nil
         }
-
+        
         return image
     }
-
+    
     static let tabBar = TabBar()
 }
 
@@ -98,7 +114,7 @@ public struct TabBar {
             return UIImage.image(dsimage: .profileSolid)
         }
     }
-
+    
     public func loadImage(for tab: Tablist) -> UIImage? {
         switch tab {
         case .home:

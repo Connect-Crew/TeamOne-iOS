@@ -30,9 +30,9 @@ final class SignUpCompleteView: UIView {
         
     }
     
-    let buttonColor = #colorLiteral(red: 0.9333333333, green: 0.3019607843, blue: 0.3019607843, alpha: 1)
+ //   let buttonColor = #colorLiteral(red: 0.9333333333, green: 0.3019607843, blue: 0.3019607843, alpha: 1)
     
-    let startButton = ReusableButton(buttonTitle: "시작하기",bgColor: #colorLiteral(red: 0.9333333333, green: 0.3019607843, blue: 0.3019607843, alpha: 1),textColor: .white,cornerRadius:10,width: 340,height:52)
+    let startButton = ReusableButton(buttonTitle: "시작하기",bgColor: .teamOne.mainBlue,textColor: .white,cornerRadius:10,width: 340,height:52)
     
     override init(frame: CGRect) {
         super.init(frame: frame)

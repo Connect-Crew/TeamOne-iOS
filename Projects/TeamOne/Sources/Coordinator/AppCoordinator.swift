@@ -13,9 +13,12 @@ import Core
 
 final class AppCoordinator: BaseCoordinator<Void> {
     let window: UIWindow?
+    
+    
 
     init(_ window: UIWindow?) {
         self.window = window
+       
         super.init(UINavigationController())
     }
 

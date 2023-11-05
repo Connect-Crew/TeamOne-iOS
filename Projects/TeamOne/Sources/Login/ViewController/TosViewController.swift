@@ -35,7 +35,7 @@ final class TosViewController: ViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
-        //self.title = "Your Title"
+        self.title = "Your Title"
         
       
         

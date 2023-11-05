@@ -10,9 +10,11 @@ import UIKit
 import Then
 import DSKit
 import SnapKit
+import RxSwift
+import RxCocoa
 
 final class TosView: UIView {
-    
+    let disposeBag = DisposeBag()
     let title = ["서비스 이용약관","개인정보 처리방침","커뮤니티 정책","광고성 혜택 알림 수신동의 (선택)"]
     
     // let disposeBag = DisposeBag()
@@ -47,11 +49,8 @@ final class TosView: UIView {
     let underline = UIView().then {
         $0.backgroundColor = .gray
     }
-    
     let checkButton = ReusableButton(buttonTitle:"",bgColor: .clear,cornerRadius: 0,width: 24,height: 24,image: UIImage(named: "check"))
-    let buttonColor = #colorLiteral(red: 0.9333333333, green: 0.3019607843, blue: 0.3019607843, alpha: 1)
-    
-    let nextButton = ReusableButton(buttonTitle: "다음",bgColor: #colorLiteral(red: 0.9333333333, green: 0.3019607843, blue: 0.3019607843, alpha: 1),textColor: .white,cornerRadius:10,width: 340,height:52)
+    let nextButton = ReusableButton(buttonTitle: "다음",bgColor: .teamOne.mainBlue,textColor: .white,cornerRadius:10,width: 340,height:52)
     
     let loginLabel = UILabel().then {
         $0.setLabel(text: "올바른 비밀번호 입력하세요", typo: .caption2, color: .teamOne.point)
@@ -60,11 +59,14 @@ final class TosView: UIView {
     let checkTableView = UITableView().then {
         $0.backgroundColor = .clear
     }
+    let checkButtonAction = PublishSubject<Void>()
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         backgroundColor = .clear
         layout()
         setupTableView()
+        
     }
     
     override func layoutSubviews() {
@@ -77,7 +79,6 @@ final class TosView: UIView {
     }
     
     private func layout() {
-        
         addSubview(tosLabel)
         tosLabel.snp.makeConstraints {
             $0.top.equalToSuperview().offset(119)

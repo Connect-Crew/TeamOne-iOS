@@ -22,9 +22,6 @@ final class SignUpCompleteViewController: ViewController {
     private let viewModel: SignUpCompleteViewModel
 
     private let mainView = SignUpCompleteView()
-    
-   
-
     // MARK: - LifeCycle
 
     override func loadView() {

@@ -13,6 +13,8 @@ import Core
 
 final class LoginAppCoordinator: BaseCoordinator<Void> {
     let window: UIWindow?
+    
+    let navi = UINavigationController()
 
     init(_ window: UIWindow?) {
         self.window = window
@@ -25,18 +27,16 @@ final class LoginAppCoordinator: BaseCoordinator<Void> {
         window?.backgroundColor = .teamOne.backgroundDefault
     }
 
-    
-    
-    
     override func start() -> Observable<Void> {
         setup(with: window)
         showLogin()
-     
-
+    
         return Observable.never()
     }
     private func showLogin() {
-        navigationController.setNavigationBarHidden(true, animated: true)
+        navigationController.setNavigationBarHidden(false, animated: false)
+        
+        //navigationController.set
         let login = LoginCoordinator(navigationController)
         coordinate(to: login)
             .subscribe(onNext: {
