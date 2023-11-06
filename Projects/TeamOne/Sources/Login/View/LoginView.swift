@@ -35,6 +35,8 @@ final class LoginView: UIView {
     let googleButton = UIButton().then {
         $0.setButton(image: .googleButton)
     }
+    
+  
     let appleButton = UIButton().then {
         $0.setButton(image: .appleButton)
     }
