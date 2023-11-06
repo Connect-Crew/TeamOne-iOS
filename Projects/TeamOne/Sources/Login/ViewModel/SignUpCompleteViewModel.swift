@@ -1,8 +1,8 @@
 //
-//  LoginViewModel.swift
+//  SignUpCompleteViewModel.swift
 //  TeamOne
 //
-//  Created by 임재현 on 2023/10/26.
+//  Created by 임재현 on 2023/10/29.
 //  Copyright © 2023 TeamOne. All rights reserved.
 //
 
@@ -11,29 +11,27 @@ import RxSwift
 import RxCocoa
 import Core
 
-enum LoginNavigation {
+enum SignUpCompleteNavigation {
 
 }
 
-final class LoginViewModel: ViewModel {
+final class SignUpCompleteViewModel: ViewModel {
+
     
- 
     struct Input {
-       
+
     }
-    
+
     struct Output {
-        
+
     }
-    
-    let navigation = PublishSubject<LoginNavigation>()
+
+    let navigation = PublishSubject<SignUpCompleteNavigation>()
     var disposeBag = DisposeBag()
-    
+
     func transform(input: Input) -> Output {
-      
+
         return Output()
     }
-    
-    
-    
 }
+

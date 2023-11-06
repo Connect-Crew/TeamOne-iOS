@@ -12,13 +12,13 @@ import RxSwift
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
-    var appCoordinator: AppCoordinator?
+    var appCoordinator: LoginAppCoordinator?
     let disposeBag = DisposeBag()
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         window = UIWindow(windowScene: windowScene)
-        appCoordinator = AppCoordinator(window)
+        appCoordinator = LoginAppCoordinator(window)
         
 
         appCoordinator?.start()

@@ -10,37 +10,56 @@ import UIKit
 import Then
 import DSKit
 import SnapKit
+import RxCocoa
+import RxSwift
 
 final class LoginView: UIView {
     
+    let disposeBag = DisposeBag()
+    let kakaoButtonAction = PublishSubject<Void>()
+    
     let logoImageView = UIImageView().then {
-      
-        
-        $0.backgroundColor = #colorLiteral(red: 0.8039215803, green: 0.8039215803, blue: 0.8039215803, alpha: 1)
-        
+        $0.contentMode = .scaleAspectFit
+        $0.clipsToBounds = true
+        $0.layer.borderColor = UIColor.black.cgColor
+        $0.layer.borderWidth = 1
+        $0.backgroundColor = .teamOne.grayscaleEight
+       
     }
-    
     let titleLabel = UILabel().then {
-        $0.setLabel(text: "함께 만들어가는 \n 프로젝트 팀원", typo: .title2, color: .black)
-        
+        $0.setLabel(text: "함께 만들어가는 \n 프로젝트 팀원", typo: .title1, color: .teamOne.grayscaleEight)
+    }
+    let kakaoButton = UIButton().then {
+        $0.setButton(image: .kakaoButton)
+    }
+    let googleButton = UIButton().then {
+        $0.setButton(image: .googleButton)
     }
     
-    let buttonColor = #colorLiteral(red: 0.8039215803, green: 0.8039215803, blue: 0.8039215803, alpha: 1)
-    
-    let kakaoSignUpButton = ReusableButton(buttonTitle: "⚡️카카오로 3초만에 빠르게 회원가입!",bgColor: #colorLiteral(red: 0.8039215803, green: 0.8039215803, blue: 0.8039215803, alpha: 1), textColor: .gray,cornerRadius: 15,width: 259,height: 27)
-   
-    let kakaoButton = ReusableButton(buttonTitle: "카카오로 시작하기",bgColor: .yellow,textColor: .black,cornerRadius:10,width: 307,height: 57)
-    let googleButton = ReusableButton(buttonTitle: "Google로 시작하기",bgColor:#colorLiteral(red: 0.8039215803, green: 0.8039215803, blue: 0.8039215803, alpha: 1),textColor: .black,cornerRadius:10,width: 307,height: 57)
-    let appleButton = ReusableButton(buttonTitle: "Apple 시작하기",bgColor: #colorLiteral(red: 0.8039215803, green: 0.8039215803, blue: 0.8039215803, alpha: 1),textColor: .black,cornerRadius:10,width: 307,height: 57)
-    
+  
+    let appleButton = UIButton().then {
+        $0.setButton(image: .appleButton)
+    }
+    let kakaoSignUpButton = UIButton().then {
+        $0.setButton(image: .kakaoSignUpButton)
+    }
     let buttonStacks = UIStackView()
-    
-    
     
     override init(frame: CGRect) {
         super.init(frame: frame)
         backgroundColor = .red
         layout()
+//        kakaoButton.rx.tap
+//                    .bind(to: kakaoButtonAction)
+//                    .disposed(by: disposeBag)
+        
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        logoImageView.layer.cornerRadius = logoImageView.bounds.width / 2
+        logoImageView.image = UIImage(named: "팀 로고")
+        
     }
     
     required init?(coder: NSCoder) {
@@ -50,44 +69,49 @@ final class LoginView: UIView {
     private func layout() {
         
         addSubview(logoImageView)
+        addSubview(titleLabel)
+        addSubview(kakaoSignUpButton)
+        addSubview(buttonStacks)
         
         logoImageView.snp.makeConstraints {
-            $0.top.equalToSuperview().offset(130)
+            $0.top.equalTo(safeAreaLayoutGuide).offset(137)
             $0.centerX.equalToSuperview()
             $0.height.width.equalTo(176)
         }
         
-        addSubview(titleLabel)
         titleLabel.snp.makeConstraints {
             $0.top.equalTo(logoImageView.snp.bottom).offset(19)
             $0.leading.equalToSuperview().offset(129)
         }
         titleLabel.numberOfLines = 2
         
-        addSubview(kakaoSignUpButton)
         kakaoSignUpButton.snp.makeConstraints {
             $0.leading.equalToSuperview().offset(53)
-            $0.top.equalTo(titleLabel.snp.bottom).offset(135)
+            $0.top.equalTo(titleLabel.snp.bottom).offset(18)
             $0.centerX.equalToSuperview()
+            $0.height.equalTo(40)
             
         }
+        
+        kakaoButton.snp.makeConstraints {
+            $0.height.equalTo(45)
+        }
+        
+        
         buttonStacks.addArrangedSubview(kakaoButton)
         buttonStacks.addArrangedSubview(googleButton)
         buttonStacks.addArrangedSubview(appleButton)
         buttonStacks.axis = .vertical
         buttonStacks.spacing = 10
         buttonStacks.distribution = .fillEqually
-        addSubview(buttonStacks)
-        buttonStacks.snp.makeConstraints {
-            $0.leading.trailing.equalToSuperview().inset(29)
-            $0.top.equalTo(kakaoSignUpButton.snp.bottom).offset(15)
-        }
+       
         
+        buttonStacks.snp.makeConstraints {
+            $0.top.equalTo(kakaoSignUpButton.snp.bottom).offset(18)
+            $0.leading.equalTo(safeAreaLayoutGuide).offset(45)
+            $0.trailing.equalTo(safeAreaLayoutGuide).offset(-45)
+           // $0.bottom.equalTo(safeAreaLayoutGuide).inset(20)
+        }
     }
-     
-    
-    
-    
-    
 }
 

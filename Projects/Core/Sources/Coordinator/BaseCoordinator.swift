@@ -19,8 +19,6 @@ open class BaseCoordinator<ResultType> {
 
     public let disposeBag = DisposeBag()
 
-   
-    
     public init(_ navigationController: UINavigationController) {
         self.navigationController = navigationController
     }
@@ -90,6 +88,14 @@ open class BaseCoordinator<ResultType> {
 
     func setNavigationBarHidden(_ hidden: Bool, animated: Bool) {
         navigationController.tabBarController?.navigationController?.setNavigationBarHidden(
+            hidden,
+            animated: animated
+        )
+    }
+    
+    #warning("바꿀꺼")
+    func setNavigationBarHiddens(_ hidden: Bool, animated: Bool) {
+        navigationController.navigationController?.setNavigationBarHidden(
             hidden,
             animated: animated
         )
