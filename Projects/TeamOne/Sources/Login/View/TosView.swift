@@ -15,7 +15,7 @@ import RxCocoa
 
 final class TosView: UIView {
     let disposeBag = DisposeBag()
-    let title = ["서비스 이용약관","개인정보 처리방침","커뮤니티 정책","광고성 혜택 알림 수신동의 (선택)"]
+    let title = ["서비스 이용약관","개인정보 처리방침"]
     
     // let disposeBag = DisposeBag()
     let tosLabel = UILabel().then {
@@ -44,13 +44,20 @@ final class TosView: UIView {
     let allAgreeLabel = UILabel().then {
         $0.setLabel(text: "전체 동의하기", typo: .body2, color: .teamOne.grayscaleEight)
     }
-    
-    
+
     let underline = UIView().then {
         $0.backgroundColor = .gray
     }
-    let checkButton = ReusableButton(buttonTitle:"",bgColor: .clear,cornerRadius: 0,width: 24,height: 24,image: UIImage(named: "check"))
-    let nextButton = ReusableButton(buttonTitle: "다음",bgColor: .teamOne.mainBlue,textColor: .white,cornerRadius:10,width: 340,height:52)
+//    let checkButton = ReusableButton(buttonTitle:"",bgColor: .clear,cornerRadius: 0,width: 24,height: 24,image: UIImage(named: "check"))
+//    let nextButton = ReusableButton(buttonTitle: "다음",bgColor: .teamOne.mainBlue,textColor: .white,cornerRadius:10,width: 340,height:52)
+    
+    let checkButton = UIButton().then {
+        $0.setButton(image: .checkButton)
+    }
+    
+    let nextButton = UIButton().then {
+        $0.setButton(text: "다음", typo: .button1, color: .teamOne.mainBlue)
+    }
     
     let loginLabel = UILabel().then {
         $0.setLabel(text: "올바른 비밀번호 입력하세요", typo: .caption2, color: .teamOne.point)
@@ -110,7 +117,7 @@ final class TosView: UIView {
         checkButton.snp.makeConstraints {
             $0.top.equalToSuperview().offset(20)
             $0.leading.equalToSuperview().inset(20)
-            $0.height.equalTo(24)
+            $0.height.width.equalTo(24)
            // $0.centerY.equalToSuperview()
         }
         checkButton.backgroundColor = .clear
@@ -163,7 +170,7 @@ final class TosView: UIView {
     
     extension TosView: UITableViewDelegate, UITableViewDataSource {
         func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-            return 4// 예시로 5개의 셀을 표시
+            return 2
         }
         
         func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -174,6 +181,3 @@ final class TosView: UIView {
             return cell
         }
     }
-    
-
-

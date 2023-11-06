@@ -13,14 +13,13 @@ import SnapKit
 
 final class NickNameView: UIView {
     
-  // let disposeBag = DisposeBag()
+    // let disposeBag = DisposeBag()
     let nicknameSetLabel = UILabel().then {
         $0.setLabel(text: "닉네임을 설정해주세요.", typo: .title1, color: .teamOne.grayscaleEight)
     }
     
     let explainLabel = UILabel().then {
         $0.setLabel(text: "팀원에서 사용할 닉네임을 만들어주세요.\n건강한 프로젝트 모임을 만들어 나가요!", typo: .body3, color: .teamOne.grayscaleFive)
-        
     }
     
     let nicknameLabel = UILabel().then {
@@ -33,18 +32,23 @@ final class NickNameView: UIView {
     }
     
     let textField = UITextField().then {
-            $0.placeholder = "닉네임을 입력해주세요."
+        $0.placeholder = "닉네임을 입력해주세요."
         $0.borderStyle = .none
-        }
+    }
     
     let underline = UIView().then {
         $0.backgroundColor = .blue
     }
     
-    let deleteButton = ReusableButton(buttonTitle:"",bgColor: .clear,width: 24,height: 24,image: UIImage(named: "Delete 1"))
+   // let deleteButton = ReusableButton(buttonTitle:"",bgColor: .clear,width: 24,height: 24,image: UIImage(named: "Delete 1"))
     let buttonColor = #colorLiteral(red: 0.9333333333, green: 0.3019607843, blue: 0.3019607843, alpha: 1)
     
     let nextButton = ReusableButton(buttonTitle: "다음",bgColor: #colorLiteral(red: 0.9333333333, green: 0.3019607843, blue: 0.3019607843, alpha: 1),textColor: .white,cornerRadius:10,width: 340,height:52)
+    
+    let deleteButton = UIButton().then {
+        $0.setButton(image: .cancelButton)
+    }
+    
     
     let loginLabel = UILabel().then {
         $0.setLabel(text: "올바른 비밀번호 입력하세요", typo: .caption2, color: .teamOne.point)
@@ -57,7 +61,7 @@ final class NickNameView: UIView {
     
     override func layoutSubviews() {
         super.layoutSubviews()
-      
+        
     }
     
     required init?(coder: NSCoder) {
@@ -84,7 +88,7 @@ final class NickNameView: UIView {
             $0.top.equalTo(explainLabel.snp.bottom).offset(30)
         }
         
-       addSubview(textView)
+        addSubview(textView)
         textView.snp.makeConstraints {
             $0.top.equalTo(nicknameLabel.snp.bottom).offset(5)
             $0.leading.equalTo(nicknameLabel.snp.leading)
@@ -93,12 +97,12 @@ final class NickNameView: UIView {
         }
         
         textView.addSubview(textField)
-                textField.snp.makeConstraints {
-                    $0.top.equalToSuperview()
-                    $0.leading.equalToSuperview()
-                    $0.trailing.equalToSuperview().inset(30)
-                    $0.height.equalTo(40)
-                }
+        textField.snp.makeConstraints {
+            $0.top.equalToSuperview()
+            $0.leading.equalToSuperview()
+            $0.trailing.equalToSuperview().inset(30)
+            $0.height.equalTo(40)
+        }
         
         textView.addSubview(underline)
         underline.snp.makeConstraints {
@@ -111,29 +115,23 @@ final class NickNameView: UIView {
         deleteButton.snp.makeConstraints {
             $0.top.equalTo(textField.snp.top).offset(5)
             $0.trailing.equalToSuperview().inset(10)
+            $0.width.height.equalTo(24)
         }
-//        titleLabel.numberOfLines = 3
-//
+        //        titleLabel.numberOfLines = 3
+        //
         addSubview(nextButton)
         nextButton.snp.makeConstraints {
             $0.leading.equalToSuperview().inset(25)
             $0.centerX.equalToSuperview()
-          //  $0.top.equalTo(textView.snp.bottom).offset(167)
+            //  $0.top.equalTo(textView.snp.bottom).offset(167)
             $0.bottom.equalTo(safeAreaLayoutGuide).inset(50)
         }
-       
+        
         addSubview(loginLabel)
         loginLabel.snp.makeConstraints {
             $0.leading.equalTo(textView.snp.leading)
             $0.top.equalTo(textView.snp.bottom).offset(5)
         }
     }
-    
-    
-        
-
-    }
-    
-
-
+}
 

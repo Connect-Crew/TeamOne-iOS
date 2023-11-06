@@ -46,6 +46,9 @@ public enum DSKitImage {
     case googleButton
     case appleButton
     
+    case cancelButton
+    case checkButton
+    
     
     var toName: String {
         switch self {
@@ -81,7 +84,12 @@ public enum DSKitImage {
             return "appleButton"
         case .googleButton:
             return "googleButton"
+        case .cancelButton:
+            return "cancelButton"
+        case .checkButton:
+            return "checkButton"
         }
+        
         
     }
 }

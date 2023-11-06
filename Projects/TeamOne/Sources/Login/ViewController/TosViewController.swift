@@ -14,60 +14,43 @@ import SnapKit
 import Then
 
 final class TosViewController: ViewController {
-    
-    
-
     // MARK: - Properties
-
-   // private let viewModel: NickNameViewModel
-
+    
+    private let viewModel: TosViewModel
+    
     private let mainView = TosView()
     
-   
-
     // MARK: - LifeCycle
-
+    
     override func loadView() {
         self.view = mainView
-        
     }
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
         self.title = "Your Title"
         
-      
         
     }
-
+    
     override func viewWillAppear(_ animated: Bool) {
-            super.viewWillAppear(animated)
-        // Set the navigation title in viewWillAppear
-//               self.title = "Your Title"
-//
-//               // Optionally configure other navigation bar appearance settings
-//               if let navBar = self.navigationController?.navigationBar {
-//                   navBar.barTintColor = .black
-//                   navBar.tintColor = .black
-//                   navBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.black
-//                   ]
-//               }
-        }
+        super.viewWillAppear(animated)
+    }
     // MARK: - Inits
-
-//    init(viewModel: NickNameViewModel) {
-//        self.viewModel = viewModel
-//        super.init(nibName: nil, bundle: nil)
-//    }
-
+    
+    init(viewModel: TosViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
+    
     // MARK: - Methods
-
-    }
+    
+}
 
 
 
