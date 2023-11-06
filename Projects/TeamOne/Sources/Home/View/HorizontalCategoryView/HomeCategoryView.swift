@@ -93,7 +93,11 @@ struct HomeCategoryModel: CategoryViewProtocol, Equatable {
         case design
         case marketing
         case sales
+        case customerservice
         case specialized
+        case engineering
+        case media
+        case others
     }
 
     let type: CategoryModelType
@@ -111,6 +115,11 @@ struct HomeCategoryModel: CategoryViewProtocol, Equatable {
         case .marketing: return .image(dsimage: .categorymarketing)
         case .sales: return .image(dsimage: .categorysales)
         case .specialized: return .image(dsimage: .categoryspecialize)
+        case .customerservice: return .image(dsimage: .categorycustomerservice)
+        case .engineering: return .image(dsimage: .categoryengineering)
+        case .media: return .image(dsimage: .categorymedia)
+        case .others: return .image(dsimage: .categoryothers)
+
         }
     }
 
@@ -123,6 +132,10 @@ struct HomeCategoryModel: CategoryViewProtocol, Equatable {
         case .marketing: return .image(dsimage: .categoryfillmarketing)
         case .sales: return .image(dsimage: .categoryfillsales)
         case .specialized: return .image(dsimage: .categoryfillspecialize)
+        case .customerservice: return .image(dsimage: .categoryfillcustomerservice)
+        case .engineering: return .image(dsimage: .categoryfillengineering)
+        case .media: return .image(dsimage: .categoryfillmedia)
+        case .others: return .image(dsimage: .categoryfillothers)
         }
     }
 }
@@ -135,6 +148,11 @@ struct HomeCategoryMocks {
             HomeCategoryModel(type: .planning),
             HomeCategoryModel(type: .design),
             HomeCategoryModel(type: .marketing),
+            HomeCategoryModel(type: .sales),
+            HomeCategoryModel(type: .customerservice),
+            HomeCategoryModel(type: .specialized),
+            HomeCategoryModel(type: .engineering),
+            HomeCategoryModel(type: .media),
             HomeCategoryModel(type: .specialized)
         ]
     }

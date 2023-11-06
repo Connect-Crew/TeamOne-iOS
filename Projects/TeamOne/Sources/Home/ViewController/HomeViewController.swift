@@ -20,10 +20,10 @@ final class HomeViewController: ViewController {
 
     private let viewModel: HomeViewModel
 
-    private let mainView = HomeView()
+    private let mainView = HomeMainView()
 
-    var homeTableView: UITableView {
-        return mainView.homeTableView
+    var tableView: UITableView {
+        return mainView.tableView
     }
 
     // MARK: - LifeCycle
@@ -48,7 +48,7 @@ final class HomeViewController: ViewController {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
 
-        homeTableView.delegate = self
+        tableView.delegate = self
     }
 
     required init?(coder: NSCoder) {
@@ -66,7 +66,7 @@ final class HomeViewController: ViewController {
     func bindHomeTableView(output: HomeViewModel.Output) {
 
         output.projects
-            .drive(homeTableView.rx.items) { tableView, index, project in
+            .drive(tableView.rx.items) { tableView, index, project in
                 guard let cell = tableView.dequeueReusableCell(
                     withIdentifier: HomeTableViewCell.identifier,
                     for: IndexPath(row: index, section: 0)) as? HomeTableViewCell
@@ -88,23 +88,31 @@ final class HomeViewController: ViewController {
 }
 
 extension HomeViewController: UITableViewDelegate {
+    
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         let baseHeight: CGFloat = 158
 
         return baseHeight
     }
 
+
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        let remainTopSpacingoffset = -homeTableView.contentOffset.y - mainView.headerMinHeight
+        let remainTopSpacingoffset = -tableView.contentOffset.y - mainView.headerMinHeight
+
+        let remainTopRatio = remainTopSpacingoffset / mainView.headerViewWillDissmissHeight
+
+        mainView.headerImageView.alpha = remainTopRatio
 
         if remainTopSpacingoffset < mainView.headerMaxHeight {
-            mainView.goToSeeProjectView.snp.updateConstraints {
+            mainView.headerImageView.snp.updateConstraints {
                 $0.height.equalTo(remainTopSpacingoffset)
             }
+
         } else {
-            mainView.goToSeeProjectView.snp.updateConstraints {
+            mainView.headerImageView.snp.updateConstraints {
                 $0.height.equalTo(remainTopSpacingoffset)
             }
         }
+
     }
 }
