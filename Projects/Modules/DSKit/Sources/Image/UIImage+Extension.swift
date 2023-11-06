@@ -27,6 +27,7 @@ public enum Tablist: Int, CaseIterable {
 }
 
 public enum DSKitImage {
+
     case homeSolid
     case communitySolid
     case recruitmentSolid
@@ -40,6 +41,8 @@ public enum DSKitImage {
 
     case slider
     case search
+
+    // MARK: - HomeCategories
 
     case categoryall
     case categorycustomerservice
@@ -64,6 +67,28 @@ public enum DSKitImage {
     case categoryfillplanning
     case categoryfillsales
     case categoryfillspecialize
+
+    // MARK: - logo
+
+    case logo
+
+    // MARK: - 홈 셀
+
+    case place
+    case count
+    case heartline
+    case heartsolid
+    case tagGray
+    case tagRed
+    case upTwo
+    case downTow
+
+    case homeHeader
+
+    // MARK: - 홈 네비게이션
+
+    case notification
+    case notificationnew
 
     var toName: String {
         switch self {
@@ -93,50 +118,80 @@ public enum DSKitImage {
             return "search"
 
         case .categoryall:
-            return "categoryall"
+            return "category.all"
         case .categorycustomerservice:
-            return "categorycustomerservice"
+            return "category.customerservice"
         case .categorydesign:
-            return "categorydesign"
+            return "category.design"
         case .categorydevelop:
-            return "categorydevelop"
+            return "category.develop"
         case .categoryengineering:
-            return "categoryengineering"
+            return "category.engineering"
         case .categorymarketing:
-            return "categorymarketing"
+            return "category.marketing"
         case .categorymedia:
-            return "categorymedia"
+            return "category.media"
         case .categoryothers:
-            return "categoryothers"
+            return "category.others"
         case .categoryplanning:
-            return "categoryplanning"
+            return "category.planning"
         case .categorysales:
-            return "categorysales"
+            return "category.sales"
         case .categoryspecialize:
-            return "categoryspecialize"
+            return "category.specialized"
 
         case .categoryfillall:
-            return "categoryfillall"
+            return "category.fill.all"
         case .categoryfillcustomerservice:
-            return "categoryfillcustomerservice"
+            return "category.fill.customerservice"
         case .categoryfilldesign:
-            return "categoryfilldesign"
+            return "category.fill.design"
         case .categoryfilldevelop:
-            return "categoryfilldevelop"
+            return "category.fill.develop"
         case .categoryfillengineering:
-            return "categoryfillengineering"
+            return "category.fill.engineering"
         case .categoryfillmarketing:
-            return "categoryfillmarketing"
+            return "category.fill.marketing"
         case .categoryfillmedia:
-            return "categoryfillmedia"
+            return "category.fill.media"
         case .categoryfillothers:
-            return "categoryfillothers"
+            return "category.fill.others"
         case .categoryfillplanning:
-            return "categoryfillplanning"
+            return "category.fill.planning"
         case .categoryfillsales:
-            return "categoryfillsales"
+            return "category.fill.sales"
         case .categoryfillspecialize:
-            return "categoryfillspecialize"
+            return "category.fill.specialized"
+            
+        case .place:
+            return "place"
+        case.tagGray:
+            return "tag_gray"
+        case.tagRed:
+            return "tag_red"
+
+        case .logo:
+            return "임시로고"
+
+        case .count:
+            return "count"
+        case .heartline:
+            return "heart_line"
+        case .heartsolid:
+            return "heart_solid"
+
+        case .upTwo:
+            return "up_2"
+        case .downTow:
+            return "down_2"
+
+        case .homeHeader:
+            return "homeHeader"
+
+        case .notification:
+            return "notification"
+        case .notificationnew:
+            return "notification_new"
         }
     }
 }
@@ -144,6 +199,7 @@ public enum DSKitImage {
 public extension UIImage {
     static func image(dsimage: DSKitImage) -> UIImage? {
         guard let image = UIImage(named: dsimage.toName, in: Bundle.module, compatibleWith: .none) else {
+            print("DEBUG: image \(dsimage.toName) load 실패")
             return nil
         }
 

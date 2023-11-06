@@ -21,6 +21,6 @@ open class ViewController: UIViewController {
         bind()
     }
 
-    public func layout() {}
-    public func bind() {}
+    open func layout() {}
+    open func bind() {}
 }

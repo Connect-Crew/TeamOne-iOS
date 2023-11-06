@@ -60,3 +60,7 @@ identifier_name:
     - GlobalAPIKey
     
 reporter: "xcode" # reporter type (xcode, json, csv, checkstyle, codeclimate, junit, html, emoji, sonarqube, markdown, github-actions-logging)
+
+### 함수 길이z
+function_body_length:
+  warning: 100
