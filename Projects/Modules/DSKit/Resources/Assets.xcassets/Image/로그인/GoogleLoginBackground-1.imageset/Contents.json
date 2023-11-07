@@ -1,15 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "간편로그인.png",
+      "filename" : "GoogleLoginBackground.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
+      "filename" : "GoogleLoginBackground@2x-1.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
+      "filename" : "GoogleLoginBackground@3x-1.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

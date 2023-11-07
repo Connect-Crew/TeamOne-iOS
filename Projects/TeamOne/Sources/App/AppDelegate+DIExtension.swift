@@ -10,6 +10,7 @@ import Core
 import Domain
 
 extension AppDelegate {
+
     var container: DIContainer {
         DIContainer.shared
     }
@@ -22,8 +23,20 @@ extension AppDelegate {
         
         // MARK: - ViewModel
 
-        container.register(interface:LoginViewModel.self) { resolver in
-            let viewModel = LoginViewModel()
+        container.register(interface: SplashViewModel.self) { _ in
+            let viewModel = SplashViewModel()
+
+            return viewModel
+        }
+
+        container.register(interface: LoginMainViewModel.self) { _ in
+            let viewModel = LoginMainViewModel()
+
+            return viewModel
+        }
+
+        container.register(interface: HomeViewModel.self) { _ in
+            let viewModel = HomeViewModel()
 
             return viewModel
         }

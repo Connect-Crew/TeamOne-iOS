@@ -1,15 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "kakao_login_large_wide.png",
+      "filename" : "KaKaoLoginBackground.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
+      "filename" : "KaKaoLoginBackground@2x-2.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
+      "filename" : "KaKaoLoginBackground@3x-2.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

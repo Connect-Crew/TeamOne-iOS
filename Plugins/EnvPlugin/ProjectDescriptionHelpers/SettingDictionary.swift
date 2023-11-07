@@ -17,12 +17,12 @@ public extension SettingsDictionary {
     
     func setCodeSignManual() -> SettingsDictionary {
         merging(["CODE_SIGN_STYLE": SettingValue(stringLiteral: "Manual")])
-            .merging(["DEVELOPMENT_TEAM": SettingValue(stringLiteral: "SUMATJC294")])
+            .merging(["DEVELOPMENT_TEAM": SettingValue(stringLiteral: "Kang HyeonJun")])
             .merging(["CODE_SIGN_IDENTITY": SettingValue(stringLiteral: "$(CODE_SIGN_IDENTITY)")])
     }
     
     func setProvisioning() -> SettingsDictionary {
         merging(["PROVISIONING_PROFILE_SPECIFIER": SettingValue(stringLiteral: "$(APP_PROVISIONING_PROFILE)")])
-                    .merging(["PROVISIONING_PROFILE": SettingValue(stringLiteral: "$(APP_PROVISIONING_PROFILE)")])
+            .merging(["PROVISIONING_PROFILE": SettingValue(stringLiteral: "$(APP_PROVISIONING_PROFILE)")])
     }
 }

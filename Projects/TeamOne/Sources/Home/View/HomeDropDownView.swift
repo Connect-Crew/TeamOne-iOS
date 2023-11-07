@@ -28,7 +28,7 @@ final class HomeDropDownView: UIView {
     }
 
     private let statusLabel = UILabel().then {
-        $0.setLabel(text: "0/0", typo: .caption1, color: .teamOne.mainBlue)
+        $0.setLabel(text: "0/0", typo: .caption1, color: .teamOne.mainColor)
     }
 
     private let upDownButton = UIButton().then {

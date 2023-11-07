@@ -22,6 +22,8 @@ public extension TargetDependency.SPM {
     static let RxKeyboard = TargetDependency.external(name: "RxKeyboard")
     static let SnapKit = TargetDependency.external(name: "SnapKit")
     static let Inject = TargetDependency.external(name: "Inject")
+    static let RxKakaoSDK = TargetDependency.external(name: "RxKakaoSDK")
+    static let RxKakaoSDKAuth = TargetDependency.external(name: "RxKakaoSDKAuth")
 }
 
 public extension TargetDependency.Carthage {

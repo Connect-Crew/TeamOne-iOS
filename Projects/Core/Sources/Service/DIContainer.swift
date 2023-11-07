@@ -24,6 +24,11 @@ public final class DIContainer {
     }
 
     public func resolve<T>(_ serviceType: T.Type) -> T {
+
+        if container.resolve(serviceType) == nil {
+            print("!!!!!DIContainer Error Type is \(serviceType)")
+        }
+
         return container.resolve(serviceType)!
     }
 }

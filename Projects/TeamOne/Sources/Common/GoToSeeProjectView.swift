@@ -34,7 +34,7 @@ final class GoToSeeProjectView: UIView {
     }
 
     func layout() {
-        backgroundColor = .teamOne.mainBlue
+        backgroundColor = .teamOne.mainColor
 
         addSubview(titleLabel)
 

@@ -10,11 +10,10 @@ import UIKit
 import DSKit
 import RxSwift
 import Core
+import Inject
 
 final class AppCoordinator: BaseCoordinator<Void> {
     let window: UIWindow?
-    
-    
 
     init(_ window: UIWindow?) {
         self.window = window
@@ -30,9 +29,44 @@ final class AppCoordinator: BaseCoordinator<Void> {
 
     override func start() -> Observable<Void> {
         setup(with: window)
-        showTab()
+        showSplash()
 
         return Observable.never()
+    }
+
+    private func showSplash() {
+        let viewModel = DIContainer.shared.resolve(SplashViewModel.self)
+
+        viewModel.navigation
+            .do(onNext: { [weak self] _ in
+                self?.pop(animated: false)
+            })
+            .subscribe(onNext: { [weak self] in
+                switch $0 {
+                case .finish:
+                    self?.showLogin()
+                case .autoLogin:
+                    self?.showTab()
+                }
+            })
+            .disposed(by: disposeBag)
+
+        let viewController = Inject.ViewControllerHost(SplashViewController(viewModel: viewModel))
+
+        push(viewController, animated: false)
+    }
+
+    private func showLogin() {
+        navigationController.setNavigationBarHidden(true, animated: true)
+        let tab = LoginCoordinator(navigationController)
+        coordinate(to: tab)
+            .subscribe(onNext: {
+                switch $0 {
+                case .finish:
+                    break
+                }
+            })
+            .disposed(by: disposeBag)
     }
 
     private func showTab() {

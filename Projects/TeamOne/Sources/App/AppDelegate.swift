@@ -9,6 +9,12 @@
 import UIKit
 import Core
 import DSKit
+import RxKakaoSDKCommon
+import KakaoSDKCommon
+import KakaoSDKAuth
+import RxKakaoSDKAuth
+import KakaoSDKUser
+import RxKakaoSDKUser
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -22,13 +28,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         print("Product")
         #endif
 
-        // 의존성 생성
-
-        registerDependencies()
+        RxKakaoSDK.initSDK(appKey: AppKey.kakaoNativeAppKey)
 
         // 폰트생성
 
         Fonts.fontInitialize()
+
+        // 의존성 생성
+
+        registerDependencies()
         
         return true
     }
@@ -44,5 +52,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didDiscardSceneSessions sceneSessions: Set<UISceneSession>) {
         
+    }
+
+    func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
+
+        // 카카오 로그인 관련
+        if AuthApi.isKakaoTalkLoginUrl(url) {
+            return AuthController.rx.handleOpenUrl(url: url)
+        }
+
+        return false
     }
 }

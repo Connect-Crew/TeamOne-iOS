@@ -14,7 +14,9 @@ import RxSwift
 import RxCocoa
 
 final class TosView: UIView {
+    
     let disposeBag = DisposeBag()
+
     let title = ["서비스 이용약관","개인정보 처리방침"]
     
     // let disposeBag = DisposeBag()
@@ -51,12 +53,10 @@ final class TosView: UIView {
 //    let checkButton = ReusableButton(buttonTitle:"",bgColor: .clear,cornerRadius: 0,width: 24,height: 24,image: UIImage(named: "check"))
 //    let nextButton = ReusableButton(buttonTitle: "다음",bgColor: .teamOne.mainBlue,textColor: .white,cornerRadius:10,width: 340,height:52)
     
-    let checkButton = UIButton().then {
-        $0.setButton(image: .checkButton)
-    }
+    let checkButton = UIButton()
     
     let nextButton = UIButton().then {
-        $0.setButton(text: "다음", typo: .button1, color: .teamOne.mainBlue)
+        $0.setButton(text: "다음", typo: .button1, color: .teamOne.mainColor)
     }
     
     let loginLabel = UILabel().then {
@@ -120,8 +120,9 @@ final class TosView: UIView {
             $0.height.width.equalTo(24)
            // $0.centerY.equalToSuperview()
         }
-        checkButton.backgroundColor = .clear
+        
         allAgreeView.addSubview(underline)
+
         underline.snp.makeConstraints {
             $0.leading.trailing.equalToSuperview()
             $0.height.equalTo(1)

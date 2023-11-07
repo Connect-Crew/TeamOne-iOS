@@ -85,6 +85,13 @@ public enum DSKitImage {
 
     case homeHeader
 
+    // MARK: - 로그인
+
+    case appleLoginButtonBG
+    case googleLoginButtonBG
+    case kakaoLoginButtonBG
+    case kakaoLoginExplain
+
     // MARK: - 홈 네비게이션
 
     case notification
@@ -192,6 +199,13 @@ public enum DSKitImage {
             return "notification"
         case .notificationnew:
             return "notification_new"
+
+            // MARK: - 로그인
+
+        case .appleLoginButtonBG: return "AppleLoginBackground"
+        case .googleLoginButtonBG: return "GoogleLoginBackground-1"
+        case .kakaoLoginButtonBG: return "KaKaoLoginBackground-2"
+        case .kakaoLoginExplain: return "kakaoLoginExplain"
         }
     }
 }

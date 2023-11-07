@@ -90,7 +90,7 @@ final class SignUpCompleteView: UIView {
             $0.bottom.equalTo(safeAreaLayoutGuide).inset(20)
             $0.height.equalTo(52)
         }
-        startButton.backgroundColor = .teamOne.mainBlue
+        startButton.backgroundColor = .teamOne.mainColor
     }
     
 }

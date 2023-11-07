@@ -18,7 +18,7 @@ public extension UIColor {
 
 public struct TeamOneColor {
     public let backgroundDefault = UIColor(r: 253, g: 253, b: 253, a: 1)
-    public let mainBlue = UIColor(r: 0, g: 174, b: 228, a: 1)
+    public let mainColor = UIColor(r: 0, g: 174, b: 228, a: 1)
     public let mainlightColor = UIColor(r: 241, g: 252, b: 255, a: 1)
     public let background = UIColor(r: 249, g: 250, b: 252, a: 1)
     public let point = UIColor(r: 214, g: 37, b: 70, a: 1)

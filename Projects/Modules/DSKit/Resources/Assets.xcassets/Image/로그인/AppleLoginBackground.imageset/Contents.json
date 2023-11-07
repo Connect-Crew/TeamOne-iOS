@@ -1,15 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "카카오 회원가입 1.png",
+      "filename" : "AppleLoginBackground.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
+      "filename" : "AppleLoginBackground@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
+      "filename" : "AppleLoginBackground@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

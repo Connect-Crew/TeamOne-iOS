@@ -43,10 +43,10 @@ final class NickNameView: UIView {
    // let deleteButton = ReusableButton(buttonTitle:"",bgColor: .clear,width: 24,height: 24,image: UIImage(named: "Delete 1"))
     let buttonColor = #colorLiteral(red: 0.9333333333, green: 0.3019607843, blue: 0.3019607843, alpha: 1)
     
-    let nextButton = ReusableButton(buttonTitle: "다음",bgColor: #colorLiteral(red: 0.9333333333, green: 0.3019607843, blue: 0.3019607843, alpha: 1),textColor: .white,cornerRadius:10,width: 340,height:52)
+    let nextButton = UIButton()
     
     let deleteButton = UIButton().then {
-        $0.setButton(image: .cancelButton)
+        $0
     }
     
     

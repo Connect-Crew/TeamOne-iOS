@@ -11,7 +11,7 @@ import DependencyPlugin
 
 let project = Project.makeModule(
     name: "ThirdPartyLibs",
-    targets: [.dynamicFramework],
+    targets: [.staticFramework],
     internalDependencies: [
         .SPM.Moya,
         .SPM.RxCocoa,
@@ -22,6 +22,7 @@ let project = Project.makeModule(
         .SPM.Then,
         .SPM.SnapKit,
         .SPM.Inject,
+        .SPM.RxKakaoSDK,
     ]
 )
 

@@ -25,7 +25,7 @@ public extension Project {
         let deploymentTarget = Environment.deploymentTarget
         let platform = Environment.platform
         
-        let baseSettings: SettingsDictionary = .baseSettings.setCodeSignManual()
+        let baseSettings: SettingsDictionary = .baseSettings
         
         var projectTargets: [Target] = []
         var schemes: [Scheme] = []
@@ -42,7 +42,7 @@ public extension Project {
                                 infoPlist: .extendingDefault(with: infoPlist),
                                 sources: "Sources/**/*.swift",
                                 resources: [.glob(pattern: "Resources/**", excluding: [])],
-//                                entitlements: "\(name).entitlements",
+                                //                                entitlements: "\(name).entitlements",
                                 scripts: [.pre(path: .relativeToRoot("Scripts/SwiftLintRunScript.sh"), arguments: [], name: "SwiftLint")],
                                 dependencies: [
                                     internalDependencies,
@@ -56,7 +56,7 @@ public extension Project {
         // MARK: - Unit Tests
         if targets.contains(.unitTest) {
             let deps: [TargetDependency] = [.target(name: name)]
-            
+
             let target = Target(
                 name: "\(name)Tests",
                 platform: platform,
@@ -66,18 +66,14 @@ public extension Project {
                 infoPlist: .default,
                 sources: ["Tests/Sources/**/*.swift"],
                 resources: [.glob(pattern: "Tests/Resources/**", excluding: [])],
-                scripts: [.pre(path: .relativeToRoot("Scripts/SwiftLintRunScript.sh"), arguments: [], name: "SwiftLint")],
                 dependencies: [
                     deps,
                     [
-//                        .SPM.Nimble,
-//                        .SPM.Quick
+                       
                     ]
                 ].flatMap { $0 },
                 settings: .settings(base: SettingsDictionary().setCodeSignManual(), configurations: XCConfig.tests)
             )
-            
-            projectTargets.append(target)
         }
         
         // MARK: - Framework
@@ -102,11 +98,11 @@ public extension Project {
         }
         
         // MARK: - Scheme
-        let additionalSchemes = targets.contains(.demo)
-        ? [Scheme.makeScheme(configs: configurationName, name: name),
-           Scheme.makeDemoScheme(configs: configurationName, name: name)]
-        : [Scheme.makeScheme(configs: configurationName, name: name)]
-        schemes += additionalSchemes
+//        let additionalSchemes = targets.contains(.demo)
+//                ? [Scheme.makeScheme(configs: configurationName, name: name),
+//                   Scheme.makeDemoScheme(configs: configurationName, name: name)]
+//                : [Scheme.makeScheme(configs: configurationName, name: name)]
+//                schemes += additionalSchemes
 
         var scheme = targets.contains(.app)
         ? appSchemes

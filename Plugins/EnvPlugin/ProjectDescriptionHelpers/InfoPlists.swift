@@ -48,7 +48,8 @@ public extension Project {
         "UIBackgroundModes": ["remote-notification"],
         "LSApplicationQueriesSchemes": [
             "kakaompassauth",
-            "kakaolink"
+            "kakaolink",
+            "kakaoplus"
         ],
         "UIAppFonts": [
             "Item 0": "SpoqaHanSans-Bold.ttf",
