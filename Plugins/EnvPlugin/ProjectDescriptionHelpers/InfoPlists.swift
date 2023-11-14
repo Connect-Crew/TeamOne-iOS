@@ -32,7 +32,6 @@ public extension Project {
                 ]
             ]
         ],
-
         "CFBundleURLTypes": [
             [
                 "CFBundleTypeRole": "Editor",
@@ -47,7 +46,7 @@ public extension Project {
         ],
         "UIBackgroundModes": ["remote-notification"],
         "LSApplicationQueriesSchemes": [
-            "kakaompassauth",
+            "kakaokompassauth",
             "kakaolink",
             "kakaoplus"
         ],

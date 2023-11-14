@@ -91,6 +91,12 @@ public enum DSKitImage {
     case googleLoginButtonBG
     case kakaoLoginButtonBG
     case kakaoLoginExplain
+    case backButtonImage
+    case closeButtonX
+    case checkNONOE
+    case rightButton
+    case checkOK
+
 
     // MARK: - 홈 네비게이션
 
@@ -206,6 +212,12 @@ public enum DSKitImage {
         case .googleLoginButtonBG: return "GoogleLoginBackground-1"
         case .kakaoLoginButtonBG: return "KaKaoLoginBackground-2"
         case .kakaoLoginExplain: return "kakaoLoginExplain"
+
+        case .backButtonImage: return "backButtonImage"
+        case .closeButtonX: return "closeButtonX"
+        case .checkNONOE: return "checkNONOE"
+        case .rightButton: return "rightButton"
+        case .checkOK: return "checkOK"
         }
     }
 }

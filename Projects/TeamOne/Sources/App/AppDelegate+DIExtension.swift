@@ -8,6 +8,7 @@
 
 import Core
 import Domain
+import Data
 
 extension AppDelegate {
 
@@ -17,7 +18,41 @@ extension AppDelegate {
 
     func registerDependencies() {
 
+        // MARK: - DataSource
+
+        container.register(interface: KeychainProtocol.self) { resolver in
+            let dataSource = Keychain()
+
+            return dataSource
+        }
+
+        container.register(interface: KeychainManagerProtocol.self) { resolver in
+
+            guard let keychain = resolver.resolve(KeychainProtocol.self) else { fatalError() }
+
+            var dataSource = KeychainManager(keychain: keychain)
+
+            return dataSource
+        }
+
+        container.register(interface: LoginDataSourceProtocol.self) { resolver in
+            let dataSource = LoginDataSource()
+
+            return dataSource
+        }
+
         // MARK: - Repository
+
+        container.register(interface: LoginRepositoryProtocol.self) { resolver in
+
+            guard let loginDataSource = resolver.resolve(LoginDataSourceProtocol.self) else {
+                fatalError()
+            }
+
+            let repository = LoginRepository(loginDataSource: loginDataSource)
+
+            return repository
+        }
 
         // MARK: - UseCase
         
@@ -37,6 +72,12 @@ extension AppDelegate {
 
         container.register(interface: HomeViewModel.self) { _ in
             let viewModel = HomeViewModel()
+
+            return viewModel
+        }
+
+        container.register(interface: TosViewModel.self) { _ in
+            let viewModel = TosViewModel()
 
             return viewModel
         }

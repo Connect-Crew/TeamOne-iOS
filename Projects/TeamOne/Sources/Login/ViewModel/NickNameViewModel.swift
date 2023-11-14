@@ -17,7 +17,6 @@ enum NickNameNavigation {
 
 final class NickNameViewModel: ViewModel {
 
-    
     struct Input {
 
     }
@@ -34,5 +33,3 @@ final class NickNameViewModel: ViewModel {
         return Output()
     }
 }
-
-

@@ -9,7 +9,7 @@
 import UIKit
 import SnapKit
 
-class TosCell:UITableViewCell {
+class TosCell: UITableViewCell {
     
     let checkButton = UIButton().then {
         $0.setImage(UIImage(named: "check"), for: .normal)

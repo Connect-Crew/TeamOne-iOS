@@ -248,8 +248,10 @@ extension HomeTableViewCell: UICollectionViewDataSource {
 
         guard let cell = hashtagListCollectionView.dequeueReusableCell(
             withReuseIdentifier: HashTagCollectionViewCell.identifier, for: indexPath
-        ) as? HashTagCollectionViewCell else
-        { return UICollectionViewCell() }
+        ) as? HashTagCollectionViewCell else {
+            return UICollectionViewCell()
+            
+        }
 
         guard let hashTags = project?.hashTags else { return UICollectionViewCell() }
 

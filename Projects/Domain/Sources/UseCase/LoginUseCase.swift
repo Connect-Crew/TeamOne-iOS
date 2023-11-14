@@ -9,6 +9,22 @@
 import Foundation
 import RxSwift
 
-struct LoginUseCase {
+enum LoginCase {
+    case kakao
+}
 
+enum LoginResult {
+    case success
+    case failure
+}
+
+protocol LoginUseCaseProtocol {
+    func login(loginCase: LoginCase)
+}
+
+struct LoginUseCase: LoginUseCaseProtocol {
+    
+    var repository: LoginRepositoryProtocol
+    
+    func login(loginCase: LoginCase){}
 }

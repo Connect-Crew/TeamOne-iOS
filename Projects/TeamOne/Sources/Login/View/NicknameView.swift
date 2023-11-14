@@ -48,8 +48,7 @@ final class NickNameView: UIView {
     let deleteButton = UIButton().then {
         $0
     }
-    
-    
+
     let loginLabel = UILabel().then {
         $0.setLabel(text: "올바른 비밀번호 입력하세요", typo: .caption2, color: .teamOne.point)
     }
@@ -134,4 +133,3 @@ final class NickNameView: UIView {
         }
     }
 }
-

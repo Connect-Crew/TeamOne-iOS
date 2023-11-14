@@ -20,7 +20,7 @@ class HashtagFlowLayout: UICollectionViewFlowLayout {
         fatalError("init(coder:) has not been implemented")
     }
 
-    override func layoutAttributesForElements(in rect: CGRect) ->  [UICollectionViewLayoutAttributes]? {
+    override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
         let attributes = super.layoutAttributesForElements(in: rect)?.map { $0.copy() as! UICollectionViewLayoutAttributes }
         var leftMargin: CGFloat = 0.0
         var maxY: CGFloat = -1.0
@@ -34,7 +34,7 @@ class HashtagFlowLayout: UICollectionViewFlowLayout {
             }
             layoutAttribute.frame.origin.x = leftMargin
             leftMargin += layoutAttribute.frame.width + minimumInteritemSpacing
-            maxY = max(layoutAttribute.frame.maxY , maxY)
+            maxY = max(layoutAttribute.frame.maxY, maxY)
         }
         return attributes
 

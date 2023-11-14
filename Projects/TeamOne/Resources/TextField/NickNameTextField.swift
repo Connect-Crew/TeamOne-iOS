@@ -31,7 +31,5 @@ final class NickNameTextView: UIView {
     private func layout() {
         
     }
-        
-    
-}
 
+}

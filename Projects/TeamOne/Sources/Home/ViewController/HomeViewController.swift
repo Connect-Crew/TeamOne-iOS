@@ -95,7 +95,6 @@ extension HomeViewController: UITableViewDelegate {
         return baseHeight
     }
 
-
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         let remainTopSpacingoffset = -tableView.contentOffset.y - mainView.headerMinHeight
 

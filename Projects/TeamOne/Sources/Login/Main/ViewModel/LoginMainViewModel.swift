@@ -6,6 +6,9 @@
 //  Copyright © 2023 TeamOne. All rights reserved.
 //
 
+import AuthenticationServices
+
+import UIKit
 import Foundation
 import RxSwift
 import RxCocoa
@@ -17,6 +20,7 @@ import KakaoSDKUser
 
 enum LoginNavigation {
     case finish
+    case getToken(String, Social)
 }
 
 final class LoginMainViewModel: ViewModel {
@@ -36,23 +40,24 @@ final class LoginMainViewModel: ViewModel {
     
     func transform(input: Input) -> Output {
 
-        input
-            .kakaoLoginTap
-            .subscribe(onNext: {
-                if UserApi.isKakaoTalkLoginAvailable() {
-                    UserApi.shared.rx.loginWithKakaoAccount()
-                        .subscribe(onNext: { (oauthToken) in
-                            print("loginWithKakaoTalk() success.")
+        input.appleLoginTap
+            .flatMap {
+                ASAuthorizationAppleIDProvider().rx.login(scope: [.email])
+            }
+            .map { result -> String in
 
-                            print(oauthToken)
+                guard let auth = result.credential as? ASAuthorizationAppleIDCredential,
+                      let token = auth.identityToken,
+                      let tokenString = String(data: token, encoding: .utf8) else { assert(true); return "" }
 
-                        })
-                
-                }
-            })
+                print("발급받은 토큰 token: \(tokenString)")
+
+                return tokenString
+            }
+            .map { LoginNavigation.getToken($0, .apple) }
+            .bind(to: navigation)
             .disposed(by: disposeBag)
 
         return Output()
     }
-
 }

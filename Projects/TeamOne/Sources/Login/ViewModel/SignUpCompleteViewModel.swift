@@ -17,7 +17,6 @@ enum SignUpCompleteNavigation {
 
 final class SignUpCompleteViewModel: ViewModel {
 
-    
     struct Input {
 
     }
@@ -34,4 +33,3 @@ final class SignUpCompleteViewModel: ViewModel {
         return Output()
     }
 }
-

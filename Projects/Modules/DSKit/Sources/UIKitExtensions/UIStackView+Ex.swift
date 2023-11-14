@@ -9,7 +9,7 @@
 import UIKit
 
 public extension UIStackView {
-    public func addArrangeSubViews(views: [UIView]) {
+    func addArrangeSubViews(views: [UIView]) {
         views.forEach { self.addArrangedSubview($0) }
     }
 }

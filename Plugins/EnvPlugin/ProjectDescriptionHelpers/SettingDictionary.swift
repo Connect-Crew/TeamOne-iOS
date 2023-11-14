@@ -17,7 +17,7 @@ public extension SettingsDictionary {
     
     func setCodeSignManual() -> SettingsDictionary {
         merging(["CODE_SIGN_STYLE": SettingValue(stringLiteral: "Manual")])
-            .merging(["DEVELOPMENT_TEAM": SettingValue(stringLiteral: "Kang HyeonJun")])
+            .merging(["DEVELOPMENT_TEAM": SettingValue(stringLiteral: "$(CODE_SIGN_IDENTITY)")])
             .merging(["CODE_SIGN_IDENTITY": SettingValue(stringLiteral: "$(CODE_SIGN_IDENTITY)")])
     }
     

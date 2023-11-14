@@ -67,10 +67,6 @@ final class SignUpCompleteViewController: ViewController {
            print("Kakao button tapped")
           let viewcontroller = HomeViewController(viewModel: HomeViewModel())
         self.navigationController?.pushViewController(viewcontroller, animated: true)
-
-
        }
     }
-
-
 

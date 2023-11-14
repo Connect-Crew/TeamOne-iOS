@@ -14,6 +14,7 @@ let project = Project.makeModule(
     targets: [.app, .unitTest],
     internalDependencies: [
         .domain,
-        .Modules.dsKit
+        .Modules.dsKit,
+        .data
     ]
 )

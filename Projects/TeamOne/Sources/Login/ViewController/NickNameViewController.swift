@@ -21,8 +21,6 @@ final class NickNameViewController: ViewController {
     private let viewModel: NickNameViewModel
 
     private let mainView = NickNameView()
-    
-   
 
     // MARK: - LifeCycle
 
@@ -35,8 +33,7 @@ final class NickNameViewController: ViewController {
         super.viewDidLoad()
         view.backgroundColor = .white
         self.title = "Your Title"
-        
-        
+
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -66,7 +63,3 @@ final class NickNameViewController: ViewController {
     // MARK: - Methods
 
     }
-
-
-
-

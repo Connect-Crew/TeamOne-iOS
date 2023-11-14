@@ -7,6 +7,8 @@
 //
 
 import UIKit
+import RxSwift
+import RxCocoa
 
 public extension UIButton {
     func setButton(text: String, typo: SansNeo, color: UIColor) {
@@ -20,3 +22,5 @@ public extension UIButton {
         self.setImage(image, for: .normal)
     }
 }
+
+
