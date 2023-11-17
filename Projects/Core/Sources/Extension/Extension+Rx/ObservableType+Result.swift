@@ -6,4 +6,11 @@
 //  Copyright © 2023 TeamOne. All rights reserved.
 //
 
-import Foundation
+import RxSwift
+
+public extension ObservableType {
+    public func asResult() -> Observable<Result<Element, Error>> {
+        return self.map { .success($0) }
+            .catch { .just(.failure($0)) }
+    }
+}

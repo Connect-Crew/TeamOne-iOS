@@ -19,6 +19,9 @@ public extension Project {
         "UIRequiresFullScreen": true,
         "UISupportedInterfaceOrientations": ["UIInterfaceOrientationPortrait"],
         "ITSAppUsesNonExemptEncryption": false,
+        "NSAppTransportSecurity": [
+            "NSAllowsArbitraryLoads": true
+        ],
         "NSMicrophoneUsageDescription": "마이크 권한 설정",
         "NSCameraUsageDescription": "카메라 권한 설정",
         "UIApplicationSceneManifest": [

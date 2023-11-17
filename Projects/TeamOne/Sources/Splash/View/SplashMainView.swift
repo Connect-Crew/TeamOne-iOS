@@ -32,7 +32,7 @@ final class SplashMainView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func layout() {
+    private func layout() {
 
         self.backgroundColor = .teamOne.mainColor
 

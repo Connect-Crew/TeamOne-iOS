@@ -2,7 +2,7 @@
 //  LoginCoordinator.swift
 //  TeamOne
 //
-//  Created by 임재현 on 2023/10/26.
+//  Created by 강현준 on 2023/10/26.
 //  Copyright © 2023 TeamOne. All rights reserved.
 //
 
@@ -10,6 +10,7 @@ import UIKit
 import RxSwift
 import Core
 import Inject
+import Domain
 
 enum LoginCoordinatorResult {
     case finish
@@ -20,9 +21,7 @@ final class LoginCoordinator: BaseCoordinator<LoginCoordinatorResult> {
     let finish = PublishSubject<LoginCoordinatorResult>()
     
     override func start() -> Observable<LoginCoordinatorResult> {
-        showSetNickName(token: "adsf", social: .apple)
-//        showLogin()
-//        showTerms(token: "Asdf", social: .apple)
+        showLogin()
         return finish
     }
     
@@ -32,10 +31,10 @@ final class LoginCoordinator: BaseCoordinator<LoginCoordinatorResult> {
         viewModel.navigation
             .subscribe(onNext: { [weak self] in
                 switch $0 {
-                case .getToken(let token, let social):
-                    self?.showTerms(token: token, social: social)
-                default:
-                    break
+                case .finish:
+                    self?.finish.onNext(.finish)
+                case .getToken(let auth):
+                    self?.showTerms(auth: auth)
                 }
             })
             .disposed(by: disposeBag)
@@ -45,11 +44,10 @@ final class LoginCoordinator: BaseCoordinator<LoginCoordinatorResult> {
         push(viewController, animated: true, isRoot: true)
     }
 
-    func showTerms(token: String, social: Social) {
+    func showTerms(auth: OAuthSignUpProps) {
         let viewModel = DIContainer.shared.resolve(TosViewModel.self)
 
-        viewModel.token = token
-        viewModel.social = social
+        viewModel.auth = auth
 
         viewModel.navigation
             .subscribe(onNext: { [weak self] in
@@ -57,9 +55,9 @@ final class LoginCoordinator: BaseCoordinator<LoginCoordinatorResult> {
                 case .back:
                     self?.pop(animated: true)
                 case .close:
-                    self?.pop(animated: true)
-                case .finish(let token, let social):
-                    self?.showSetNickName(token: token, social: social)
+                    self?.showLogin()
+                case .finish(let auth):
+                    self?.showSetNickName(auth: auth)
                 }
             })
             .disposed(by: disposeBag)
@@ -69,10 +67,39 @@ final class LoginCoordinator: BaseCoordinator<LoginCoordinatorResult> {
         push(viewController, animated: true)
     }
 
-    func showSetNickName(token: String, social: Social) {
+    func showSetNickName(auth: OAuthSignUpProps) {
         let viewModel = DIContainer.shared.resolve(SetNickNameViewModel.self)
 
+        viewModel.auth = auth
+
+        viewModel.navigation
+            .subscribe(onNext: { [weak self] in
+                switch $0 {
+                case .close: self?.showLogin()
+                case .back: self?.pop(animated: true)
+                case .finish: self?.showSignUpResult()
+                }
+            })
+            .disposed(by: disposeBag)
+
         let viewController = Inject.ViewControllerHost(SetNickNameViewController(viewModel: viewModel))
+
+        push(viewController, animated: true)
+    }
+
+    func showSignUpResult() {
+        let viewModel = DIContainer.shared.resolve(SignUpResultViewModel.self)
+
+        viewModel.navigation
+            .subscribe(onNext:{ [weak self] in
+                switch $0 {
+                case .finish:
+                    self?.finish.onNext(.finish)
+                }
+            })
+            .disposed(by: disposeBag)
+
+        let viewController = Inject.ViewControllerHost(SignUpResultViewController(viewModel: viewModel))
 
         push(viewController, animated: true)
     }

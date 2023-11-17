@@ -7,3 +7,7 @@
 //
 
 import Foundation
+
+public struct AuthRefreshRequtstDTO: Decodable {
+    let refreshToken: String
+}

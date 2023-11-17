@@ -21,6 +21,12 @@ enum SplashNavigation {
 
 final class SplashViewModel: ViewModel {
 
+    let autoLoginUseCase: AutoLoginUseCaseProtocol
+
+    public init(autoLoginUseCase: AutoLoginUseCaseProtocol) {
+        self.autoLoginUseCase = autoLoginUseCase
+    }
+
     struct Input {
         let viewDidAppear: Observable<Void>
     }
@@ -35,9 +41,21 @@ final class SplashViewModel: ViewModel {
     func transform(input: Input) -> Output {
 
         input.viewDidAppear
-            .delay(.seconds(1), scheduler: MainScheduler.asyncInstance)
-            .map { .finish }
-            .bind(to: navigation)
+            .withUnretained(self)
+            .flatMap { $0.0.autoLoginUseCase.autoLogin().asResult()}
+            .delay(.seconds(2), scheduler: MainScheduler.instance)
+            .withUnretained(self)
+            .subscribe(onNext: { viewModel, result in
+                switch result {
+                case .success(let bool):
+                    if bool { viewModel.navigation.onNext(.autoLogin) }
+                    else { viewModel.navigation.onNext(.finish) }
+
+                case .failure(let error):
+                    print("DEBUG: SplashError \(error) ====> \(error.localizedDescription)")
+                    viewModel.navigation.onNext(.finish)
+                }
+            })
             .disposed(by: disposeBag)
 
         return Output()

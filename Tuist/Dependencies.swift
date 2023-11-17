@@ -17,7 +17,9 @@ let spm = SwiftPackageManagerDependencies([
     .remote(url: "https://github.com/RxSwiftCommunity/RxKeyboard.git", requirement: .exact("2.0.1")),
     .remote(url: "https://github.com/SnapKit/SnapKit.git", requirement: .exact("5.6.0")),
     .remote(url: "https://github.com/krzysztofzablocki/Inject.git", requirement: .exact("1.2.4")),
-    .remote(url: "https://github.com/kakao/kakao-ios-sdk-rx", requirement: .branch("master"))
+    .remote(url: "https://github.com/kakao/kakao-ios-sdk-rx", requirement: .branch("master")),
+    .remote(url: "https://github.com/firebase/firebase-ios-sdk.git", requirement: .exact("9.6.0")),
+    .remote(url: "https://github.com/google/GoogleSignIn-iOS", requirement: .exact("6.1.0"))
 ], baseSettings: Settings.settings(
     configurations: XCConfig.framework
 ))

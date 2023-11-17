@@ -7,3 +7,14 @@
 //
 
 import Foundation
+
+public enum APIError: Error, Equatable {
+    case network(statusCode: Int)
+    case unknown
+    case tokenReissuanceFailed
+
+    init(error: Error, statusCode: Int? = 0) {
+        guard let statusCode else { self = .unknown ; return }
+        self = .network(statusCode: statusCode)
+    }
+}

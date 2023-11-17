@@ -7,3 +7,13 @@
 //
 
 import Foundation
+
+public struct OAuthLoginProps {
+    public let token: String
+    public let social: Social
+
+    public init(token: String, social: Social) {
+        self.token = token
+        self.social = social
+    }
+}

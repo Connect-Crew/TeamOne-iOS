@@ -10,6 +10,7 @@ import UIKit
 import RxSwift
 import RxKakaoSDKAuth
 import KakaoSDKAuth
+import GoogleSignIn
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
@@ -33,8 +34,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             // 카카오 로그인 관련
             if AuthApi.isKakaoTalkLoginUrl(url) {
                 _ = AuthController.rx.handleOpenUrl(url: url)
+            } else {
+                _ = GIDSignIn.sharedInstance.handle(url)
             }
         }
-
     }
 }

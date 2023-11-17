@@ -55,9 +55,14 @@ final class TosViewController: ViewController {
             serviceTermSelected: mainView.buttonUserServiceTermsCheckBox.rx.tap
                 .throttle(.seconds(1), scheduler: MainScheduler.instance),
             personalInfoPolycy: mainView.buttonUserPersonalInfoPolicyCheckBox.rx.tap
-                .throttle(.seconds(1), scheduler: MainScheduler.instance))
-
-
+                .throttle(.seconds(1), scheduler: MainScheduler.instance),
+            nextButtonTap: mainView.buttonNext.rx.tap
+                .throttle(.seconds(1), scheduler: MainScheduler.instance),
+            backButtonTap: mainView.leftBackButton.rx.tap
+                .throttle(.seconds(1), scheduler: MainScheduler.instance),
+            closeButtonTap: mainView.buttonClose.rx.tap
+                .throttle(.seconds(1), scheduler: MainScheduler.instance)
+        )
 
         let output = viewModel.transform(input: input)
 
@@ -65,23 +70,17 @@ final class TosViewController: ViewController {
             .drive(mainView.buttonAllCheckBox.rx.isSelected)
             .disposed(by: disposeBag)
 
-        output.allSelected
+        output.serviceTermSelected
             .drive(mainView.buttonUserServiceTermsCheckBox.rx.isSelected)
             .disposed(by: disposeBag)
 
-        output.allSelected
+        output.personalInfoPolycy
             .drive(mainView.buttonUserPersonalInfoPolicyCheckBox.rx.isSelected)
             .disposed(by: disposeBag)
 
-
-//        output.allSelected
-//            .drive(onNext: { [weak self] isSelected in
-//                if isSelected {
-//                    self?.mainView.nextButton.backgroundColor = .teamOne.mainColor
-//                } else {
-//
-//                }
-//            })
+        output.allSelected
+            .drive(mainView.buttonNext.rx.isEnabled)
+            .disposed(by: disposeBag)
 
     }
     

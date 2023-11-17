@@ -7,3 +7,13 @@
 //
 
 import Foundation
+import Domain
+
+public struct AuthRefreshResponseDTO: Codable {
+    public let token: String
+    public let exp: String
+
+    func toDomain() -> RefreshToken {
+        return RefreshToken(token: token, exp: exp)
+    }
+}

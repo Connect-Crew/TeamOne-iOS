@@ -15,6 +15,8 @@ import KakaoSDKAuth
 import RxKakaoSDKAuth
 import KakaoSDKUser
 import RxKakaoSDKUser
+import Firebase
+import GoogleSignIn
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -29,6 +31,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         #endif
 
         RxKakaoSDK.initSDK(appKey: AppKey.kakaoNativeAppKey)
+        FirebaseApp.configure()
 
         // 폰트생성
 
@@ -58,6 +61,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // 카카오 로그인 관련
         if AuthApi.isKakaoTalkLoginUrl(url) {
             return AuthController.rx.handleOpenUrl(url: url)
+        } else {
+            return GIDSignIn.sharedInstance.handle(url)
         }
 
         return false

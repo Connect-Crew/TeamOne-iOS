@@ -6,4 +6,12 @@
 //  Copyright © 2023 TeamOne. All rights reserved.
 //
 
-import Foundation
+import Alamofire
+import RxSwift
+
+public protocol ProviderProtocol: AnyObject {
+//    func request<Success: Decodable, Error: Decodable>(_ urlConvertible: URLRequestConvertible) -> Observable<GenericAPIResponse<Success, Error>>
+    
+    func request<T: Decodable>(_ urlConvertible: URLRequestConvertible) -> Observable<T>
+}
+

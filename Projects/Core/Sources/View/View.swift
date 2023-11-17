@@ -6,4 +6,8 @@
 //  Copyright © 2023 TeamOne. All rights reserved.
 //
 
-import Foundation
+import UIKit
+
+open class View: UIView {
+    
+}

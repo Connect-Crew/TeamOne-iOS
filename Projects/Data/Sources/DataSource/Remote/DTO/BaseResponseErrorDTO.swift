@@ -7,3 +7,22 @@
 //
 
 import Foundation
+import Domain
+
+public struct BaseResponseErrorDTO: Decodable {
+    let timestamp: String
+    let path: String
+    let status: Int
+    let error: String
+    let message: String
+
+    func toDoamin() -> ErrorResponse {
+        return ErrorResponse(
+            timestamp: self.timestamp,
+            path: self.path,
+            status: self.status,
+            error: self.error,
+            message: self.message
+        )
+    }
+}

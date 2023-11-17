@@ -22,5 +22,3 @@ public extension UIButton {
         self.setImage(image, for: .normal)
     }
 }
-
-

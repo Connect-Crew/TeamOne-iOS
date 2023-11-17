@@ -7,3 +7,8 @@
 //
 
 import Foundation
+
+public enum DomainGenericAPIResponse<Success,Error> {
+    case success(Success)
+    case failure(Error)
+}

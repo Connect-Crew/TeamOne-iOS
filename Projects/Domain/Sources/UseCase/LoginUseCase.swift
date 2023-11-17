@@ -8,23 +8,23 @@
 
 import Foundation
 import RxSwift
+import Core
 
-enum LoginCase {
-    case kakao
+public protocol LoginUseCaseProtocol {
+    func login(props: OAuthLoginProps) -> Observable<Bool>
 }
 
-enum LoginResult {
-    case success
-    case failure
-}
+public struct LoginUseCase: LoginUseCaseProtocol {
 
-protocol LoginUseCaseProtocol {
-    func login(loginCase: LoginCase)
-}
+    let authRepository: AuthRepositoryProtocol
+    let tokenRepository: TokenRepositoryProtocol
 
-struct LoginUseCase: LoginUseCaseProtocol {
-    
-    var repository: LoginRepositoryProtocol
-    
-    func login(loginCase: LoginCase){}
+    public init(authRepository: AuthRepositoryProtocol, tokenRepository: TokenRepositoryProtocol) {
+        self.authRepository = authRepository
+        self.tokenRepository = tokenRepository
+    }
+
+    public func login(props: OAuthLoginProps) -> Observable<Bool> {
+        return authRepository.login(request: props)
+    }
 }

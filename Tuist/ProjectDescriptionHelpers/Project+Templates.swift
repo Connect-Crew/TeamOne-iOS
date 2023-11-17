@@ -42,8 +42,10 @@ public extension Project {
                                 infoPlist: .extendingDefault(with: infoPlist),
                                 sources: "Sources/**/*.swift",
                                 resources: [.glob(pattern: "Resources/**", excluding: [])],
-                                //                                entitlements: "\(name).entitlements",
-                                scripts: [.pre(path: .relativeToRoot("Scripts/SwiftLintRunScript.sh"), arguments: [], name: "SwiftLint")],
+                                entitlements: "\(name).entitlements",
+                                scripts: [
+                                    .pre(path: .relativeToRoot("Scripts/SwiftLintRunScript.sh"), arguments: [], name: "SwiftLint"),
+                                    .post(path: .relativeToRoot("Tuist/Dependencies/SwiftPackageManager/.build/checkouts/firebase-ios-sdk/Crashlytics/run"), arguments: [], name: "Firebase Crashlytics")],
                                 dependencies: [
                                     internalDependencies,
                                     externalDependencies,

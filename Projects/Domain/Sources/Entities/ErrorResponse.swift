@@ -7,3 +7,19 @@
 //
 
 import Foundation
+
+public struct ErrorResponse: Decodable {
+    let timestamp: String
+    let path: String
+    let status: Int
+    let error: String
+    let message: String
+
+    public init(timestamp: String, path: String, status: Int, error: String, message: String) {
+        self.timestamp = timestamp
+        self.path = path
+        self.status = status
+        self.error = error
+        self.message = message
+    }
+}

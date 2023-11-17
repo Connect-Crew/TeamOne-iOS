@@ -10,15 +10,17 @@ import Foundation
 import RxSwift
 import RxCocoa
 import Core
+import Domain
 
 enum TosNavigation {
-
+    case finish(OAuthSignUpProps)
+    case close
+    case back
 }
 
 final class TosViewModel: ViewModel {
 
-    let token = BehaviorSubject<String>(value: "")
-    let social = BehaviorSubject<Social>(value: .apple)
+    var auth: OAuthSignUpProps? = nil
 
     let allSelected = BehaviorSubject<Bool>(value: false)
     let serviceTermSelected = BehaviorSubject<Bool>(value: false)
@@ -28,6 +30,9 @@ final class TosViewModel: ViewModel {
         let allSelected: Observable<Void>
         let serviceTermSelected: Observable<Void>
         let personalInfoPolycy: Observable<Void>
+        let nextButtonTap: Observable<Void>
+        let backButtonTap: Observable<Void>
+        let closeButtonTap: Observable<Void>
     }
 
     struct Output {
@@ -43,9 +48,60 @@ final class TosViewModel: ViewModel {
 
         input.allSelected
             .withLatestFrom(allSelected)
-            .distinctUntilChanged()
             .map { !$0 }
             .bind(to: allSelected)
+            .disposed(by: disposeBag)
+
+        input.personalInfoPolycy
+            .withLatestFrom(personalInfoPolycy)
+            .map { !$0 }
+            .bind(to: personalInfoPolycy)
+            .disposed(by: disposeBag)
+
+        input.serviceTermSelected
+            .withLatestFrom(serviceTermSelected)
+            .map { !$0 }
+            .bind(to: serviceTermSelected)
+            .disposed(by: disposeBag)
+
+        input.nextButtonTap
+            .withUnretained(self)
+            .map { viewModel, _ in
+                guard let auth = viewModel.auth else { fatalError() }
+
+                return TosNavigation.finish(auth)
+            }
+            .bind(to: navigation)
+            .disposed(by: disposeBag)
+
+        input.backButtonTap
+            .map { .back }
+            .bind(to: navigation)
+            .disposed(by: disposeBag)
+
+        input.closeButtonTap
+            .map { .close }
+            .bind(to: navigation)
+            .disposed(by: disposeBag)
+
+        Observable.combineLatest(personalInfoPolycy, serviceTermSelected)
+            .map {
+                if $0.0 == true && $0.1 == true {
+                    return true
+                } else {
+                    return false
+                }
+            }
+            .bind(to: allSelected)
+            .disposed(by: disposeBag)
+
+        input.allSelected
+            .withLatestFrom(allSelected)
+            .subscribe(onNext: { [weak self] in
+                self?.serviceTermSelected.onNext($0)
+                self?.personalInfoPolycy.onNext($0)
+                self?.allSelected.onNext($0)
+            })
             .disposed(by: disposeBag)
 
         return Output(

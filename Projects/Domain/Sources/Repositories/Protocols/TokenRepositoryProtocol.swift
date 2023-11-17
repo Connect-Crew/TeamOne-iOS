@@ -7,3 +7,10 @@
 //
 
 import Foundation
+import RxSwift
+
+public protocol TokenRepositoryProtocol {
+    func save(_ auth: Authorization) -> Observable<Authorization>
+    func load() -> Observable<Authorization>
+    func deleteAuth() -> Observable<Void>
+}

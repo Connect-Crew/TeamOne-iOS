@@ -14,6 +14,7 @@ let project = Project.makeModule(
     targets: [.staticFramework],
     internalDependencies: [
         .SPM.Moya,
+        .SPM.RxMoya,
         .SPM.RxCocoa,
         .SPM.RxRelay,
         .SPM.RxSwift,
@@ -23,6 +24,11 @@ let project = Project.makeModule(
         .SPM.SnapKit,
         .SPM.Inject,
         .SPM.RxKakaoSDK,
+        .SPM.FirebaseAnalytics,
+        .SPM.FirebaseCrashlytics,
+        .SPM.FirebaseDynamicLinks,
+        .SPM.FirebaseMessaging,
+        .SPM.GoogleSignIn
     ]
 )
 

@@ -7,3 +7,13 @@
 //
 
 import Foundation
+
+public struct RefreshToken {
+    let token: String
+    let exp: String
+
+    public init(token: String, exp: String) {
+        self.token = token
+        self.exp = exp
+    }
+}

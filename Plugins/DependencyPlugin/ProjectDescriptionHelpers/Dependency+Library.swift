@@ -15,6 +15,7 @@ public extension TargetDependency {
 public extension TargetDependency.SPM {
     static let Then = TargetDependency.external(name: "Then")
     static let Moya = TargetDependency.external(name: "Moya")
+    static let RxMoya = TargetDependency.external(name: "RxMoya")
     static let Swinject = TargetDependency.external(name: "Swinject")
     static let RxSwift = TargetDependency.external(name: "RxSwift")
     static let RxCocoa = TargetDependency.external(name: "RxCocoa")
@@ -24,6 +25,13 @@ public extension TargetDependency.SPM {
     static let Inject = TargetDependency.external(name: "Inject")
     static let RxKakaoSDK = TargetDependency.external(name: "RxKakaoSDK")
     static let RxKakaoSDKAuth = TargetDependency.external(name: "RxKakaoSDKAuth")
+    static let FirebaseCrashlytics = TargetDependency.external(name: "FirebaseCrashlytics")
+    static let FirebaseMessaging = TargetDependency.external(name: "FirebaseMessaging")
+    static let FirebaseAnalytics = TargetDependency.external(name: "FirebaseAnalytics")
+    static let FirebaseDynamicLinks = TargetDependency.external(name: "FirebaseDynamicLinks")
+    static let GoogleSignIn = TargetDependency.external(name: "GoogleSignIn")
+
+
 }
 
 public extension TargetDependency.Carthage {

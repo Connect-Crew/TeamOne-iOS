@@ -7,3 +7,22 @@
 //
 
 import Foundation
+import RxSwift
+import Core
+
+public protocol AutoLoginUseCaseProtocol {
+    func autoLogin() -> Observable<Bool>
+}
+
+public struct AutoLoginUseCase: AutoLoginUseCaseProtocol {
+
+    let authRepository: AuthRepositoryProtocol
+
+    public init(authRepository: AuthRepositoryProtocol) {
+        self.authRepository = authRepository
+    }
+
+    public func autoLogin() -> Observable<Bool> {
+        return authRepository.autoLogin()
+    }
+}

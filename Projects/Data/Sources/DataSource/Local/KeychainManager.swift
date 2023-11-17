@@ -9,7 +9,7 @@
 import Foundation
 
 public enum KeychainKey: String {
-    case userToken = "com.connectCrew.TeamOne.userToken"
+    case authorization = "com.connectCrew.TeamOne.authorization"
 }
 
 public protocol KeychainManagerProtocol {

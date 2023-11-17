@@ -41,7 +41,10 @@ final class SignUpResultViewController: ViewController {
     }
 
     override func bind() {
-        let input = SignUpResultViewModel.Input()
+        let input = SignUpResultViewModel.Input(
+            startButtonTap: mainView.buttonStart.rx.tap
+                .throttle(.seconds(1), scheduler: MainScheduler.instance)
+        )
 
         let output = viewModel.transform(input: input)
     }

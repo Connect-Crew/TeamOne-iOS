@@ -7,3 +7,13 @@
 //
 
 import Foundation
+
+public struct AuthLoginRequestDTO: Encodable {
+    let token: String
+    let social: String
+
+    public init(token: String, social: String) {
+        self.token = token
+        self.social = social
+    }
+}

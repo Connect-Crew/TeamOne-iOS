@@ -2,7 +2,7 @@
 //  LoginViewController.swift
 //  TeamOne
 //
-//  Created by 임재현 on 2023/10/26.
+//  Created by 강현준 on 2023/10/26.
 //  Copyright © 2023 TeamOne. All rights reserved.
 //
 
@@ -54,6 +54,7 @@ final class LoginMainViewController: ViewController {
                 .throttle(.seconds(1), scheduler: MainScheduler.instance)
         )
 
+        viewModel.viewController = self
         
 
         let output = viewModel.transform(input: input)

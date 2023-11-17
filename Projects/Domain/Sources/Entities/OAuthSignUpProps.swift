@@ -24,4 +24,13 @@ public struct OAuthSignUpProps {
         self.nickName = nickName
         self.email = email
     }
+
+    public init(token: String, social: Social, username: String?, email: String?) {
+        self.token = token
+        self.social = social
+        self.username = username
+        self.email = email
+        self.nickName = ""
+        self.profileImage = nil
+    }
 }

@@ -10,5 +10,9 @@ import Foundation
 import RxSwift
 
 public protocol AuthRepositoryProtocol {
-  
+    func login(request: OAuthLoginProps) -> Observable<Bool>
+
+    func autoLogin() -> Observable<Bool> 
+
+    func register(props: OAuthSignUpProps) -> Observable<Bool>
 }
