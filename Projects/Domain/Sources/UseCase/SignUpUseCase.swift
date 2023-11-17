@@ -1,5 +1,5 @@
 //
-//  Authorization.swift
+//  SignUpUseCase.swift
 //  Domain
 //
 //  Created by 강현준 on 2023/11/15.
