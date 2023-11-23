@@ -8,6 +8,7 @@
 
 import UIKit
 import Core
+import Domain
 
 import RxSwift
 import RxCocoa
@@ -26,6 +27,9 @@ final class HomeViewController: ViewController {
         return mainView.tableView
     }
 
+    let participantsButtonTap = PublishSubject<SideProjectListElement?>()
+    let likeButtonTap = PublishSubject<SideProjectListElement?>()
+
     // MARK: - LifeCycle
 
     override func loadView() {
@@ -34,11 +38,6 @@ final class HomeViewController: ViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-    }
-
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
 
     }
 
@@ -56,7 +55,15 @@ final class HomeViewController: ViewController {
     }
 
     override func bind() {
-        let input = HomeViewModel.Input()
+        let input = HomeViewModel.Input(
+            parts: mainView.selected,
+            writeButtonTap: mainView.buttonWrite.rx.tap
+                .throttle(.seconds(1), scheduler: MainScheduler.instance),
+            participantsButtonTap: participantsButtonTap,
+            likeButtonTap: likeButtonTap,
+            didScrolledEnd: mainView.tableView.rx.reachedBottom
+                .throttle(.seconds(1), scheduler: MainScheduler.instance)
+        )
 
         let output = viewModel.transform(input: input)
 
@@ -76,24 +83,33 @@ final class HomeViewController: ViewController {
 
                 cell.selectionStyle = .none
                 cell.prepareForReuse()
-                cell.config(project: project)
+                cell.initSetting(project: project)
+                cell.buttonParticipantsTap
+                    .subscribe(onNext: { [weak self]  in
+                        self?.participantsButtonTap.onNext($0)
+                    })
+                    .disposed(by: cell.disposeBag)
+
+                cell.buttonLikeTap
+                    .subscribe(onNext: { [weak self]  in
+                        self?.likeButtonTap.onNext($0)
+                    })
+                    .disposed(by: cell.disposeBag)
 
                 return cell
             }
             .disposed(by: disposeBag)
+
+        output.isEmpty
+            .drive(onNext: { [weak self] bool in
+                self?.tableView.rx.isHidden.onNext(bool)
+                self?.mainView.viewEmpty.rx.isHidden.onNext(!bool)
+            })
+            .disposed(by: disposeBag)
     }
-
-    // MARK: - Methods
-
 }
 
 extension HomeViewController: UITableViewDelegate {
-    
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        let baseHeight: CGFloat = 158
-
-        return baseHeight
-    }
 
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         let remainTopSpacingoffset = -tableView.contentOffset.y - mainView.headerMinHeight
@@ -106,7 +122,6 @@ extension HomeViewController: UITableViewDelegate {
             mainView.headerImageView.snp.updateConstraints {
                 $0.height.equalTo(remainTopSpacingoffset)
             }
-
         } else {
             mainView.headerImageView.snp.updateConstraints {
                 $0.height.equalTo(remainTopSpacingoffset)

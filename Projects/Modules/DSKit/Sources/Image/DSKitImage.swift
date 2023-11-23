@@ -38,6 +38,7 @@ public enum DSKitImage {
     case recruitmentline
     case myteamline
     case profileline
+    case homeWriteButton
 
     case slider
     case search
@@ -76,12 +77,14 @@ public enum DSKitImage {
 
     case place
     case count
+    case countDisable
     case heartline
     case heartsolid
     case tagGray
     case tagRed
     case upTwo
     case downTow
+    case newTagBG
 
     case homeHeader
 
@@ -129,6 +132,9 @@ public enum DSKitImage {
             return "slider"
         case .search:
             return "search"
+
+        case .homeWriteButton:
+            return "homeWriteButton"
 
         case .categoryall:
             return "category.all"
@@ -179,15 +185,20 @@ public enum DSKitImage {
         case .place:
             return "place"
         case.tagGray:
-            return "tag_gray"
+            return "태그bg_grey"
         case.tagRed:
-            return "tag_red"
+            return "태그bg_red"
+        case .newTagBG:
+            return "new태그bg"
 
         case .logo:
             return "임시로고"
 
         case .count:
-            return "count"
+            return "countAvailable"
+        case .countDisable:
+            return "countDisable"
+
         case .heartline:
             return "heart_line"
         case .heartsolid:

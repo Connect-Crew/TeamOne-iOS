@@ -9,6 +9,8 @@
 import UIKit
 import Then
 import SnapKit
+import RxSwift
+import RxCocoa
 
 final class HomeCategoryView: UIScrollView {
 
@@ -16,23 +18,29 @@ final class HomeCategoryView: UIScrollView {
         $0.distribution = .equalSpacing
         $0.axis = .horizontal
         $0.spacing = 12
-        $0.backgroundColor = .clear
+        $0.backgroundColor = .white
     }
 
-    var dataSource: [HomeCategoryModel]? {
+    private var dataSource: [HomeCategoryModel]
+
+    private let selected: BehaviorRelay<String?>
+
+    private lazy var selectedCategory: HomeCategoryModel? = nil {
         didSet {
-            bind()
+            selected.accept(selectedCategory?.type.selectedCategoryKey)
         }
     }
 
-    lazy var selectedCategory: HomeCategoryModel? = dataSource?.first
-
     private var buttons: [UIButton] = []
 
-    override init(frame: CGRect) {
-        super.init(frame: frame)
+    init(selected: BehaviorRelay<String?>) {
+        self.selected = selected
+        self.dataSource = HomeCategoryMocks.getDataSource()
+        super.init(frame: .zero)
 
         configure()
+        bind()
+        categoryButtonTapped(buttons.first)
     }
 
     required init?(coder: NSCoder) {
@@ -42,50 +50,49 @@ final class HomeCategoryView: UIScrollView {
     func configure() {
         showsHorizontalScrollIndicator = false
         bounces = false
+        self.backgroundColor = .white
 
         addSubview(stackView)
         stackView.snp.makeConstraints {
             $0.leading.equalToSuperview().offset(20)
             $0.trailing.equalToSuperview().inset(20)
-            $0.top.bottom.equalToSuperview()
+            $0.top.equalToSuperview().offset(8)
+            $0.bottom.equalToSuperview().offset(8)
         }
     }
 
     func bind() {
-        dataSource?.forEach {
+        dataSource.forEach {
             let button = UIButton()
             button.setImage($0.image, for: .normal)
             button.setImage($0.selectedImage, for: .selected)
             button.addTarget(self, action: #selector(categoryButtonTapped(_:)), for: .touchUpInside)
-            button.tag = dataSource?.firstIndex(of: $0) ?? 0
+            button.tag = dataSource.firstIndex(of: $0) ?? 0
 
             stackView.addArrangedSubview(button)
             buttons.append(button)
 
             button.snp.makeConstraints {
-                $0.height.equalTo(snp.height)
+                $0.height.equalTo(73)
             }
         }
     }
 
-    @objc func categoryButtonTapped(_ sender: UIButton) {
+    @objc func categoryButtonTapped(_ sender: UIButton?) {
+
+        guard let sender = sender else { return }
+
         buttons.forEach { $0.isSelected = false } // 모든 버튼을 비선택 상태로 설정
         sender.isSelected = true // 탭된 버튼을 선택된 상태로 설정
-        if sender.tag < dataSource?.count ?? 0 {
-            selectedCategory = dataSource?[sender.tag]
+        if sender.tag < dataSource.count {
+            selectedCategory = dataSource[sender.tag]
         }
     }
 
 }
 
-protocol CategoryViewProtocol {
-    associatedtype EnumType
-    var type: EnumType { get }
-    var image: UIImage? { get }
-    var selectedImage: UIImage? { get }
-}
+struct HomeCategoryModel: Equatable {
 
-struct HomeCategoryModel: CategoryViewProtocol, Equatable {
     enum CategoryModelType: String {
         case all
         case develop
@@ -98,13 +105,25 @@ struct HomeCategoryModel: CategoryViewProtocol, Equatable {
         case engineering
         case media
         case others
+
+        var selectedCategoryKey: String? {
+            switch self {
+            case .all: return nil
+            case .develop: return "TOTAL_DEVELOP"
+            case .customerservice: return "TOTAL_CUSTOMER"
+            case .design: return "TOTAL_DESIGN"
+            case .engineering: return "TOTAL_ENGINEER"
+            case .sales: return "TOTAL_SALES"
+            case .planning: return "TOTAL_MANAGER"
+            case .marketing: return "TOTAL_MARKETING"
+            case .media: return "TOTAL_MEDIA"
+            case .specialized: return "TOTAL_SPECIAL"
+            case .others: return nil
+            }
+        }
     }
 
     let type: CategoryModelType
-
-    var name: String {
-        type.rawValue
-    }
 
     var image: UIImage? {
         switch type {
@@ -153,7 +172,7 @@ struct HomeCategoryMocks {
             HomeCategoryModel(type: .specialized),
             HomeCategoryModel(type: .engineering),
             HomeCategoryModel(type: .media),
-            HomeCategoryModel(type: .specialized)
+            HomeCategoryModel(type: .others)
         ]
     }
 }

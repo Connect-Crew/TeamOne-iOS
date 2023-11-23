@@ -10,6 +10,7 @@ import UIKit
 import RxSwift
 import Core
 import Inject
+import Domain
 
 enum HomeCoordinatorResult {
     case finish
@@ -28,12 +29,24 @@ final class HomeCoordinator: BaseCoordinator<HomeCoordinatorResult> {
         let viewModel = DIContainer.shared.resolve(HomeViewModel.self)
 
         viewModel.navigation
-            .subscribe(onNext: { _ in
-
+            .subscribe(onNext: {  [weak self] in
+                switch $0 {
+                case .write:
+                    break
+                case .participants(let element):
+                    self?.showparticipatnsDetail(element)
+                }
             })
             .disposed(by: disposeBag)
 
        let viewController = Inject.ViewControllerHost(HomeViewController(viewModel: viewModel))
         push(viewController, animated: true, isRoot: true)
+    }
+
+    func showparticipatnsDetail(_ element: SideProjectListElement?) {
+        let viewController = Inject.ViewControllerHost(RecruitmentStatusDetailViewController(element: element))
+
+        viewController.modalPresentationStyle = .overFullScreen
+        present(viewController, animated: false)
     }
 }

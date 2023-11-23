@@ -41,18 +41,20 @@ extension AppDelegate {
             return dataSouce
         }
 
+        container.register(interface: ProjectsDataSouceProtocol.self) { _ in
+            let dataSource = ProjectsDataSource()
+
+            return dataSource
+        }
+
         // MARK: - Repository
 
         container.register(interface: AuthRepositoryProtocol.self) { res in
 
-            guard let authDataSource = res.resolve(AuthDataSourceProtocol.self),
-            let tokenRepository = res.resolve(TokenRepositoryProtocol.self) else {
-                fatalError("auth")
-            }
+            guard let authDataSource = res.resolve(AuthDataSourceProtocol.self) else { fatalError() }
 
             let repository = AuthRepository(
                 authDataSource: authDataSource
-//                tokenRepository: tokenRepository
             )
 
             return repository
@@ -67,6 +69,12 @@ extension AppDelegate {
             return TokenRepository(
                 keychainManager: keychainManager
             )
+        }
+
+        container.register(interface: ProjectRepositoryProtocol.self) { res in
+            guard let projectDataSource = res.resolve(ProjectsDataSouceProtocol.self) else { fatalError() }
+
+            return ProjectRepository(projectDataSource: projectDataSource)
         }
 
         // MARK: - UseCase
@@ -102,6 +110,22 @@ extension AppDelegate {
 
             return AutoLoginUseCase(authRepository: authRepository)
         }
+
+        container.register(interface: ProjectListUseCaseProtocol.self) { res in
+            guard let projectRepository = res.resolve(ProjectRepositoryProtocol.self) else {
+                fatalError()
+            }
+
+            return ProjectListUseCase(projectRepository: projectRepository)
+        }
+
+        container.register(interface: ProjectLikeUseCaseProtocol.self) { res in
+            guard let projectRepository = res.resolve(ProjectRepositoryProtocol.self) else {
+                fatalError()
+            }
+
+            return ProjectLikeUseCase(projectRepository: projectRepository)
+        }
         
         // MARK: - ViewModel
 
@@ -126,9 +150,17 @@ extension AppDelegate {
             return viewModel
         }
 
-        container.register(interface: HomeViewModel.self) { _ in
+        container.register(interface: HomeViewModel.self) { res in
 
-            let viewModel = HomeViewModel()
+            guard let projectListUseCase = res.resolve(ProjectListUseCaseProtocol.self),
+                  let projectLikeUseCase = res.resolve(ProjectLikeUseCaseProtocol.self) else {
+                fatalError()
+            }
+
+            let viewModel = HomeViewModel(
+                projectListUseCase: projectListUseCase,
+                projectLikeUseCase: projectLikeUseCase
+            )
 
             return viewModel
         }

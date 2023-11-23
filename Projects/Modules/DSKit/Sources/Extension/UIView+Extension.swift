@@ -17,6 +17,13 @@ public extension UIView {
         }
     }
 
+    func setDivider(width: CGFloat, color: UIColor) {
+        self.backgroundColor = color
+        self.snp.makeConstraints {
+            $0.width.equalTo(width)
+        }
+    }
+
     func setRound(radius: CGFloat) {
         self.layer.cornerRadius = radius
     }

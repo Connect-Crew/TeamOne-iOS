@@ -84,6 +84,14 @@ open class BaseCoordinator<ResultType> {
         navigationController.tabBarController?.dismiss(animated: animated)
     }
 
+    public func present(_ viewController: UIViewController, animated: Bool) {
+        navigationController.present(viewController, animated: animated)
+    }
+
+    public func dismiss(animated: Bool) {
+        navigationController.dismiss(animated: animated)
+    }
+
     // MARK: - Navigation Bar Hidden
 
     func setNavigationBarHidden(_ hidden: Bool, animated: Bool) {
