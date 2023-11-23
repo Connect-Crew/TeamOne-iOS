@@ -17,8 +17,9 @@ public struct AuthRegisterRequestDTO: Encodable {
     let email: String?
     let termsAgreement: Bool
     let privacyAgreement: Bool
+    let fcm: String
 
-    public init(token: String, social: String, username: String?, nickname: String, email: String?, termsAgreement: Bool, privacyAgreement: Bool) {
+    public init(token: String, social: String, username: String?, nickname: String, email: String?, termsAgreement: Bool, privacyAgreement: Bool, fcm: String) {
         self.token = token
         self.social = social
         self.username = username
@@ -26,5 +27,6 @@ public struct AuthRegisterRequestDTO: Encodable {
         self.email = email
         self.termsAgreement = termsAgreement
         self.privacyAgreement = privacyAgreement
+        self.fcm = fcm
     }
 }

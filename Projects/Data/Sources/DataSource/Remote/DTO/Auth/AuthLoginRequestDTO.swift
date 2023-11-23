@@ -11,9 +11,11 @@ import Foundation
 public struct AuthLoginRequestDTO: Encodable {
     let token: String
     let social: String
+    let fcm: String
 
-    public init(token: String, social: String) {
+    public init(token: String, social: String, fcm: String) {
         self.token = token
         self.social = social
+        self.fcm = fcm
     }
 }
