@@ -21,6 +21,9 @@ import GoogleSignIn
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
+    let notificationCenter = UNUserNotificationCenter.current()
+    let notificationOption: UNAuthorizationOptions = [.alert, .badge, .sound]
+
     func application(_ application: UIApplication,
                      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
 
@@ -40,6 +43,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // 의존성 생성
 
         registerDependencies()
+
+        // APNs
+
+        notificationCenter.delegate = self
+        registerForPushNotivications()
+        application.registerForRemoteNotifications()
+
+        // FCM
+
+        Messaging.messaging().delegate = self
         
         return true
     }
@@ -64,7 +77,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         } else {
             return GIDSignIn.sharedInstance.handle(url)
         }
+    }
 
-        return false
+    func registerForPushNotivications() {
+        notificationCenter.requestAuthorization(
+            options: notificationOption, completionHandler: { granted, error in
+
+                if let error = error {
+                    print("DEBUG: \(error)")
+                }
+
+                if granted {
+                    print("권한 허용 여부 \(granted)")
+                }
+            }
+        )
     }
 }

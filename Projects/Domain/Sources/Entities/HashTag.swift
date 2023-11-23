@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import DSKit
 
 public struct HashTag {
     public let title: String
@@ -19,20 +18,8 @@ public enum HashBackground {
     case pink
     case gray
 
-    public var image: UIImage? {
-        switch self {
-        case .gray: return .image(dsimage: .tagGray)
-        case .pink: return .image(dsimage: .tagRed)
-        }
-    }
 }
 
 public enum HashTagTitleColor {
     case gray
-
-    public var titleColor: UIColor {
-        switch self {
-        case .gray: return .teamOne.grayscaleSeven
-        }
-    }
 }

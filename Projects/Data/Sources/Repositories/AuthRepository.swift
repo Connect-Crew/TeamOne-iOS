@@ -19,6 +19,12 @@ import Domain
 import Core
 import Network
 
+import FirebaseMessaging
+
+enum AuthError: Error {
+    case apnsError
+}
+
 public struct AuthRepository: AuthRepositoryProtocol {
 
     let authDataSource: AuthDataSourceProtocol
@@ -29,9 +35,12 @@ public struct AuthRepository: AuthRepositoryProtocol {
 
     public func login(request: OAuthLoginProps) -> Observable<Bool> {
 
+        guard let token = UserDefaultKeyList.Auth.APNsToken else { return Observable.error(AuthError.apnsError) }
+
         let requestDTO = AuthLoginRequestDTO(
             token: request.token,
-            social: request.social.toString
+            social: request.social.toString,
+            fcm: token
         )
 
         return authDataSource.login(requestDTO)
@@ -71,6 +80,8 @@ public struct AuthRepository: AuthRepositoryProtocol {
 
     public func register(props: OAuthSignUpProps) -> Observable<Bool> {
 
+        guard let token = UserDefaultKeyList.Auth.APNsToken else { return Observable.error(AuthError.apnsError) }
+
         let requestDTO = AuthRegisterRequestDTO(
             token: props.token,
             social: props.social.toString,
@@ -78,7 +89,8 @@ public struct AuthRepository: AuthRepositoryProtocol {
             nickname: props.nickName,
             email: props.email,
             termsAgreement: true,
-            privacyAgreement: true
+            privacyAgreement: true,
+            fcm: token
         )
 
         return authDataSource.signup(requestDTO)

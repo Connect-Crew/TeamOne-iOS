@@ -270,9 +270,34 @@ extension HomeTableViewCell: UICollectionViewDataSource {
             return UICollectionViewCell()
         }
 
-        cell.backgroundImageView.image = hashTag.background.image
+
+
+//        public var image: UIImage? {
+//            switch self {
+//            case .gray: return .image(dsimage: .tagGray)
+//            case .pink: return .image(dsimage: .tagRed)
+//            }
+//        }
+//
+//        public var titleColor: UIColor {
+//            switch self {
+//            case .gray: return .teamOne.grayscaleSeven
+//            }
+//        }
+
         cell.titleLabel.text = hashTag.title
-        cell.titleLabel.textColor = hashTag.titleColor.titleColor
+
+        switch hashTag.titleColor {
+        case .gray:
+            cell.titleLabel.textColor = .teamOne.grayscaleSeven
+        }
+
+        switch hashTag.background {
+        case .gray:
+            cell.backgroundImageView.image = .image(dsimage: .tagGray)
+        case .pink:
+            cell.backgroundImageView.image = .image(dsimage: .tagRed)
+        }
 
         return cell
     }

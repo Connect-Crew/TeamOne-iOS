@@ -13,5 +13,6 @@ public struct UserDefaultKeyList {
         @UserDefaultWrapper<String>(key: "appAccessToken") public static var appAccessToken
         @UserDefaultWrapper<String>(key: "appRefreshToken") public static var appRefreshToken
         @UserDefaultWrapper<String>(key: "appLoginSocial") public static var appLoginSocial
+        @UserDefaultWrapper<String>(key: "APNsToken") public static var APNsToken
     }
 }
