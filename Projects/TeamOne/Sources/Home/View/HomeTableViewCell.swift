@@ -9,6 +9,8 @@
 import UIKit
 import Core
 import Domain
+import SnapKit
+import DSKit
 
 import RxSwift
 import RxCocoa
@@ -17,55 +19,39 @@ final class HomeTableViewCell: UITableViewCell, CellIdentifiable {
 
     var disposeBag: DisposeBag = .init()
 
-    var project: SideProject?
-
     // MARK: - Properties
 
-    let containerView = UIView().then {
+    let viewContainer = UIView().then {
         $0.backgroundColor = .clear
     }
 
-    let mainImageView: UIImageView = UIImageView().then {
+    let imageViewMain: UIImageView = UIImageView().then {
         $0.layer.cornerRadius = 6
         $0.clipsToBounds = true
-        $0.layer.borderColor = UIColor.teamOne.grayscaleOne.cgColor
-        $0.layer.borderWidth = 1
+        $0.backgroundColor = .clear
         $0.image = .image(dsimage: .logo)
     }
 
-    let contentContainerView = UIView().then {
-        $0.backgroundColor = .clear
+    let viewIsNew = ViewBGImage_Label(bgImage: .newTagBG, text: "NEW", font: .caption2, textColor: .white)
+
+    let labelTitle = UILabel().then {
+        $0.setLabel(text: "배달비 없는 배달앱 - 함께 하실분구해요오오옷ㅌ", typo: .body4, color: .teamOne.grayscaleEight)
     }
 
-    let titleLabel = UILabel().then {
-        $0.text = "배달비 없는 배달앱 - 함께 하실분구해요오오옷ㅌ"
-        $0.font = .setFont(font: .button1)
-    }
-
-    let locationImageView = UIImageView().then {
+    let imageViewLocation = UIImageView().then {
         $0.image = .image(dsimage: .place)
     }
 
-    let locationLabel = UILabel().then {
+    let labelLocation = UILabel().then {
         $0.setLabel(text: "서울", typo: .caption2, color: .teamOne.grayscaleSeven)
     }
 
-    let locationDurationDivider = UILabel().then {
-        $0.backgroundColor = .teamOne.grayscaleFive
+    let viewLocationDivider = UILabel().then {
+        $0.setDivider(width: 1, color: .teamOne.grayscaleSeven)
     }
 
-    let projectDurationLabel = UILabel().then {
-        $0.setLabel(text: "2023.10.23 ~ 12.20", typo: .caption2, color: .teamOne.grayscaleSeven)
-    }
-
-    let dropDownView = HomeDropDownView()
-
-    let heartImageView = UIImageView().then {
-        $0.image = .image(dsimage: .heartline)
-    }
-
-    let heartCountlabel = UILabel().then {
-        $0.setLabel(text: "0", typo: .caption1, color: .teamOne.point)
+    let labelUploadTime = UILabel().then {
+        $0.setLabel(text: "방금 전", typo: .caption2, color: .teamOne.grayscaleSeven)
     }
 
     lazy var hashtagListCollectionView = UICollectionView(
@@ -77,6 +63,36 @@ final class HomeTableViewCell: UITableViewCell, CellIdentifiable {
         $0.backgroundColor = .clear
         $0.dataSource = self
         $0.delegate = self
+    }
+
+    let buttonParticipants = Button_IsEnabledImage(
+        text: "0/0", typo: .caption1,
+        enabledImage: .count, disabledImage: .countDisable,
+        enabledTextColor: .teamOne.mainColor, disabledTextColor: .teamOne.grayscaleFive)
+
+    let buttonLike = Button_IsLiked(count: 0, typo: .caption1, isLiked: false, likedImage: .heartsolid, unLikedImage: .heartline, likedTextColor: .teamOne.point)
+
+    lazy var contentStackView = UIStackView(
+        arrangedSubviews: [
+            createFirstHorizontalStackView(),
+            createSecondButtonStackView()
+        ]
+    ).then {
+        $0.axis = .vertical
+        $0.distribution = .fill
+    }
+
+    private var project: SideProjectListElement?
+
+    private var buttonParticipatsTapSubject = PublishSubject<SideProjectListElement?>()
+    private var buttonLikeTapSubject = PublishSubject<SideProjectListElement?>()
+
+    var buttonParticipantsTap: Observable<SideProjectListElement?>{
+        return buttonParticipatsTapSubject.asObservable()
+    }
+
+    var buttonLikeTap: Observable<SideProjectListElement?> {
+        return buttonLikeTapSubject.asObservable()
     }
 
     // MARK: - Inits
@@ -91,146 +107,147 @@ final class HomeTableViewCell: UITableViewCell, CellIdentifiable {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func config(project: SideProject) {
+    override func prepareForReuse() {
+        super.prepareForReuse()
+
+        self.disposeBag = DisposeBag()
+    }
+
+    func initSetting(project: SideProjectListElement) {
 
         self.project = project
 
-        titleLabel.text = project.title
+        self.labelTitle.text = project.title
 
-        locationLabel.text = project.location
-
-        if project.isExistedperiod == true,
-           let startDate = project.startDate,
-           let endDate = project.endDate {
-            projectDurationLabel.text = "\(startDate) ~ \(endDate)"
+        if project.online == true {
+            self.labelLocation.text = "온라인"
         } else {
-            projectDurationLabel.text = "기간미정"
+            self.labelLocation.text = project.region
         }
 
-        dropDownView.configure(project: project)
+        viewIsNew.isHidden = project.region.isNewData()
+        labelUploadTime.text = project.createdAt.toRelativeDateString()
 
-        if project.isEmpty == true {
-            contentView.isHidden = true
+        var totalMemberCnt: Int = 0
+        var currentMemberCnt: Int = 0
+
+        project.recruitStatus.forEach {
+            totalMemberCnt += $0.max
+            currentMemberCnt += $0.current
         }
 
+        buttonParticipants.setTitle("\(currentMemberCnt)/\(totalMemberCnt)", for: .normal)
+
+        buttonLike.likedCount = project.favorite
+
+        buttonLike.isLiked = project.myFavorite
     }
 
     // MARK: - Methods
 
     func layout() {
 
-        contentView.clipsToBounds = false
+        contentView.backgroundColor = .clear
 
-        contentView.backgroundColor = .teamOne.backgroundDefault
-        contentView.layer.cornerRadius = 8
+        contentView.addSubview(viewContainer)
 
-        self.backgroundColor = .clear
-
-        contentView.addSubview(containerView)
-
-        containerView.snp.makeConstraints {
-            $0.top.equalToSuperview().offset(13)
+        viewContainer.snp.makeConstraints {
+            $0.top.equalToSuperview().offset(10)
             $0.leading.equalToSuperview().offset(24)
             $0.trailing.equalToSuperview().inset(24)
-            $0.bottom.equalToSuperview().inset(6)
-        }
-
-        containerView.addSubview(mainImageView)
-
-        mainImageView.snp.makeConstraints {
-            $0.top.leading.equalToSuperview().offset(10)
             $0.bottom.equalToSuperview().inset(10)
-            $0.width.equalTo(120)
         }
 
-        mainImageView.snp.contentCompressionResistanceVerticalPriority = 760
+        viewContainer.layer.cornerRadius = 8
 
-        containerView.addSubview(contentContainerView)
+        viewContainer.backgroundColor = .white
+        viewContainer.layer.masksToBounds = false
+        viewContainer.layer.shadowColor = UIColor.black.cgColor
+        viewContainer.layer.shadowOpacity = 0.2
+        viewContainer.layer.shadowRadius = 8
+        viewContainer.layer.shadowOffset = CGSize(width: 0, height: 0)
 
-        contentContainerView.snp.makeConstraints {
-            $0.leading.equalTo(mainImageView.snp.trailing).offset(10)
-            $0.top.equalToSuperview().offset(10)
-            $0.trailing.equalToSuperview().inset(10)
+        viewContainer.addSubview(contentStackView)
+
+        contentStackView.snp.makeConstraints {
+            $0.edges.equalToSuperview()
         }
 
-        contentContainerView.addSubview(titleLabel)
+        viewContainer.addSubview(viewIsNew)
 
-        titleLabel.snp.makeConstraints {
-            $0.leading.equalToSuperview()
-            $0.top.equalToSuperview()
-            $0.trailing.equalToSuperview()
+        viewIsNew.snp.makeConstraints {
+            $0.top.left.equalTo(imageViewMain)
+        }
+    }
+
+    func createFirstHorizontalStackView() -> UIStackView {
+
+        let locationInformationStackView = UIStackView(arrangedSubviews: [
+            imageViewLocation,
+            labelLocation,
+            viewLocationDivider,
+            labelUploadTime]
+        ).then {
+            $0.axis = .horizontal
+            $0.distribution = .fill
+            $0.spacing = 4
         }
 
-        contentContainerView.addSubview(locationImageView)
-
-        locationImageView.snp.makeConstraints {
-            $0.leading.equalTo(titleLabel)
-            $0.top.equalTo(titleLabel.snp.bottom).offset(4)
-            $0.width.height.equalTo(16)
+        imageViewLocation.snp.makeConstraints {
+            $0.width.height.equalTo(16).priority(.required)
         }
 
-        locationImageView.snp.contentHuggingHorizontalPriority = 750
+        labelLocation.snp.contentHuggingHorizontalPriority = 750
+        labelUploadTime.snp.contentHuggingHorizontalPriority = 749
 
-        contentContainerView.addSubview(locationLabel)
+        let verticalStackView = UIStackView(arrangedSubviews: [labelTitle, locationInformationStackView, hashtagListCollectionView])
+        verticalStackView.axis = .vertical
+        verticalStackView.spacing = 8
+        verticalStackView.alignment = .fill
 
-        locationLabel.snp.makeConstraints {
-            $0.leading.equalTo(locationImageView.snp.trailing)
-            $0.centerY.equalTo(locationImageView)
+        let stackView = UIStackView(arrangedSubviews: [imageViewMain, verticalStackView])
+        stackView.axis = .horizontal
+        stackView.distribution = .fill
+        stackView.spacing = 8
+
+        stackView.layoutMargins = UIEdgeInsets(top: 10, left: 10, bottom: 8, right: 10)
+
+        stackView.isLayoutMarginsRelativeArrangement = true
+
+        imageViewMain.snp.makeConstraints {
+            $0.width.height.equalTo(100).priority(.required)
         }
 
-        locationLabel.snp.contentHuggingHorizontalPriority = 750
+        return stackView
+    }
 
-        contentContainerView.addSubview(locationDurationDivider)
+    func createSecondButtonStackView() -> UIStackView {
+        let stackView = UIStackView(arrangedSubviews: [buttonParticipants, buttonLike])
+        stackView.axis = .horizontal
+        stackView.spacing = 0
+        stackView.distribution = .fillEqually
 
-        locationDurationDivider.snp.makeConstraints {
-            $0.leading.equalTo(locationLabel.snp.trailing).offset(4)
-            $0.centerY.equalTo(locationImageView)
-            $0.height.equalTo(locationLabel)
-            $0.width.equalTo(1)
+        [buttonParticipants, buttonLike].forEach {
+            $0.snp.makeConstraints {
+                $0.height.equalTo(44)
+            }
+            $0.layer.borderWidth = 1
+            $0.layer.borderColor = UIColor.teamOne.grayscaleTwo.cgColor
+            $0.isEnabled = true
         }
 
-        locationDurationDivider.snp.contentHuggingHorizontalPriority = 750
+        buttonParticipants.addTarget(self, action: #selector(buttonParticipatnsTapped), for: .touchUpInside)
+        buttonLike.addTarget(self, action: #selector(buttonLikeTapped), for: .touchUpInside)
 
-        contentContainerView.addSubview(projectDurationLabel)
+        return stackView
+    }
 
-        projectDurationLabel.snp.makeConstraints {
-            $0.leading.equalTo(locationDurationDivider.snp.trailing).offset(4)
-            $0.centerY.equalTo(locationImageView)
-            $0.trailing.equalToSuperview()
-        }
+    @objc private func buttonParticipatnsTapped() {
+        buttonParticipatsTapSubject.onNext(project)
+    }
 
-        projectDurationLabel.snp.contentHuggingHorizontalPriority = 749.0
-
-        contentContainerView.addSubview(hashtagListCollectionView)
-
-        hashtagListCollectionView.snp.makeConstraints {
-            $0.top.equalTo(locationImageView.snp.bottom).offset(14)
-            $0.leading.equalTo(titleLabel)
-            $0.trailing.equalToSuperview()
-            $0.height.equalTo(38)
-        }
-
-        containerView.addSubview(heartCountlabel)
-
-        heartCountlabel.snp.makeConstraints {
-            $0.trailing.equalToSuperview()
-            $0.bottom.equalToSuperview()
-        }
-
-        containerView.addSubview(heartImageView)
-
-        heartImageView.snp.makeConstraints {
-            $0.trailing.equalTo(heartCountlabel.snp.leading)
-            $0.centerY.equalTo(heartCountlabel)
-            $0.width.equalTo(24)
-        }
-
-        containerView.addSubview(dropDownView)
-
-        dropDownView.snp.makeConstraints {
-            $0.top.equalTo(heartImageView)
-            $0.trailing.equalTo(heartImageView.snp.leading).offset(-10)
-        }
+    @objc private func buttonLikeTapped() {
+        buttonLikeTapSubject.onNext(project)
     }
 }
 
@@ -238,7 +255,7 @@ extension HomeTableViewCell: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView,
                         numberOfItemsInSection section: Int) -> Int {
 
-        guard let hashTags = project?.hashTags else { return 0 }
+        guard let hashTags = self.project?.HashTags else { return 0 }
 
         return hashTags.count
     }
@@ -248,14 +265,14 @@ extension HomeTableViewCell: UICollectionViewDataSource {
 
         guard let cell = hashtagListCollectionView.dequeueReusableCell(
             withReuseIdentifier: HashTagCollectionViewCell.identifier, for: indexPath
-        ) as? HashTagCollectionViewCell else {
+        ) as? HashTagCollectionViewCell,
+              let hashTag = project?.HashTags[indexPath.row] else {
             return UICollectionViewCell()
-            
         }
 
-        guard let hashTags = project?.hashTags else { return UICollectionViewCell() }
-
-        cell.configure(hashTag: hashTags[indexPath.row])
+        cell.backgroundImageView.image = hashTag.background.image
+        cell.titleLabel.text = hashTag.title
+        cell.titleLabel.textColor = hashTag.titleColor.titleColor
 
         return cell
     }
@@ -266,16 +283,16 @@ extension HomeTableViewCell: UICollectionViewDelegateFlowLayout {
                         layout collectionViewLayout: UICollectionViewLayout,
                         sizeForItemAt indexPath: IndexPath) -> CGSize {
 
-        guard let hashTags = project?.hashTags else {
+        guard let hashTags = project?.HashTags[indexPath.row] else {
             print("@@@@@ HomeTableViewCell: UICollectionViewDelegateFlowLayout ")
             return  CGSize(width: 0, height: 0) }
 
         let titleLabel = UILabel().then {
             $0.textAlignment = .center
-            $0.setLabel(text: hashTags[indexPath.row].title, typo: .caption2, color: .teamOne.grayscaleSeven)
+            $0.setLabel(text: hashTags.title, typo: .caption2, color: .teamOne.grayscaleSeven)
         }
 
-        let width = titleLabel.intrinsicContentSize.width + 16 
+        let width = titleLabel.intrinsicContentSize.width + 16
         let height = 17.0
 
         return CGSize(width: width, height: height)

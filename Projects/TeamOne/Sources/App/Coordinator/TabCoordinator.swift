@@ -36,8 +36,6 @@ final class TabCoordinator: BaseCoordinator<TabCoordinatorResult> {
 
             switch $0 {
             case .home: showHome(navigationController)
-            case .community: break
-            case .recruitment: break
             case .myteam: break
             case .profile: break
             }

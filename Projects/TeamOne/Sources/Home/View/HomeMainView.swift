@@ -10,6 +10,8 @@ import UIKit
 import Then
 import DSKit
 import SnapKit
+import RxSwift
+import RxCocoa
 
 final class HomeMainView: UIView {
 
@@ -27,15 +29,11 @@ final class HomeMainView: UIView {
         $0.setButton(image: .notification)
     }
 
-    let filterButton = UIButton().then {
-        $0.setButton(image: .slider)
-    }
-
     let searchButton = UIButton().then {
         $0.setButton(image: .search)
     }
 
-    lazy var navigationButtonArray: [UIButton] = [notificationButton, filterButton, searchButton]
+    lazy var navigationButtonArray: [UIButton] = [notificationButton, searchButton]
 
     lazy var navigationButtonStackView = UIStackView(
         arrangedSubviews: navigationButtonArray
@@ -51,9 +49,8 @@ final class HomeMainView: UIView {
         $0.contentMode = .scaleToFill
     }
 
-    let homeCategoryView = HomeCategoryView().then {
-        $0.dataSource = HomeCategoryMocks.getDataSource()
-        $0.backgroundColor = .teamOne.backgroundDefault
+    lazy var homeCategoryView = HomeCategoryView(selected: self.selected).then {
+        $0.backgroundColor = .white
     }
 
     lazy var tableView = UITableView().then {
@@ -63,6 +60,16 @@ final class HomeMainView: UIView {
         $0.backgroundColor = .teamOne.background
         $0.separatorStyle = .none
     }
+
+    var viewEmpty = View_EmptyImageView_Label(text: "지원할 프로젝트가 없습니다", textColor: .teamOne.grayscaleFive, typo: .body3, image: .logo).then {
+        $0.isHidden = true
+    }
+
+    var buttonWrite = UIButton().then {
+        $0.setImage(.image(dsimage: .homeWriteButton), for: .normal)
+    }
+
+    let selected = BehaviorRelay<String?>(value: nil)
 
     init() {
         super.init(frame: .zero)
@@ -78,6 +85,7 @@ final class HomeMainView: UIView {
         layoutNavigation()
         layoutTableView()
         layoutStickyHeaderView()
+        layoutButtonWrite()
     }
 
     func layoutNavigation() {
@@ -119,6 +127,13 @@ final class HomeMainView: UIView {
             $0.leading.trailing.equalToSuperview()
             $0.bottom.equalTo(safeAreaLayoutGuide.snp.bottom)
         }
+
+        addSubview(viewEmpty)
+
+        viewEmpty.snp.makeConstraints {
+            $0.centerX.equalTo(tableView)
+            $0.centerY.equalTo(tableView).offset(headerMinHeight)
+        }
     }
 
     func layoutStickyHeaderView() {
@@ -145,6 +160,15 @@ final class HomeMainView: UIView {
             $0.leading.trailing.equalToSuperview()
             $0.height.equalTo(headerMinHeight)
             $0.bottom.equalToSuperview()
+        }
+    }
+
+    func layoutButtonWrite() {
+        addSubview(buttonWrite)
+
+        buttonWrite.snp.makeConstraints {
+            $0.trailing.equalToSuperview().inset(24)
+            $0.bottom.equalTo(safeAreaLayoutGuide.snp.bottom).inset(24)
         }
     }
 }

@@ -1,7 +1,7 @@
 {
   "images" : [
     {
-      "filename" : "태그_grey.png",
+      "filename" : "new태그bg.png",
       "idiom" : "universal",
       "resizing" : {
         "cap-insets" : {
@@ -17,7 +17,7 @@
       "scale" : "1x"
     },
     {
-      "filename" : "태그_grey@2x.png",
+      "filename" : "new태그bg@2x.png",
       "idiom" : "universal",
       "resizing" : {
         "cap-insets" : {
@@ -33,7 +33,7 @@
       "scale" : "2x"
     },
     {
-      "filename" : "태그_grey@3x.png",
+      "filename" : "new태그bg@3x.png",
       "idiom" : "universal",
       "resizing" : {
         "cap-insets" : {

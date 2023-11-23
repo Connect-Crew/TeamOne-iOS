@@ -14,7 +14,7 @@ public extension UIButton {
     func setButton(text: String, typo: SansNeo, color: UIColor) {
         self.setTitle(text, for: .normal)
         self.titleLabel?.font = .setFont(font: typo)
-        self.titleLabel?.textColor = color
+        self.setTitleColor(color, for: .normal)
     }
 
     func setButton(image: DSKitImage) {

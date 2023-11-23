@@ -18,8 +18,6 @@ final class HashTagCollectionViewCell: UICollectionViewCell, CellIdentifiable {
 
     let disposeBag: DisposeBag = .init()
 
-    var hashTag: HashTag?
-
     let backgroundImageView = UIImageView()
 
     let titleLabel = UILabel().then {
@@ -37,17 +35,17 @@ final class HashTagCollectionViewCell: UICollectionViewCell, CellIdentifiable {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func configure(hashTag: HashTag?) {
-        guard let hashTag = hashTag else { return }
-
-        titleLabel.text = hashTag.title
-
-        if hashTag.backgroundColor == "gray" {
-            backgroundImageView.image = .image(dsimage: .tagGray)
-        } else if hashTag.backgroundColor == "pink" {
-            backgroundImageView.image = .image(dsimage: .tagRed)
-        }
-    }
+//    func configure(hashTag: ?) {
+//        guard let hashTag = hashTag else { return }
+//
+//        titleLabel.text = hashTag.title
+//
+//        if hashTag.backgroundColor == "gray" {
+//            backgroundImageView.image = .image(dsimage: .tagGray)
+//        } else if hashTag.backgroundColor == "pink" {
+//            backgroundImageView.image = .image(dsimage: .tagRed)
+//        }
+//    }
 
     func layout() {
 

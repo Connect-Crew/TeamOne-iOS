@@ -10,16 +10,12 @@ import UIKit
 
 public enum Tablist: Int, CaseIterable {
     case home
-    case community
-    case recruitment
     case myteam
     case profile
 
     public var title: String {
         switch self {
         case .home: return "홈"
-        case .community: return "커뮤니티"
-        case .recruitment: return "모집"
         case .myteam: return "나의 팀"
         case .profile:  return "마이페이지"
         }
@@ -38,6 +34,7 @@ public enum DSKitImage {
     case recruitmentline
     case myteamline
     case profileline
+    case homeWriteButton
 
     case slider
     case search
@@ -76,12 +73,14 @@ public enum DSKitImage {
 
     case place
     case count
+    case countDisable
     case heartline
     case heartsolid
     case tagGray
     case tagRed
     case upTwo
     case downTow
+    case newTagBG
 
     case homeHeader
 
@@ -129,6 +128,9 @@ public enum DSKitImage {
             return "slider"
         case .search:
             return "search"
+
+        case .homeWriteButton:
+            return "homeWriteButton"
 
         case .categoryall:
             return "category.all"
@@ -179,15 +181,20 @@ public enum DSKitImage {
         case .place:
             return "place"
         case.tagGray:
-            return "tag_gray"
+            return "태그bg_grey"
         case.tagRed:
-            return "tag_red"
+            return "태그bg_red"
+        case .newTagBG:
+            return "new태그bg"
 
         case .logo:
             return "임시로고"
 
         case .count:
-            return "count"
+            return "countAvailable"
+        case .countDisable:
+            return "countDisable"
+
         case .heartline:
             return "heart_line"
         case .heartsolid:
@@ -240,10 +247,6 @@ public struct TabBar {
         switch tab {
         case .home:
             return UIImage.image(dsimage: .homeSolid)
-        case .community:
-            return UIImage.image(dsimage: .communitySolid)
-        case .recruitment:
-            return UIImage.image(dsimage: .recruitmentSolid)
         case .myteam:
             return UIImage.image(dsimage: .myteamSolid)
         case .profile:
@@ -255,10 +258,6 @@ public struct TabBar {
         switch tab {
         case .home:
             return UIImage.image(dsimage: .homeline)
-        case .community:
-            return UIImage.image(dsimage: .communityline)
-        case .recruitment:
-            return UIImage.image(dsimage: .recruitmentline)
         case .myteam:
             return UIImage.image(dsimage: .myteamline)
         case .profile:

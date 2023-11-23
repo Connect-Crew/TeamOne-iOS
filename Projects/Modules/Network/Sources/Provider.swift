@@ -10,6 +10,7 @@ import Foundation
 
 import Alamofire
 import RxSwift
+import Core
 
 public struct EmptyResponse: Decodable {}
 public struct EmptyParameter: Encodable {}
@@ -30,43 +31,51 @@ public class Provider: ProviderProtocol {
         return Provider(session: session)
     }()
 
-    public func request<Success: Decodable, Error: Decodable>(_ urlConvertible: URLRequestConvertible) -> Observable<GenericAPIResponse<Success, Error>> {
-        return Observable.create { emitter in
-            let request = self.session
-                .request(urlConvertible)
-                .validate()
-                .responseJSON { response in
-                    switch response.result {
-                    case .success(let value):
-                        do {
-                            let data = try JSONSerialization.data(withJSONObject: value)
-                            let successResponse = try JSONDecoder().decode(Success.self, from: data)
-                            emitter.onNext(.success(successResponse))
-                            emitter.onCompleted()
-                        } catch {
-                            emitter.onError(error)
-                        }
-                    case .failure(_):
-                        if let data = response.data {
-                            do {
-                                let errorResponse = try JSONDecoder().decode(Error.self, from: data)
-                                emitter.onNext(.failure(errorResponse))
-                                emitter.onCompleted()
-                            } catch {
-                                emitter.onError(error)
-                            }
-                        } else {
-                            emitter.onError(response.error ?? AFError.responseValidationFailed(reason: .dataFileNil))
-                        }
-                    }
-                }
-            return Disposables.create {
-                request.cancel()
-            }
-        }
-    }
+//    public func request<Success: Decodable, Error: Decodable>(_ urlConvertible: URLRequestConvertible) -> Observable<GenericAPIResponse<Success, Error>> {
+//
+//        Loading.start()
+//
+//        return Observable.create { emitter in
+//            let request = self.session
+//                .request(urlConvertible)
+//                .validate()
+//                .responseJSON { response in
+//                    switch response.result {
+//                    case .success(let value):
+//                        do {
+//                            let data = try JSONSerialization.data(withJSONObject: value)
+//                            let successResponse = try JSONDecoder().decode(Success.self, from: data)
+//                            emitter.onNext(.success(successResponse))
+//                            emitter.onCompleted()
+//                        } catch {
+//                            emitter.onError(error)
+//                        }
+//                    case .failure(_):
+//                        if let data = response.data {
+//                            do {
+//                                let errorResponse = try JSONDecoder().decode(Error.self, from: data)
+//                                emitter.onNext(.failure(errorResponse))
+//                                emitter.onCompleted()
+//                            } catch {
+//                                emitter.onError(error)
+//                            }
+//                        } else {
+//                            emitter.onError(response.error ?? AFError.responseValidationFailed(reason: .dataFileNil))
+//                        }
+//                    }
+//
+//                    Loading.stop()
+//                }
+//            return Disposables.create {
+//                request.cancel()
+//            }
+//        }
+//    }
 
     public func request<T: Decodable>(_ urlConvertible: URLRequestConvertible) -> Observable<T> {
+
+        Loading.start()
+        
         return Observable.create { emitter in
             let request = self.session
                 .request(urlConvertible)
@@ -79,6 +88,8 @@ public class Provider: ProviderProtocol {
                     case let .failure(error):
                         emitter.onError(error)
                     }
+
+                    Loading.stop()
                 }
             return Disposables.create {
                 request.cancel()
