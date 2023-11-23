@@ -10,16 +10,12 @@ import UIKit
 
 public enum Tablist: Int, CaseIterable {
     case home
-    case community
-    case recruitment
     case myteam
     case profile
 
     public var title: String {
         switch self {
         case .home: return "홈"
-        case .community: return "커뮤니티"
-        case .recruitment: return "모집"
         case .myteam: return "나의 팀"
         case .profile:  return "마이페이지"
         }
@@ -251,10 +247,6 @@ public struct TabBar {
         switch tab {
         case .home:
             return UIImage.image(dsimage: .homeSolid)
-        case .community:
-            return UIImage.image(dsimage: .communitySolid)
-        case .recruitment:
-            return UIImage.image(dsimage: .recruitmentSolid)
         case .myteam:
             return UIImage.image(dsimage: .myteamSolid)
         case .profile:
@@ -266,10 +258,6 @@ public struct TabBar {
         switch tab {
         case .home:
             return UIImage.image(dsimage: .homeline)
-        case .community:
-            return UIImage.image(dsimage: .communityline)
-        case .recruitment:
-            return UIImage.image(dsimage: .recruitmentline)
         case .myteam:
             return UIImage.image(dsimage: .myteamline)
         case .profile:
