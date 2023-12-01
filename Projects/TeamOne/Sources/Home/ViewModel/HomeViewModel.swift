@@ -18,27 +18,33 @@ import Domain
 enum HomeNavigation {
     case write
     case participants(SideProjectListElement?)
+    case detail(Project)
 }
 
 final class HomeViewModel: ViewModel {
 
     let projectListUseCase: ProjectListUseCaseProtocol
     let projectLikeUseCase: ProjectLikeUseCaseProtocol
+    let myProfileUseCase: MyProfileUseCaseProtocol
+    let projectUseCase: ProjectUseCaseProtocol
 
-    public init(projectListUseCase: ProjectListUseCaseProtocol,
-                projectLikeUseCase: ProjectLikeUseCaseProtocol) {
+    public init(projectListUseCase: ProjectListUseCaseProtocol, projectLikeUseCase: ProjectLikeUseCaseProtocol, myProfileUseCase: MyProfileUseCaseProtocol, projectUseCase: ProjectUseCaseProtocol) {
         self.projectListUseCase = projectListUseCase
         self.projectLikeUseCase = projectLikeUseCase
+        self.myProfileUseCase = myProfileUseCase
+        self.projectUseCase = projectUseCase
     }
 
     // MARK: - Mocks
 
     struct Input {
+        let viewDidAppear: Observable<Void>
         let parts: BehaviorRelay<String?>
         let writeButtonTap: Observable<Void>
         let participantsButtonTap: Observable<SideProjectListElement?>
         let likeButtonTap: Observable<SideProjectListElement?>
         let didScrolledEnd: Observable<Void>
+        let didSelectedCell: Observable<IndexPath>
     }
 
     struct Output {
@@ -57,10 +63,13 @@ final class HomeViewModel: ViewModel {
 
     func transform(input: Input) -> Output {
 
+        transformMyProfile(input: input)
         transformInputButton(input: input)
         transformParts(input: input)
         transformParticipantsButton(input: input)
         transformLikeButton(input: input)
+        transformDidSelectCell(input: input)
+
 
         return Output(
             projects: projects.asDriver(onErrorJustReturn: []),
@@ -68,7 +77,19 @@ final class HomeViewModel: ViewModel {
         )
     }
 
+    func transformMyProfile(input: Input) {
+        input.viewDidAppear
+            .withUnretained(self)
+            .flatMap { viewModel, _ in
+                viewModel.myProfileUseCase.myProfile().asResult()
+            }.subscribe(onNext: { _ in
+
+            })
+            .disposed(by: disposeBag)
+    }
+
     func transformParts(input: Input) {
+
         input.parts
             .distinctUntilChanged()
             .map { [weak self] in
@@ -183,6 +204,20 @@ final class HomeViewModel: ViewModel {
     func transformInputButton(input: Input) {
         input.writeButtonTap
             .map { .write }
+            .bind(to: navigation)
+            .disposed(by: disposeBag)
+    }
+
+    func transformDidSelectCell(input: Input) {
+        input.didSelectedCell
+            .withLatestFrom(projects) { indexPath, projects in
+                return projects[indexPath.row]
+            }
+            .withUnretained(self)
+            .flatMap { viewModel, project in
+                viewModel.projectUseCase.project(projectId: project.id)
+            }
+            .map { HomeNavigation.detail($0) }
             .bind(to: navigation)
             .disposed(by: disposeBag)
     }

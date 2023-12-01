@@ -56,12 +56,15 @@ final class HomeViewController: ViewController {
 
     override func bind() {
         let input = HomeViewModel.Input(
+            viewDidAppear: rx.viewDidAppear.map { _ in return }.asObservable(),
             parts: mainView.selected,
             writeButtonTap: mainView.buttonWrite.rx.tap
                 .throttle(.seconds(1), scheduler: MainScheduler.instance),
             participantsButtonTap: participantsButtonTap,
             likeButtonTap: likeButtonTap,
             didScrolledEnd: mainView.tableView.rx.reachedBottom
+                .throttle(.seconds(1), scheduler: MainScheduler.instance),
+            didSelectedCell: mainView.tableView.rx.itemSelected
                 .throttle(.seconds(1), scheduler: MainScheduler.instance)
         )
 

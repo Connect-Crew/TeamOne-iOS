@@ -9,6 +9,8 @@
 import Foundation
 import RxSwift
 import Domain
+import TeamOneNetwork
+import Core
 
 public struct ProjectRepository: ProjectRepositoryProtocol {
 
@@ -36,5 +38,40 @@ public struct ProjectRepository: ProjectRepositoryProtocol {
 
         return projectDataSource.like(request)
             .map { $0.toDomain() }
+    }
+
+    public func project(projectId: Int) -> Observable<Project> {
+        return projectDataSource.project(projectId)
+            .map { $0.toDomain() }
+    }
+
+    public func apply(projectId: Int, part: String, message: String) -> Observable<Bool> {
+
+        let request = ProjectApplyRequestDTO(
+            projectId: projectId,
+            part: part,
+            message: message
+        )
+
+        return projectDataSource.apply(request)
+            .map { $0.toDomain() }
+            .catch({ error in
+                guard let error = error as? APIError else
+                {
+                    return Observable.error(APIError.unknown)
+                }
+
+                switch error {
+                case .network(let statusCode):
+                    if statusCode == 400 {
+                        return Observable.error(ApplyError.recruitComplete)
+                    } else {
+                        return Observable.error(ApplyError.recruitOthers)
+                    }
+
+                default: return Observable.error(ApplyError.recruitOthers)
+                }
+            })
+
     }
 }

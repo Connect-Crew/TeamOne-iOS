@@ -13,8 +13,6 @@ let project = Project.makeModule(
     name: "ThirdPartyLibs",
     targets: [.staticFramework],
     internalDependencies: [
-        .SPM.Moya,
-        .SPM.RxMoya,
         .SPM.RxCocoa,
         .SPM.RxRelay,
         .SPM.RxSwift,
@@ -28,7 +26,8 @@ let project = Project.makeModule(
         .SPM.FirebaseCrashlytics,
         .SPM.FirebaseDynamicLinks,
         .SPM.FirebaseMessaging,
-        .SPM.GoogleSignIn
+        .SPM.GoogleSignIn,
+        .SPM.Alamofire
     ]
 )
 

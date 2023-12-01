@@ -86,5 +86,3 @@ final class TosViewController: ViewController {
     
 }
 
-
-

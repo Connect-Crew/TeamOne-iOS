@@ -102,6 +102,20 @@ public enum DSKitImage {
     case notification
     case notificationnew
 
+    // MARK: - Navigation
+
+    case threedot
+
+    // MARK: - ProjectDetail
+
+    case baseProfile
+    case leaderResponseRate
+    case defaultIntroduceImage
+
+    // MARK: - Apply
+
+    case complete
+
     var toName: String {
         switch self {
         case .homeSolid:
@@ -181,11 +195,11 @@ public enum DSKitImage {
         case .place:
             return "place"
         case.tagGray:
-            return "tagbg_grey"
+            return "태그bg_grey"
         case.tagRed:
-            return "tagbg_red"
+            return "태그bg_red"
         case .newTagBG:
-            return "newTagbg"
+            return "new태그bg"
 
         case .logo:
             return "임시로고"
@@ -213,6 +227,13 @@ public enum DSKitImage {
         case .notificationnew:
             return "notification_new"
 
+        case .threedot:
+            return "threedot"
+
+        case .baseProfile: return "baseProfile"
+        case .leaderResponseRate: return "leaderResponseRate"
+        case .defaultIntroduceImage: return "defaultIntroduceImage"
+
             // MARK: - 로그인
 
         case .appleLoginButtonBG: return "AppleLoginBackground"
@@ -225,6 +246,8 @@ public enum DSKitImage {
         case .checkNONOE: return "checkNONOE"
         case .rightButton: return "rightButton"
         case .checkOK: return "checkOK"
+
+        case .complete: return "complete"
         }
     }
 }

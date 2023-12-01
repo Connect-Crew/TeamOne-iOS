@@ -70,7 +70,7 @@ final class TosView: UIView {
 
     }
 
-    let buttonNext = Button_IsEnabled().then {
+    let buttonNext = Button_IsEnabled(enabledString: "다음", disabledString: "다음").then {
         $0.setButton(text: "다음", typo: .button1, color: .teamOne.grayscaleTwo)
 
         $0.isEnabled = false

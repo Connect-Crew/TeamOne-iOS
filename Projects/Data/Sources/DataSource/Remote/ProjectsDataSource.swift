@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import Network
+import TeamOneNetwork
 import RxSwift
 import Core
 import Alamofire
@@ -16,6 +16,10 @@ public protocol ProjectsDataSouceProtocol {
     func list(_ request: ProjectListRequestDTO) -> Observable<[ProjectListResponseDTO]>
 
     func like(_ request: ProjectFavoriteRequestDTO) -> Observable<ProjectFavoriteResponseDTO>
+
+    func project(_ projectId: Int) -> Observable<ProjectResponseDTO>
+
+    func apply(_ request: ProjectApplyRequestDTO) -> Observable<ProjectApplyResponseDTO>
 }
 
 public struct ProjectsDataSource: ProjectsDataSouceProtocol {
@@ -34,6 +38,17 @@ public struct ProjectsDataSource: ProjectsDataSouceProtocol {
     public func like(_ request: ProjectFavoriteRequestDTO) -> Observable<ProjectFavoriteResponseDTO> {
         return provider.request(ProjectsTarget.like(request: request))
     }
+
+    public func project(_ projectId: Int) -> Observable<ProjectResponseDTO> {
+        return provider.request(ProjectsTarget.project(projectId: projectId))
+            .catch { _ in
+                return Observable.error(ProjectError.loadFail)
+            }
+    }
+
+    public func apply(_ request: ProjectApplyRequestDTO) -> Observable<ProjectApplyResponseDTO> {
+        return provider.request(ProjectsTarget.apply(request: request))
+    }
 }
 
 extension NetworkConstant {
@@ -43,6 +58,8 @@ extension NetworkConstant {
 enum ProjectsTarget {
     case list(request: ProjectListRequestDTO)
     case like(request: ProjectFavoriteRequestDTO)
+    case project(projectId: Int)
+    case apply(request: ProjectApplyRequestDTO)
 }
 
 extension ProjectsTarget: TargetType {
@@ -53,16 +70,16 @@ extension ProjectsTarget: TargetType {
 
     var method: HTTPMethod {
         switch self {
-        case .list:
+        case .list, .project:
             return .get
-        case .like:
+        case .like, .apply:
             return .post
         }
     }
 
-    var header: Network.HTTPHeaders {
+    var header: HTTPHeaders {
         switch self {
-        case .list, .like:
+        case .list, .like, .project, .apply:
             return ["Authorization": "Bearer \(UserDefaultKeyList.Auth.appAccessToken ?? "")"]
         }
     }
@@ -73,14 +90,18 @@ extension ProjectsTarget: TargetType {
             return .query(request)
         case let .like(request: request):
             return .body(request)
+        case .project:
+            return .none
+        case let .apply(request: request):
+            return .body(request)
         }
     }
 
-    var encoding: Network.ParameterEncoding {
+    var encoding: ParameterEncoding {
         switch self {
-        case .list:
+        case .list, .project:
             return  URLEncoding.default
-        case .like:
+        case .like, .apply:
             return JSONEncoding.default
         }
     }
@@ -89,6 +110,8 @@ extension ProjectsTarget: TargetType {
         switch self {
         case .list: return "/project/list"
         case .like: return "/project/favorite"
+        case .project(projectId: let id): return "/project/\(id)"
+        case .apply: return "/project/apply"
         }
     }
 }

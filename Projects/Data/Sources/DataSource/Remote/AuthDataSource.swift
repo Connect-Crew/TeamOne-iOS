@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import Network
+import TeamOneNetwork
 import RxSwift
 import Core
 
@@ -61,14 +61,14 @@ extension AuthTarget: TargetType {
         return NetworkConstant.authBasedURLString
     }
 
-    var method: Network.HTTPMethod {
+    var method: HTTPMethod {
         switch self {
         case .register, .login, .reissuance:
             return .post
         }
     }
 
-    var header: Network.HTTPHeaders {
+    var header: HTTPHeaders {
         switch self {
         case .register, .login:
             return ["Content-Type": "application/json"]
@@ -78,7 +78,7 @@ extension AuthTarget: TargetType {
 
     }
 
-    var parameters: Network.RequestParams? {
+    var parameters: RequestParams? {
         switch self {
         case let .register(request):
             return .body(request)
@@ -89,7 +89,7 @@ extension AuthTarget: TargetType {
         }
     }
 
-    var encoding: Network.ParameterEncoding {
+    var encoding: ParameterEncoding {
         return JSONEncoding.default
     }
 

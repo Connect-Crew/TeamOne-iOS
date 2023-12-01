@@ -11,15 +11,15 @@ import EnvPlugin
 
 let spm = SwiftPackageManagerDependencies([
     .remote(url: "https://github.com/ReactiveX/RxSwift.git", requirement: .exact("6.6.0")),
-    .remote(url: "https://github.com/Moya/Moya.git", requirement: .exact("15.0.0")),
     .remote(url: "https://github.com/Swinject/Swinject.git", requirement: .exact("2.8.3")),
     .remote(url: "https://github.com/devxoul/Then.git", requirement: .exact("3.0.0")),
     .remote(url: "https://github.com/RxSwiftCommunity/RxKeyboard.git", requirement: .exact("2.0.1")),
     .remote(url: "https://github.com/SnapKit/SnapKit.git", requirement: .exact("5.6.0")),
     .remote(url: "https://github.com/krzysztofzablocki/Inject.git", requirement: .exact("1.2.4")),
-    .remote(url: "https://github.com/kakao/kakao-ios-sdk-rx", requirement: .branch("master")),
+    .remote(url: "https://github.com/kakao/kakao-ios-sdk-rx", requirement: .exact("2.19.0")),
     .remote(url: "https://github.com/firebase/firebase-ios-sdk.git", requirement: .exact("9.6.0")),
-    .remote(url: "https://github.com/google/GoogleSignIn-iOS", requirement: .exact("6.1.0"))
+    .remote(url: "https://github.com/google/GoogleSignIn-iOS", requirement: .exact("6.1.0")),
+    .remote(url: "https://github.com/Alamofire/Alamofire", requirement: .upToNextMajor(from: "5.0.0")),
 ], baseSettings: Settings.settings(
     configurations: XCConfig.framework
 ))
