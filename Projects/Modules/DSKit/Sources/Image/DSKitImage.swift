@@ -195,11 +195,11 @@ public enum DSKitImage {
         case .place:
             return "place"
         case.tagGray:
-            return "태그bg_grey"
+            return "Tagbg_grey"
         case.tagRed:
-            return "태그bg_red"
+            return "Tagbg_red"
         case .newTagBG:
-            return "new태그bg"
+            return "newTagbg"
 
         case .logo:
             return "임시로고"

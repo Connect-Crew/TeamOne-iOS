@@ -1,17 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "baseProfile.png",
+      "filename" : "newTagbg.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "baseProfile@2x.png",
+      "filename" : "newTagbg@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "baseProfile@3x.png",
+      "filename" : "newTagbg@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }
