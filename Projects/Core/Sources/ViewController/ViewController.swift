@@ -23,4 +23,8 @@ open class ViewController: UIViewController {
 
     open func layout() {}
     open func bind() {}
+
+    open override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        view.endEditing(true)
+    }
 }

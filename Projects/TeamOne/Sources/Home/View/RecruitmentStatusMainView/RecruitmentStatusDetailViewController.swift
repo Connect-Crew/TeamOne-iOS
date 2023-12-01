@@ -12,6 +12,11 @@ import SnapKit
 import Domain
 import Then
 import DSKit
+import RxSwift
+
+enum RecuritmentStatusDetailResult {
+    case detail(element: SideProjectListElement?)
+}
 
 final class RecruitmentStatusDetailViewController: ViewController {
 
@@ -28,7 +33,12 @@ final class RecruitmentStatusDetailViewController: ViewController {
         $0.distribution = .fill
     }
 
+    let element: SideProjectListElement?
+
+    let navigation = PublishSubject<RecuritmentStatusDetailResult>()
+
     init(element: SideProjectListElement?) {
+        self.element = element
         super.init(nibName: nil, bundle: nil)
 
         layout(element)
@@ -163,11 +173,19 @@ final class RecruitmentStatusDetailViewController: ViewController {
         mainStackView.addArrangedSubview(stackView)
 
         cancleButton.addTarget(self, action: #selector(dismissViewController), for: .touchUpInside)
+
+        detailButton.addTarget(self, action: #selector(showDetail), for: .touchUpInside)
     }
 
     @objc func dismissViewController() {
         self.dismiss(animated: false, completion: {
 
+        })
+    }
+
+    @objc func showDetail() {
+        self.dismiss(animated: false, completion: {
+            self.navigation.onNext(.detail(element: self.element))
         })
     }
 }

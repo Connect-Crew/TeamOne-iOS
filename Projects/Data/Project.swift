@@ -13,7 +13,7 @@ let project = Project.makeModule(
     name: "Data",
     targets: [.staticFramework],
     internalDependencies: [
-        .Modules.network
+        .Modules.TeamOneNetwork
     ]
 )
 

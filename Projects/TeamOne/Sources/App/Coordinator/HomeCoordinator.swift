@@ -35,6 +35,8 @@ final class HomeCoordinator: BaseCoordinator<HomeCoordinatorResult> {
                     break
                 case .participants(let element):
                     self?.showparticipatnsDetail(element)
+                case .detail(let project):
+                    self?.showDetail(project)
                 }
             })
             .disposed(by: disposeBag)
@@ -46,7 +48,28 @@ final class HomeCoordinator: BaseCoordinator<HomeCoordinatorResult> {
     func showparticipatnsDetail(_ element: SideProjectListElement?) {
         let viewController = Inject.ViewControllerHost(RecruitmentStatusDetailViewController(element: element))
 
+        viewController.navigation
+            .subscribe(onNext: { [weak self] in
+                switch $0 {
+                case let .detail(element: element):
+                    break
+                }
+            })
+            .disposed(by: disposeBag)
+
         viewController.modalPresentationStyle = .overFullScreen
         present(viewController, animated: false)
+    }
+
+    func showDetail(_ project: Project) {
+        print("DEBUG: showDetail!!!!!!!!")
+
+        let projectDetail = ProjectDetailCoordinator(navigationController, project: project)
+
+        coordinate(to: projectDetail)
+            .subscribe(onNext: { [weak self] _ in
+                self?.popTabbar(animated: true)
+            })
+            .disposed(by: disposeBag)
     }
 }

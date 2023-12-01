@@ -10,10 +10,6 @@ import AuthenticationServices
 import RxSwift
 import RxCocoa
 
-import AuthenticationServices
-import RxSwift
-import RxCocoa
-
 class ASAuthorizationControllerProxy: DelegateProxy<ASAuthorizationController, ASAuthorizationControllerDelegate>, DelegateProxyType {
 
     // MARK: - Properties
@@ -22,7 +18,7 @@ class ASAuthorizationControllerProxy: DelegateProxy<ASAuthorizationController, A
 
 
     // MARK: - Initializers
-    public init(controller: ASAuthorizationController) {
+    init(controller: ASAuthorizationController) {
         super.init(parentObject: controller, delegateProxy: ASAuthorizationControllerProxy.self)
     }
 

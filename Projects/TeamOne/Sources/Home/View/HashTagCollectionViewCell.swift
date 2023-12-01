@@ -35,18 +35,6 @@ final class HashTagCollectionViewCell: UICollectionViewCell, CellIdentifiable {
         fatalError("init(coder:) has not been implemented")
     }
 
-//    func configure(hashTag: ?) {
-//        guard let hashTag = hashTag else { return }
-//
-//        titleLabel.text = hashTag.title
-//
-//        if hashTag.backgroundColor == "gray" {
-//            backgroundImageView.image = .image(dsimage: .tagGray)
-//        } else if hashTag.backgroundColor == "pink" {
-//            backgroundImageView.image = .image(dsimage: .tagRed)
-//        }
-//    }
-
     func layout() {
 
         contentView.addSubview(backgroundImageView)
@@ -63,6 +51,22 @@ final class HashTagCollectionViewCell: UICollectionViewCell, CellIdentifiable {
             $0.edges.equalTo(backgroundImageView)
         }
 
+    }
+
+    func initSetting(tag: HashTag) {
+        self.titleLabel.text = tag.title
+
+        switch tag.titleColor {
+        case .gray:
+            self.titleLabel.textColor = .teamOne.grayscaleSeven
+        }
+
+        switch tag.background {
+        case .gray:
+            self.backgroundImageView.image = .image(dsimage: .tagGray)
+        case .pink:
+            self.backgroundImageView.image = .image(dsimage: .tagRed)
+        }
     }
 
 }

@@ -51,7 +51,7 @@ final class SetNickNameMainView: UIView {
         $0.setLabel(text: "", typo: .caption2, color: .teamOne.point)
     }
 
-    let buttonNext = Button_IsEnabled(frame: .zero).then {
+    let buttonNext = Button_IsEnabled(enabledString: "다음", disabledString: "다음").then {
         $0.setRound(radius: 8)
         $0.setButton(text: "다음", typo: .button1, color: .black)
         $0.isEnabled = false

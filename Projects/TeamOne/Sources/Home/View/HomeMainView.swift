@@ -82,6 +82,9 @@ final class HomeMainView: UIView {
     }
 
     func layout() {
+
+        self.backgroundColor = .teamOne.background
+
         layoutNavigation()
         layoutTableView()
         layoutStickyHeaderView()

@@ -269,22 +269,7 @@ extension HomeTableViewCell: UICollectionViewDataSource {
               let hashTag = project?.HashTags[indexPath.row] else {
             return UICollectionViewCell()
         }
-
-
-
-//        public var image: UIImage? {
-//            switch self {
-//            case .gray: return .image(dsimage: .tagGray)
-//            case .pink: return .image(dsimage: .tagRed)
-//            }
-//        }
-//
-//        public var titleColor: UIColor {
-//            switch self {
-//            case .gray: return .teamOne.grayscaleSeven
-//            }
-//        }
-
+        
         cell.titleLabel.text = hashTag.title
 
         switch hashTag.titleColor {

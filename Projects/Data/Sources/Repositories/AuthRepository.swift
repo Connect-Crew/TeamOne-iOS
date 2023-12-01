@@ -17,7 +17,7 @@ import Foundation
 import RxSwift
 import Domain
 import Core
-import Network
+import TeamOneNetwork
 
 import FirebaseMessaging
 

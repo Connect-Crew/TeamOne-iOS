@@ -15,4 +15,14 @@ public struct UserDefaultKeyList {
         @UserDefaultWrapper<String>(key: "appLoginSocial") public static var appLoginSocial
         @UserDefaultWrapper<String>(key: "APNsToken") public static var APNsToken
     }
+
+    public struct User {
+        @UserDefaultWrapper<Int>(key: "id") public static var id
+        @UserDefaultWrapper<String>(key: "nickname") public static var nickname
+        @UserDefaultWrapper<String>(key: "profileImageURL") public static var profileImageURL
+        @UserDefaultWrapper<String>(key: "introduction") public static var introduction
+        @UserDefaultWrapper<Double>(key: "temperature") public static var temperature
+        @UserDefaultWrapper<Int>(key: "responseRate") public static var responseRate
+        @UserDefaultWrapper<[String]>(key: "parts") public static var parts
+    }
 }
