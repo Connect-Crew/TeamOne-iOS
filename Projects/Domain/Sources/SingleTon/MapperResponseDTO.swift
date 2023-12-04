@@ -8,20 +8,38 @@
 
 import Foundation
 
-struct MapperResponseDTO: Codable {
-    let region: [Category]
-    let job: [Job]
-    let skill: [String]
-    let category: [Category]
-}
+public struct BaseProjectInfoParameters {
+    public let region: [Category]
+    public let job: [Job]
+    public let skill: [String]
+    public let category: [Category]
 
-// MARK: - Category
-struct Category: Codable {
-    let name, key: String
+    public init(region: [Category], job: [Job], skill: [String], category: [Category]) {
+        self.region = region
+        self.job = job
+        self.skill = skill
+        self.category = category
+    }
 }
 
 // MARK: - Job
-struct Job: Codable {
-    let name, key: String
-    let value: [Category]
+public struct Job {
+    public let name, key: String
+    public let value: [Category]
+
+    public init(name: String, key: String, value: [Category]) {
+        self.name = name
+        self.key = key
+        self.value = value
+    }
+}
+
+// MARK: - Category
+public struct Category {
+    public let name, key: String
+
+    public init(name: String, key: String) {
+        self.name = name
+        self.key = key
+    }
 }

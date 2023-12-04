@@ -9,7 +9,7 @@
 import UIKit
 import RxSwift
 
-open class BasePageViewController :UIPageViewController {
+open class BasePageViewController: UIPageViewController {
 
     public var vcList:[UIViewController] = []
     public var currentIndex:Int = 0
@@ -28,6 +28,14 @@ open class BasePageViewController :UIPageViewController {
 
         if vcList.count > 0 {
             self.setViewControllers([vcList[0]], direction: .forward, animated: true)
+        }
+    }
+
+    public func removeSwipeGesture(){
+        for view in self.view.subviews {
+            if let subView = view as? UIScrollView {
+                subView.isScrollEnabled = false
+            }
         }
     }
 

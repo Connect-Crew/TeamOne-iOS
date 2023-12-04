@@ -74,7 +74,7 @@ final class ApplyViewModel: ViewModel {
             }
             .withUnretained(self)
             .flatMap { viewModel, apply in
-                viewModel.applyUseCase.apply(projectId: apply.projectid, part: KM.key(name: apply.part), message: apply.message)
+                viewModel.applyUseCase.apply(projectId: apply.projectid, part: KM.shared.key(name: apply.part), message: apply.message)
             }
             .bind(to: showResult)
             .disposed(by: disposeBag)

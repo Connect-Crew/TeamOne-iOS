@@ -57,6 +57,7 @@ final class LoginMainViewModel: ViewModel {
         input.appleLoginTap
             .flatMap {
                 ASAuthorizationAppleIDProvider().rx.login(scope: [.email, .fullName])
+                    .catch { _ in return .empty() }
             }
             .map { result -> (token: String, name: String?, email: String?) in
 
@@ -104,9 +105,15 @@ final class LoginMainViewModel: ViewModel {
         input.kakaoLoginTap
             .flatMap {
                 UserApi.isKakaoTalkLoginAvailable() ?
-                UserApi.shared.rx.loginWithKakaoTalk() :
+                UserApi.shared.rx.loginWithKakaoTalk()
+                    .catch { _ in return .empty() } :
                 UserApi.shared.rx.loginWithKakaoAccount()
+                    .catch { _ in return .empty() }
             }
+            .catch({ error -> Observable<OAuthToken> in
+                    print("로그인 실패 또는 취소: \(error)")
+                    return .empty()
+                })
             .map { oAuthToken -> (token: String, name: String?, email: String?) in
 
                 print("발급받은 토큰 token in kakao: \(oAuthToken.accessToken)")

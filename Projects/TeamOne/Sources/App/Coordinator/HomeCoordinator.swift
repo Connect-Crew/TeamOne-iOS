@@ -32,7 +32,7 @@ final class HomeCoordinator: BaseCoordinator<HomeCoordinatorResult> {
             .subscribe(onNext: {  [weak self] in
                 switch $0 {
                 case .write:
-                    break
+                    self?.showPorjectCreate()
                 case .participants(let element):
                     self?.showparticipatnsDetail(element)
                 case .detail(let project):
@@ -69,6 +69,20 @@ final class HomeCoordinator: BaseCoordinator<HomeCoordinatorResult> {
         coordinate(to: projectDetail)
             .subscribe(onNext: { [weak self] _ in
                 self?.popTabbar(animated: true)
+            })
+            .disposed(by: disposeBag)
+    }
+
+    func showPorjectCreate() {
+
+        let projectCreate = ProjectCreateCoordinator(navigationController)
+
+        coordinate(to: projectCreate)
+            .subscribe(onNext: {
+                switch $0 {
+                case .finish:
+                    break
+                }
             })
             .disposed(by: disposeBag)
     }

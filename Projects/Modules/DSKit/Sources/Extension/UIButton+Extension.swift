@@ -21,4 +21,8 @@ public extension UIButton {
         guard let image = UIImage(named: image.toName, in: Bundle.module, compatibleWith: nil) else { return }
         self.setImage(image, for: .normal)
     }
+
+    func setFont(typo: SansNeo) {
+        self.titleLabel?.font = .setFont(font: typo)
+    }
 }
