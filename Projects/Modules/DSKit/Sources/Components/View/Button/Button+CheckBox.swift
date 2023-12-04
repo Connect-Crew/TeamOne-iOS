@@ -8,7 +8,32 @@
 
 import UIKit
 
+public enum CheckBoxType {
+    case vColor
+    case checkBox
+}
+
 public class Button_CheckBox: UIButton {
+
+    public var checkedImage = UIImage.image(dsimage: .checkOK)
+    public var noneCheckedImage = UIImage.image(dsimage: .checkNONOE)
+
+    public var type: CheckBoxType = .vColor{
+        didSet {
+            changeType()
+        }
+    }
+
+    func changeType() {
+        switch type {
+        case .vColor:
+            self.checkedImage = UIImage.image(dsimage: .checkOK)
+            self.noneCheckedImage = UIImage.image(dsimage: .checkNONOE)
+        case .checkBox:
+            self.checkedImage = UIImage.image(dsimage: .CheckBoxChecked)
+            self.noneCheckedImage = UIImage.image(dsimage: .CheckBoxNotChecked)
+        }
+    }
 
     public init(text: String, typo: SansNeo, textColor: UIColor) {
 
@@ -24,9 +49,9 @@ public class Button_CheckBox: UIButton {
     public override var isSelected: Bool {
         didSet {
             if isSelected {
-                self.setImage(.image(dsimage: .checkOK), for: .normal)
+                self.setImage(checkedImage, for: .normal)
             } else {
-                self.setImage(.image(dsimage: .checkNONOE), for: .normal)
+                self.setImage(noneCheckedImage, for: .normal)
             }
         }
     }

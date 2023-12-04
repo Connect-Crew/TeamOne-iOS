@@ -7,57 +7,64 @@
 //
 
 import Foundation
-import RxAlamofire
-import Alamofire
+import RxSwift
+import Core
+
 
 public class KM {
+
     public static let shared = KM()
 
-    private static var data: [String: String] = [:]
+    private let disposeBag = DisposeBag()
+    private var data: [String: String] = [:]
+    private var region: [String: String] = [:]
+
+
+    private let baseProjectInformationUseCase: BaseProjectInformationUseCaseProtocol
 
     private init() {
-        KM.loadAndParseData()
+        self.baseProjectInformationUseCase = DIContainer.shared.resolve(BaseProjectInformationUseCaseProtocol.self)
+        loadAndParseData()
     }
 
     public func configure() {
 
     }
 
-    private static func loadAndParseData() {
-        let url = "http://teamone.kro.kr:9080/project/"
+    private func loadAndParseData() {
+        
+        self.baseProjectInformationUseCase.baseInformation()
+            .subscribe(onNext: { response in
 
-        AF.request(url, method: .get)
-            .responseDecodable(of: MapperResponseDTO.self) { response in
-
-
-
-                switch response.result {
-                case .success(let response):
-
-                    response.category.forEach {
-                        self.data[$0.name] = $0.key
-                    }
-
-                    response.job.forEach {
-                        self.data[$0.name] = $0.key
-                        $0.value.forEach {
-                            self.data[$0.name] = $0.key
-                        }
-                    }
-
-                    response.region.forEach {
-                        self.data[$0.name] = $0.key
-                    }
-
-                case .failure(let error):
-                    print("!!!!!!!!!!!\(error)::::")
-                    print("MAPPER LOAD ERROR ::: \n\(error.localizedDescription)!!!!!!")
-                    print("!!!!!!!!!!!!")
+                // MARK: - data
+                response.category.forEach {
+                    self.data[$0.name] = $0.key
                 }
-            }
+
+                response.job.forEach {
+                    self.data[$0.name] = $0.key
+                    $0.value.forEach {
+                        self.data[$0.name] = $0.key
+                    }
+                }
+
+                response.region.forEach {
+                    self.data[$0.name] = $0.key
+                }
+
+                // MARK: - region
+                response.region.forEach {
+                    self.region[$0.name] = $0.key
+                }
+            })
+            .disposed(by: disposeBag)
     }
 
-    public static func key(name: String) -> String {
+    public func getRegion() -> [String] {
+        return region.map { $0.key }
+    }
+
+    public func key(name: String) -> String {
         if let key = data[name] {
             return key
         } else {

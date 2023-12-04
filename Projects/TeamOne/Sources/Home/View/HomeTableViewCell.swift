@@ -47,7 +47,7 @@ final class HomeTableViewCell: UITableViewCell, CellIdentifiable {
     }
 
     let viewLocationDivider = UILabel().then {
-        $0.setDivider(width: 1, color: .teamOne.grayscaleSeven)
+        $0.setLabel(text: "ㅣ", typo: .caption2, color: .teamOne.grayscaleSeven)
     }
 
     let labelUploadTime = UILabel().then {
@@ -87,7 +87,7 @@ final class HomeTableViewCell: UITableViewCell, CellIdentifiable {
     private var buttonParticipatsTapSubject = PublishSubject<SideProjectListElement?>()
     private var buttonLikeTapSubject = PublishSubject<SideProjectListElement?>()
 
-    var buttonParticipantsTap: Observable<SideProjectListElement?>{
+    var buttonParticipantsTap: Observable<SideProjectListElement?> {
         return buttonParticipatsTapSubject.asObservable()
     }
 
@@ -125,7 +125,7 @@ final class HomeTableViewCell: UITableViewCell, CellIdentifiable {
             self.labelLocation.text = project.region
         }
 
-        viewIsNew.isHidden = project.region.isNewData()
+        viewIsNew.isHidden = !project.region.isNewData()
         labelUploadTime.text = project.createdAt.toRelativeDateString()
 
         var totalMemberCnt: Int = 0
@@ -186,7 +186,9 @@ final class HomeTableViewCell: UITableViewCell, CellIdentifiable {
             imageViewLocation,
             labelLocation,
             viewLocationDivider,
-            labelUploadTime]
+            labelUploadTime,
+            UIView()
+        ]
         ).then {
             $0.axis = .horizontal
             $0.distribution = .fill

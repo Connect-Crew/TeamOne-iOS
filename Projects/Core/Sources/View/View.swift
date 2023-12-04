@@ -7,7 +7,9 @@
 //
 
 import UIKit
+import RxSwift
+import RxCocoa
 
 open class View: UIView {
-    
+    public let disposeBag = DisposeBag()
 }

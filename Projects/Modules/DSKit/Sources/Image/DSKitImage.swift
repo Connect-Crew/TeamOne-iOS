@@ -112,9 +112,13 @@ public enum DSKitImage {
     case leaderResponseRate
     case defaultIntroduceImage
 
-    // MARK: - Apply
+    // MARK: - Common
 
     case complete
+    case warinning
+    case write
+    case CheckBoxChecked
+    case CheckBoxNotChecked
 
     var toName: String {
         switch self {
@@ -246,8 +250,15 @@ public enum DSKitImage {
         case .checkNONOE: return "checkNONOE"
         case .rightButton: return "rightButton"
         case .checkOK: return "checkOK"
-
+            
+        // MARK: - Common
         case .complete: return "complete"
+        case .warinning: return "warinning"
+        case .write: return "write"
+
+            // MARK: - CheckBox
+        case .CheckBoxChecked: return "CheckBoxChecked"
+        case .CheckBoxNotChecked: return "CheckBoxNotChecked"
         }
     }
 }

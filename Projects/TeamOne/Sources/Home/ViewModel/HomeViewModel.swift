@@ -179,6 +179,7 @@ final class HomeViewModel: ViewModel {
     }
 
     func transformLikeButton(input: Input) {
+
         input.likeButtonTap
             .compactMap { $0 }
             .withUnretained(self)

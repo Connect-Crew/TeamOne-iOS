@@ -158,7 +158,13 @@ extension AppDelegate {
                 projectRepository: res.resolve(ProjectRepositoryProtocol.self)!
             )
         }
-        
+
+        container.register(interface: BaseProjectInformationUseCaseProtocol.self) { res in
+            return BaseProjectInformationUseCase(
+                projectRepository: res.resolve(ProjectRepositoryProtocol.self)!
+            )
+        }
+
         // MARK: - ViewModel
 
         container.register(interface: SplashViewModel.self) { res in

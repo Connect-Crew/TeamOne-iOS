@@ -36,7 +36,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         RxKakaoSDK.initSDK(appKey: AppKey.kakaoNativeAppKey)
         FirebaseApp.configure()
-        KM.shared.configure()
 
         // 폰트생성
 
@@ -45,6 +44,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // 의존성 생성
 
         registerDependencies()
+
+        // 프로젝트 기본 정보 생성
+        
+        KM.shared.configure()
 
         // APNs
 

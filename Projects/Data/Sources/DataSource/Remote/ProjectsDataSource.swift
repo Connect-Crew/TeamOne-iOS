@@ -11,8 +11,11 @@ import TeamOneNetwork
 import RxSwift
 import Core
 import Alamofire
+import Domain
 
 public protocol ProjectsDataSouceProtocol {
+
+    func baseInformation() -> Observable<BaseProjectInformationResponseDTO>
     func list(_ request: ProjectListRequestDTO) -> Observable<[ProjectListResponseDTO]>
 
     func like(_ request: ProjectFavoriteRequestDTO) -> Observable<ProjectFavoriteResponseDTO>
@@ -28,6 +31,10 @@ public struct ProjectsDataSource: ProjectsDataSouceProtocol {
 
     public init() {
         self.provider = Provider.default
+    }
+
+    public func baseInformation() -> Observable<BaseProjectInformationResponseDTO> {
+        return provider.request(ProjectsTarget.baseInformation)
     }
 
     public func list(_ request: ProjectListRequestDTO) -> Observable<[ProjectListResponseDTO]> {
@@ -56,6 +63,7 @@ extension NetworkConstant {
 }
 
 enum ProjectsTarget {
+    case baseInformation
     case list(request: ProjectListRequestDTO)
     case like(request: ProjectFavoriteRequestDTO)
     case project(projectId: Int)
@@ -70,7 +78,7 @@ extension ProjectsTarget: TargetType {
 
     var method: HTTPMethod {
         switch self {
-        case .list, .project:
+        case .list, .project, .baseInformation:
             return .get
         case .like, .apply:
             return .post
@@ -79,13 +87,15 @@ extension ProjectsTarget: TargetType {
 
     var header: HTTPHeaders {
         switch self {
-        case .list, .like, .project, .apply:
+        case .list, .like, .project, .apply, .baseInformation:
             return ["Authorization": "Bearer \(UserDefaultKeyList.Auth.appAccessToken ?? "")"]
         }
     }
 
     var parameters: RequestParams? {
         switch self {
+        case .baseInformation:
+            return .none
         case let .list(request: request):
             return .query(request)
         case let .like(request: request):
@@ -99,7 +109,7 @@ extension ProjectsTarget: TargetType {
 
     var encoding: ParameterEncoding {
         switch self {
-        case .list, .project:
+        case .list, .project, .baseInformation:
             return  URLEncoding.default
         case .like, .apply:
             return JSONEncoding.default
@@ -108,6 +118,7 @@ extension ProjectsTarget: TargetType {
 
     var path: String {
         switch self {
+        case .baseInformation: return "/project/"
         case .list: return "/project/list"
         case .like: return "/project/favorite"
         case .project(projectId: let id): return "/project/\(id)"
