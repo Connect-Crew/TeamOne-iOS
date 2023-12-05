@@ -19,6 +19,7 @@ enum HomeNavigation {
     case write
     case participants(SideProjectListElement?)
     case detail(Project)
+    case search
 }
 
 final class HomeViewModel: ViewModel {
@@ -45,6 +46,7 @@ final class HomeViewModel: ViewModel {
         let likeButtonTap: Observable<SideProjectListElement?>
         let didScrolledEnd: Observable<Void>
         let didSelectedCell: Observable<IndexPath>
+        let tapSearch: Observable<Void>
     }
 
     struct Output {
@@ -69,12 +71,19 @@ final class HomeViewModel: ViewModel {
         transformParticipantsButton(input: input)
         transformLikeButton(input: input)
         transformDidSelectCell(input: input)
-
+        tarsfromMoveToSearch(input: input)
 
         return Output(
             projects: projects.asDriver(onErrorJustReturn: []),
             isEmpty: isEmpty.asDriver(onErrorJustReturn: true)
         )
+    }
+    
+    func tarsfromMoveToSearch(input: Input) {
+        input.tapSearch
+            .map { .search }
+            .bind(to: navigation)
+            .disposed(by: disposeBag)
     }
 
     func transformMyProfile(input: Input) {

@@ -37,6 +37,8 @@ final class HomeCoordinator: BaseCoordinator<HomeCoordinatorResult> {
                     self?.showparticipatnsDetail(element)
                 case .detail(let project):
                     self?.showDetail(project)
+                case .search:
+                    self?.pushToSearch()
                 }
             })
             .disposed(by: disposeBag)
@@ -67,6 +69,18 @@ final class HomeCoordinator: BaseCoordinator<HomeCoordinatorResult> {
         let projectDetail = ProjectDetailCoordinator(navigationController, project: project)
 
         coordinate(to: projectDetail)
+            .subscribe(onNext: { [weak self] _ in
+                self?.popTabbar(animated: true)
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    func pushToSearch() {
+        print("DEBUG: showDetail!!!!!!!!")
+
+        let searchCoordinator = SearchCoordinator(navigationController)
+
+        coordinate(to: searchCoordinator)
             .subscribe(onNext: { [weak self] _ in
                 self?.popTabbar(animated: true)
             })
