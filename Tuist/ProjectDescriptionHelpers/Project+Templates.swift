@@ -24,16 +24,16 @@ public extension Project {
         let hasDynamicFramework = targets.contains(.dynamicFramework)
         let deploymentTarget = Environment.deploymentTarget
         let platform = Environment.platform
-        
+
         let baseSettings: SettingsDictionary = .baseSettings
-        
+
         var projectTargets: [Target] = []
         var schemes: [Scheme] = []
-        
+
         if targets.contains(.app) {
             let bundleSuffix = name
-            let settings = baseSettings.setProvisioning()
-            
+            let settings = baseSettings
+
             let target = Target(name: name,
                                 platform: platform,
                                 product: .app,
@@ -51,10 +51,22 @@ public extension Project {
                                     externalDependencies,
                                 ].flatMap { $0 },
                                 settings: .settings(base: settings, configurations: XCConfig.project)
+//                                settings: .settings(
+//                                    configurations:[
+//                                        .debug(name: "DEV",
+//                                              settings: [
+//                                                "CODE_SIGN_IDENTITY": "Apple Development",
+//                                                "PROVISIONING_PROFILE_SPECIFIER": "match Development com.connectCrew.TeamOne",
+//                                                "CODE_SIGN_STYLE": "Manual"
+//                                              ],
+//                                               xcconfig: XCConfig.project),
+//                                        )
+//                                    ]
+//                                )
             )
             projectTargets.append(target)
         }
-        
+
         // MARK: - Unit Tests
         if targets.contains(.unitTest) {
             let deps: [TargetDependency] = [.target(name: name)]
@@ -71,18 +83,18 @@ public extension Project {
                 dependencies: [
                     deps,
                     [
-                       
+
                     ]
                 ].flatMap { $0 },
                 settings: .settings(base: SettingsDictionary().setCodeSignManual(), configurations: XCConfig.tests)
             )
         }
-        
+
         // MARK: - Framework
         if targets.contains(where: { $0.hasFramework }) {
-            
+
             let settings = baseSettings
-            
+
             let target = Target(
                 name: name,
                 platform: platform,
@@ -95,21 +107,21 @@ public extension Project {
                 dependencies: internalDependencies + externalDependencies,
                 settings: .settings(base: settings, configurations: XCConfig.framework)
             )
-            
+
             projectTargets.append(target)
         }
-        
+
         // MARK: - Scheme
-//        let additionalSchemes = targets.contains(.demo)
-//                ? [Scheme.makeScheme(configs: configurationName, name: name),
-//                   Scheme.makeDemoScheme(configs: configurationName, name: name)]
-//                : [Scheme.makeScheme(configs: configurationName, name: name)]
-//                schemes += additionalSchemes
+        //        let additionalSchemes = targets.contains(.demo)
+        //                ? [Scheme.makeScheme(configs: configurationName, name: name),
+        //                   Scheme.makeDemoScheme(configs: configurationName, name: name)]
+        //                : [Scheme.makeScheme(configs: configurationName, name: name)]
+        //                schemes += additionalSchemes
 
         var scheme = targets.contains(.app)
         ? appSchemes
         : schemes
-        
+
         return Project(
             name: name,
             organizationName: Environment.workspaceName,
