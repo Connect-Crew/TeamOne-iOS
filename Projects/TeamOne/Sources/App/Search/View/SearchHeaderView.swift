@@ -36,6 +36,7 @@ final class SearchHeaderView: UIView {
     private let disposeBag = DisposeBag()
     public let tapBack = PublishSubject<Void>()
     public let tapSearch = PublishSubject<Void>()
+    public let searchText = PublishSubject<String>()
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -75,6 +76,11 @@ final class SearchHeaderView: UIView {
         
         searchButton.rx.tap
             .bind(to: tapSearch)
+            .disposed(by: disposeBag)
+        
+        searchTextField.rx.text
+            .map { $0 ?? "" }
+            .bind(to: searchText)
             .disposed(by: disposeBag)
     }
 }
