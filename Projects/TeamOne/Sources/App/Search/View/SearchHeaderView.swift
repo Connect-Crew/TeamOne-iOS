@@ -33,6 +33,10 @@ final class SearchHeaderView: UIView {
         layout()
     }
     
+    private let disposeBag = DisposeBag()
+    public let tapBack = PublishSubject<Void>()
+    public let tapSearch = PublishSubject<Void>()
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -64,5 +68,13 @@ final class SearchHeaderView: UIView {
         }
         
         self.setBaseShadow(radius: 8)
+        
+        backButton.rx.tap
+            .bind(to: tapBack)
+            .disposed(by: disposeBag)
+        
+        searchButton.rx.tap
+            .bind(to: tapSearch)
+            .disposed(by: disposeBag)
     }
 }

@@ -44,5 +44,17 @@ final class SearchViewController: ViewController {
         let input = SearchViewModel.Input()
         
         let output = viewModel.transform(input: input)
+        
+        mainView.searchHeader.tapBack
+            .subscribe(onNext: { _ in
+                print("tap Back")
+            })
+            .disposed(by: disposeBag)
+        
+        mainView.searchHeader.tapSearch
+            .subscribe(onNext: { _ in
+                print("Tap Search")
+            })
+            .disposed(by: disposeBag)
     }
 }
