@@ -27,6 +27,7 @@ final class SearchViewModel: ViewModel {
         let tapSearch: Observable<Void>
         let tapDeleteHistory: Observable<String>
         let tapClearAllHistory: Observable<Void>
+        let tapBack: Observable<Void>
     }
     
     struct Output {
@@ -38,6 +39,7 @@ final class SearchViewModel: ViewModel {
     
     func transform(input: Input) -> Output {
         
+        let navigation = PublishSubject<SearchCoordinatorResult>()
         let searchHistoryList = PublishRelay<[String]>()
         
         input.viewWillAppear
@@ -74,7 +76,7 @@ final class SearchViewModel: ViewModel {
             .disposed(by: disposeBag)
         
         // MARK: 삭제 및 검색 이벤트 이후 검색 목록 리프레시
-        Observable.merge([input.tapDeleteHistory.map{ _ in },
+        Observable.merge([input.tapDeleteHistory.map { _ in },
                           input.tapClearAllHistory
         ])
         .withUnretained(self)
@@ -83,6 +85,14 @@ final class SearchViewModel: ViewModel {
             searchHistoryList.accept(historyList)
         })
         .disposed(by: disposeBag)
+        
+        // MARK: 뒤로가기
+        input.tapBack
+            .withUnretained(self)
+            .subscribe(onNext: { this, _ in
+                this.navigation.onNext(.finish)
+            })
+            .disposed(by: disposeBag)
         
         return Output(
             searchHistoryList: searchHistoryList

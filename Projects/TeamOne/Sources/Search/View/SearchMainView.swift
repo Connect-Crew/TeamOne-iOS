@@ -60,5 +60,7 @@ final class SearchMainView: UIView {
         tableView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
+        
+        tableView.separatorStyle = .none
     }
 }
