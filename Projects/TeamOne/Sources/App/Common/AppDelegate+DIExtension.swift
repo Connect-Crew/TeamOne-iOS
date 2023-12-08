@@ -88,6 +88,10 @@ extension AppDelegate {
 
             return UserRepository(userDataSource: userDataSource)
         }
+        
+        container.register(interface: RecentSearchHistoryRepository.self) { _ in
+            DefaultRecentSearchHistoryRepository()
+        }
 
         // MARK: - UseCase
 
@@ -163,6 +167,10 @@ extension AppDelegate {
             return BaseProjectInformationUseCase(
                 projectRepository: res.resolve(ProjectRepositoryProtocol.self)!
             )
+        }
+        
+        container.register(interface: RecentSearchHistoryUseCase.self) { _ in
+            RecentSearchHistory()
         }
 
         // MARK: - ViewModel

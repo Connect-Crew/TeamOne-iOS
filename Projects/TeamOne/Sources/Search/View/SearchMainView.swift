@@ -17,7 +17,10 @@ import DSKit
 final class SearchMainView: UIView {
     
     let searchHeader = SearchHeaderView()
+    let recentSearchClearContainer = UIStackView()
+    let recentSearchClearView = RecentSearchClearView()
     let contentView = UIView()
+    let tableView = UITableView()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -36,10 +39,26 @@ final class SearchMainView: UIView {
             make.height.equalTo(42)
         }
         
+        addSubview(recentSearchClearContainer)
+        recentSearchClearContainer.addArrangedSubview(recentSearchClearView)
+        recentSearchClearView.snp.makeConstraints { make in
+            make.height.equalTo(53)
+        }
+        
+        recentSearchClearContainer.snp.makeConstraints { make in
+            make.top.equalTo(searchHeader.snp.bottom)
+            make.left.right.equalToSuperview()
+        }
+        
         addSubview(contentView)
         contentView.snp.makeConstraints { make in
-            make.top.equalTo(searchHeader.snp.bottom)
+            make.top.equalTo(recentSearchClearContainer.snp.bottom)
             make.left.right.bottom.equalTo(safeAreaLayoutGuide)
+        }
+        
+        contentView.addSubview(tableView)
+        tableView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
         }
     }
 }
