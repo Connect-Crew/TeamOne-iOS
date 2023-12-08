@@ -40,6 +40,16 @@ public protocol RecentSearchHistoryUseCase {
      - returns: Void
      */
     func deleteHistory(_ keyword: String)
+    
+    /**
+     최근 검색어 전부 삭제
+     - Authors: junlight94
+     - parameters:
+        - param: Void
+     - Argument: 최근 검색어 전부 삭제
+     - returns: Void
+     */
+    func clearAllHistory()
 }
 
 public final class RecentSearchHistory: RecentSearchHistoryUseCase {
@@ -77,6 +87,10 @@ public final class RecentSearchHistory: RecentSearchHistoryUseCase {
     
     public func deleteHistory(_ keyword: String) {
         recentSearchHistoryRepository.saveSearchHistory(deleteKeyword(keyword))
+    }
+    
+    public func clearAllHistory() {
+        recentSearchHistoryRepository.saveSearchHistory([])
     }
     
 }

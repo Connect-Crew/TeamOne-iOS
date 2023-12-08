@@ -57,7 +57,8 @@ final class SearchViewController: ViewController {
             viewWillAppear: rx.viewWillAppear.map { _ in },
             searchHistoryInput: mainView.searchHeader.searchText,
             tapSearch: mainView.searchHeader.tapSearch,
-            tapDeleteHistory: deleteHistory
+            tapDeleteHistory: deleteHistory,
+            tapClearAllHistory: mainView.recentSearchClearView.tapRecentHistoryClear
         )
         
         let output = viewModel.transform(input: input)

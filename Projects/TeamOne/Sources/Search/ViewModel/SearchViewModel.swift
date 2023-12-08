@@ -26,6 +26,7 @@ final class SearchViewModel: ViewModel {
         let searchHistoryInput: Observable<String>
         let tapSearch: Observable<Void>
         let tapDeleteHistory: Observable<String>
+        let tapClearAllHistory: Observable<Void>
     }
     
     struct Output {
@@ -64,13 +65,24 @@ final class SearchViewModel: ViewModel {
             })
             .disposed(by: disposeBag)
         
-        input.tapDeleteHistory
+        // MARK: 최근 검색 전부 삭제
+        input.tapClearAllHistory
             .withUnretained(self)
             .subscribe(onNext: { this, _ in
-                let historyList = this.recentSearchHistoryUseCase.getRecentSearchHistory()
-                searchHistoryList.accept(historyList)
+                this.recentSearchHistoryUseCase.clearAllHistory()
             })
             .disposed(by: disposeBag)
+        
+        // MARK: 삭제 및 검색 이벤트 이후 검색 목록 리프레시
+        Observable.merge([input.tapDeleteHistory.map{ _ in },
+                          input.tapClearAllHistory
+        ])
+        .withUnretained(self)
+        .subscribe(onNext: { this, _ in
+            let historyList = this.recentSearchHistoryUseCase.getRecentSearchHistory()
+            searchHistoryList.accept(historyList)
+        })
+        .disposed(by: disposeBag)
         
         return Output(
             searchHistoryList: searchHistoryList
