@@ -45,7 +45,21 @@ final class SearchCoordinator: BaseCoordinator<SearchCoordinatorResult> {
         pushTabbar(viewController, animated: true)
     }
     
-    func pushToKeyword(_ key: String) {
+    func pushToKeyword(_ keyword: String) {
+        let viewModel = SearchDetailViewModel()
+        let viewController = SearchDetailViewController(viewModel: viewModel)
         
+        viewModel.searchKeyword.onNext(keyword)
+        
+        viewModel.navigation
+            .subscribe(onNext: { [weak self] in
+                switch $0 {
+                case .finish:
+                    self?.finish.onNext(.finish)
+                }
+            })
+            .disposed(by: disposeBag)
+        
+        pushTabbar(viewController, animated: true)
     }
 }

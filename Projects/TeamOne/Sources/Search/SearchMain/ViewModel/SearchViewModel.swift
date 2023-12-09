@@ -28,6 +28,7 @@ final class SearchViewModel: ViewModel {
         let tapDeleteHistory: Observable<String>
         let tapClearAllHistory: Observable<Void>
         let tapBack: Observable<Void>
+        let tapKeyword: Observable<String>
     }
     
     struct Output {
@@ -39,7 +40,6 @@ final class SearchViewModel: ViewModel {
     
     func transform(input: Input) -> Output {
         
-        let navigation = PublishSubject<SearchCoordinatorResult>()
         let searchHistoryList = PublishRelay<[String]>()
         
         input.viewWillAppear
@@ -93,6 +93,17 @@ final class SearchViewModel: ViewModel {
                 this.navigation.onNext(.finish)
             })
             .disposed(by: disposeBag)
+        
+        // MARK: 검색
+        Observable.merge([
+            input.tapKeyword,
+            input.tapSearch.withLatestFrom(input.searchHistoryInput)
+        ])
+        .withUnretained(self)
+        .bind { this, keyword in
+            this.navigation.onNext(.search(keyword))
+        }
+        .disposed(by: disposeBag)
         
         return Output(
             searchHistoryList: searchHistoryList

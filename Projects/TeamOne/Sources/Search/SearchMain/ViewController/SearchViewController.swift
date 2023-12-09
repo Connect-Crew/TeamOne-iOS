@@ -53,13 +53,15 @@ final class SearchViewController: ViewController {
     }
     
     override func bind() {
+        
         let input = SearchViewModel.Input(
             viewWillAppear: rx.viewWillAppear.map { _ in },
             searchHistoryInput: mainView.searchHeader.searchText,
             tapSearch: mainView.searchHeader.tapSearch,
             tapDeleteHistory: deleteHistory,
             tapClearAllHistory: mainView.recentSearchClearView.tapRecentHistoryClear,
-            tapBack: mainView.searchHeader.tapBack
+            tapBack: mainView.searchHeader.tapBack,
+            tapKeyword: mainView.tableView.rx.modelSelected(String.self).asObservable()
         )
         
         let output = viewModel.transform(input: input)
