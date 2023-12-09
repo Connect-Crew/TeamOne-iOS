@@ -10,7 +10,7 @@ import Foundation
 import Domain
 import Core
 
-public final class DefaultRecentSearchHistoryRepository: RecentSearchHistoryRepository {
+public struct DefaultRecentSearchHistoryRepository: RecentSearchHistoryRepository {
     
     public init() {}
     

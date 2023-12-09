@@ -52,7 +52,7 @@ public protocol RecentSearchHistoryUseCase {
     func clearAllHistory()
 }
 
-public final class RecentSearchHistory: RecentSearchHistoryUseCase {
+public struct RecentSearchHistory: RecentSearchHistoryUseCase {
     
     private let recentSearchHistoryRepository = DIContainer.shared.resolve(RecentSearchHistoryRepository.self)
     

@@ -19,7 +19,13 @@ enum SearchNavigation {
 
 final class SearchViewModel: ViewModel {
     
-    private let recentSearchHistoryUseCase = DIContainer.shared.resolve(RecentSearchHistoryUseCase.self)
+//    private let recentSearchHistoryUseCase = DIContainer.shared.resolve(RecentSearchHistoryUseCase.self)
+    
+    private let getRecentHistoryUseCase = DIContainer.shared.resolve(GetRecentHistoryUseCase.self)
+    private let addRecentHistoryUseCase = DIContainer.shared.resolve(AddRecentHistoryUseCase.self)
+    private let removeRecentHistoryUseCase = DIContainer.shared.resolve(RemoveRecentHistoryUseCase.self)
+    
+    private let projectUseCase = DIContainer.shared.resolve(ProjectListUseCaseProtocol.self)
     
     struct Input {
         let viewWillAppear: Observable<Void>
@@ -45,7 +51,7 @@ final class SearchViewModel: ViewModel {
         input.viewWillAppear
             .withUnretained(self)
             .subscribe(onNext: { this, _ in
-                let historyList = this.recentSearchHistoryUseCase.getRecentSearchHistory()
+                let historyList = this.getRecentHistoryUseCase.getRecentSearchHistory()
                 searchHistoryList.accept(historyList)
             })
             .disposed(by: disposeBag)
@@ -55,7 +61,7 @@ final class SearchViewModel: ViewModel {
             .withLatestFrom(input.searchHistoryInput)
             .withUnretained(self)
             .subscribe(onNext: { this, text in
-                this.recentSearchHistoryUseCase.saveSearchHistory(text)
+                this.addRecentHistoryUseCase.addSearchHistory(text)
             })
             .disposed(by: disposeBag)
         
@@ -63,7 +69,7 @@ final class SearchViewModel: ViewModel {
         input.tapDeleteHistory
             .withUnretained(self)
             .subscribe(onNext: { this, keyword in
-                this.recentSearchHistoryUseCase.deleteHistory(keyword)
+                this.removeRecentHistoryUseCase.deleteHistory(keyword)
             })
             .disposed(by: disposeBag)
         
@@ -71,7 +77,7 @@ final class SearchViewModel: ViewModel {
         input.tapClearAllHistory
             .withUnretained(self)
             .subscribe(onNext: { this, _ in
-                this.recentSearchHistoryUseCase.clearAllHistory()
+                this.removeRecentHistoryUseCase.clearAllHistory()
             })
             .disposed(by: disposeBag)
         
@@ -81,7 +87,7 @@ final class SearchViewModel: ViewModel {
         ])
         .withUnretained(self)
         .subscribe(onNext: { this, _ in
-            let historyList = this.recentSearchHistoryUseCase.getRecentSearchHistory()
+            let historyList = this.getRecentHistoryUseCase.getRecentSearchHistory()
             searchHistoryList.accept(historyList)
         })
         .disposed(by: disposeBag)
@@ -101,7 +107,8 @@ final class SearchViewModel: ViewModel {
         ])
         .withUnretained(self)
         .bind { this, keyword in
-            this.navigation.onNext(.search(keyword))
+//            projectUseCase.list()
+//            this.navigation.onNext(.search(keyword))
         }
         .disposed(by: disposeBag)
         

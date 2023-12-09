@@ -82,6 +82,7 @@ public enum DSKitImage {
     case downTow
     case newTagBG
     case clock
+    case emptyLogo
 
     case homeHeader
 
@@ -261,6 +262,7 @@ public enum DSKitImage {
         case .CheckBoxChecked: return "CheckBoxChecked"
         case .CheckBoxNotChecked: return "CheckBoxNotChecked"
         case .clock: return "Clock"
+        case .emptyLogo: return "EmptyLogo"
         }
     }
 }
