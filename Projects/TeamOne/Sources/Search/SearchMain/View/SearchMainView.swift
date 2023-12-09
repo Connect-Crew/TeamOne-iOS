@@ -20,6 +20,7 @@ final class SearchMainView: UIView {
     let recentSearchClearContainer = UIStackView()
     let recentSearchClearView = RecentSearchClearView()
     let contentView = UIView()
+    let emptyView = HistoryEmptyView()
     let tableView = UITableView()
     
     override init(frame: CGRect) {
@@ -61,6 +62,23 @@ final class SearchMainView: UIView {
             make.edges.equalToSuperview()
         }
         
+        contentView.addSubview(emptyView)
+        emptyView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+        
         tableView.separatorStyle = .none
+        
+        isEmpty(false)
+    }
+    
+    func isEmpty(_ empty: Bool) {
+        if empty {
+            emptyView.isHidden = false
+            recentSearchClearView.isHidden = true
+        } else {
+            emptyView.isHidden = true
+            recentSearchClearView.isHidden = false
+        }
     }
 }
