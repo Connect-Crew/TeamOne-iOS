@@ -65,7 +65,8 @@ final class HomeViewController: ViewController {
             didScrolledEnd: mainView.tableView.rx.reachedBottom
                 .throttle(.seconds(1), scheduler: MainScheduler.instance),
             didSelectedCell: mainView.tableView.rx.itemSelected
-                .throttle(.seconds(1), scheduler: MainScheduler.instance)
+                .throttle(.seconds(1), scheduler: MainScheduler.instance),
+            tapSearch: mainView.searchButton.rx.tap.asObservable()
         )
 
         let output = viewModel.transform(input: input)
