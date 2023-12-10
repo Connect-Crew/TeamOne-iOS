@@ -18,7 +18,7 @@ enum SearchDetailNavigation {
 
 final class SearchDetailViewModel: ViewModel {
  
-    public let searchKeyword = BehaviorSubject<String>(value: "")
+    public let searchKeyword = BehaviorSubject<[SideProjectListElement]>(value: [])
     
     struct Input {
         

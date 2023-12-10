@@ -11,6 +11,7 @@ import RxSwift
 import Inject
 
 import Core
+import Domain
 
 enum SearchCoordinatorResult {
     case finish
@@ -45,11 +46,11 @@ final class SearchCoordinator: BaseCoordinator<SearchCoordinatorResult> {
         pushTabbar(viewController, animated: true)
     }
     
-    func pushToKeyword(_ keyword: String) {
+    func pushToKeyword(_ result: [SideProjectListElement]) {
         let viewModel = SearchDetailViewModel()
         let viewController = SearchDetailViewController(viewModel: viewModel)
         
-        viewModel.searchKeyword.onNext(keyword)
+        viewModel.searchKeyword.onNext(result)
         
         viewModel.navigation
             .subscribe(onNext: { [weak self] in
