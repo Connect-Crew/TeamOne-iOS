@@ -14,7 +14,7 @@ import Core
 
 enum SearchNavigation {
     case finish
-    case search(String)
+    case search([SideProjectListElement])
 }
 
 final class SearchViewModel: ViewModel {
@@ -39,6 +39,7 @@ final class SearchViewModel: ViewModel {
     
     struct Output {
         let searchHistoryList: PublishRelay<[String]>
+        let searchIsEmpty: PublishRelay<Bool>
     }
     
     var disposeBag: DisposeBag = .init()
@@ -47,6 +48,7 @@ final class SearchViewModel: ViewModel {
     func transform(input: Input) -> Output {
         
         let searchHistoryList = PublishRelay<[String]>()
+        let searchIsEmpty = PublishRelay<Bool>()
         
         input.viewWillAppear
             .withUnretained(self)
@@ -106,14 +108,28 @@ final class SearchViewModel: ViewModel {
             input.tapSearch.withLatestFrom(input.searchHistoryInput)
         ])
         .withUnretained(self)
-        .bind { this, keyword in
-//            projectUseCase.list()
-//            this.navigation.onNext(.search(keyword))
+        .flatMap({ this, keyword in
+            this.projectUseCase.projectList(request: ProjectFilterRequest(size: 30, search: keyword))
+        })
+        .filter {
+            if $0.isEmpty {
+                searchIsEmpty.accept(true)
+                return false
+            } else {
+                searchIsEmpty.accept(false)
+                return true
+            }
+        }
+        .withUnretained(self)
+        .bind { this, result in
+            print("result: \(result)")
+            this.navigation.onNext(.search(result))
         }
         .disposed(by: disposeBag)
         
         return Output(
-            searchHistoryList: searchHistoryList
+            searchHistoryList: searchHistoryList,
+            searchIsEmpty: searchIsEmpty
         )
     }
 }

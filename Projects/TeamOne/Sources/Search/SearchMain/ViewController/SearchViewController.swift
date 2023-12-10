@@ -80,5 +80,13 @@ final class SearchViewController: ViewController {
                         .disposed(by: cell.disposeBag)
             }
             .disposed(by: disposeBag)
+        
+        output.searchIsEmpty
+            .observe(on: MainScheduler.instance)
+            .withUnretained(self)
+            .subscribe(onNext: { this, isEmpty in
+                this.mainView.isEmpty(isEmpty)
+            })
+            .disposed(by: disposeBag)
     }
 }

@@ -35,11 +35,11 @@ public extension TargetType {
         switch parameters {
         case let .query(request):
             let params = request?.toDictionary() ?? [:]
-            let queryParams = params.map { URLQueryItem(name: $0.key, value: "\($0.value)") }
             var components = URLComponents(string: url.appendingPathComponent(path).absoluteString)
+            let queryParams = params.map { URLQueryItem(name: $0.key, value: "\($0.value)") }
             components?.queryItems = queryParams
             urlRequest.url = components?.url
-            return try encoding.encode(urlRequest, with: params)
+            return urlRequest
         case let .body(request):
             let params = request?.toDictionary() ?? [:]
             urlRequest.httpBody = try JSONSerialization.data(withJSONObject: params, options: [])
