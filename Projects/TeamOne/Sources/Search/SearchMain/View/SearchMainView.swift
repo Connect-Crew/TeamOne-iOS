@@ -14,23 +14,57 @@ import Then
 import Core
 import DSKit
 
+public enum SearchStyle {
+    case before
+    case after
+}
+
 final class SearchMainView: UIView {
     
     let searchHeader = SearchHeaderView()
-    let recentSearchClearContainer = UIStackView()
+    let containerStackView = UIStackView().then {
+        $0.axis = .vertical
+    }
     let recentSearchClearView = RecentSearchClearView()
-    let contentView = UIView()
+    private let filterContainerView = UIView()
+    private let filterCollectionView: UICollectionView = {
+        let flowLayout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
+        flowLayout.scrollDirection = .horizontal
+        flowLayout.minimumLineSpacing = 10
+        flowLayout.minimumInteritemSpacing = 0
+
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: flowLayout)
+        collectionView.contentInsetAdjustmentBehavior = .always
+        collectionView.showsVerticalScrollIndicator = false
+        collectionView.showsHorizontalScrollIndicator = false
+
+        return collectionView
+    }()
+    private let contentView = UIView()
     let emptyView = HistoryEmptyView()
     let tableView = UITableView()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        
         layout()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    convenience init(type: SearchStyle) {
+        self.init(frame: .zero)
+        
+        switch type {
+        case .before:
+            filterContainerView.isHidden = true
+            recentSearchClearView.isHidden = false
+        case .after:
+            filterContainerView.isHidden = false
+            recentSearchClearView.isHidden = true
+        }
+        
     }
     
     private func layout() {
@@ -40,20 +74,31 @@ final class SearchMainView: UIView {
             make.height.equalTo(42)
         }
         
-        addSubview(recentSearchClearContainer)
-        recentSearchClearContainer.addArrangedSubview(recentSearchClearView)
-        recentSearchClearView.snp.makeConstraints { make in
-            make.height.equalTo(53)
-        }
-        
-        recentSearchClearContainer.snp.makeConstraints { make in
+        addSubview(containerStackView)
+        containerStackView.snp.makeConstraints { make in
             make.top.equalTo(searchHeader.snp.bottom)
             make.left.right.equalToSuperview()
         }
         
+        containerStackView.addArrangedSubview(recentSearchClearView)
+        recentSearchClearView.snp.makeConstraints { make in
+            make.height.equalTo(53)
+        }
+        
+        filterContainerView.addSubview(filterCollectionView)
+        filterCollectionView.snp.makeConstraints { make in
+            make.top.bottom.equalToSuperview().inset(8)
+            make.left.right.equalToSuperview().inset(24)
+        }
+        
+        containerStackView.addArrangedSubview(filterContainerView)
+        filterContainerView.snp.makeConstraints { make in
+            make.height.equalTo(40)
+        }
+        
         addSubview(contentView)
         contentView.snp.makeConstraints { make in
-            make.top.equalTo(recentSearchClearContainer.snp.bottom)
+            make.top.equalTo(containerStackView.snp.bottom)
             make.left.right.bottom.equalTo(safeAreaLayoutGuide)
         }
         

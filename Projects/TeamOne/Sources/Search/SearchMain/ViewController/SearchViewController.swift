@@ -16,7 +16,7 @@ final class SearchViewController: ViewController {
     
     private let viewModel: SearchViewModel
     
-    private let mainView = SearchMainView()
+    private let mainView = SearchMainView(type: .after)
     
     private let deleteHistory = PublishSubject<String>()
     
@@ -69,7 +69,9 @@ final class SearchViewController: ViewController {
         output.searchHistoryList
             .bind(to: mainView.tableView.rx.items(
                 cellIdentifier: SearchHistoryCell.defaultReuseIdentifier,
-                cellType: SearchHistoryCell.self)) { (row, element, cell) in
+                cellType: SearchHistoryCell.self)) { [weak self] (_, element, cell) in
+                    guard let self = self else { return }
+                    
                     cell.bind(title: element)
                     
                     cell.deleteHistoryButton.rx.tap
@@ -88,5 +90,9 @@ final class SearchViewController: ViewController {
                 this.mainView.isEmpty(isEmpty)
             })
             .disposed(by: disposeBag)
+    }
+    
+    deinit {
+        print("search deinit")
     }
 }

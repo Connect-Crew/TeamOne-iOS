@@ -15,7 +15,7 @@ import Domain
 
 class SearchHistoryCell: UITableViewCell {
 
-    public let disposeBag = DisposeBag()
+    public var disposeBag = DisposeBag()
     
     private let historyImage = UIImageView().then {
         $0.image = .image(dsimage: .clock)
@@ -45,6 +45,11 @@ class SearchHistoryCell: UITableViewCell {
     
     override func awakeFromNib() {
         super.awakeFromNib()
+    }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        disposeBag = DisposeBag()
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
