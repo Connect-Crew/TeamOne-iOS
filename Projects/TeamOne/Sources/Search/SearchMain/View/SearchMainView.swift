@@ -27,7 +27,7 @@ final class SearchMainView: UIView {
     }
     let recentSearchClearView = RecentSearchClearView()
     private let filterContainerView = UIView()
-    private let filterCollectionView: UICollectionView = {
+    let filterCollectionView: UICollectionView = {
         let flowLayout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
         flowLayout.scrollDirection = .horizontal
         flowLayout.minimumLineSpacing = 10

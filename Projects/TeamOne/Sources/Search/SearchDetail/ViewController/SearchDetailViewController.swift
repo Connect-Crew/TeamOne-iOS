@@ -16,7 +16,9 @@ final class SearchDetailViewController: ViewController {
     
     private let viewModel: SearchDetailViewModel
     
-    private let mainView = SearchDetailMainView()
+    private let mainView = SearchMainView(type: .after)
+    
+    private let filterData = ProjectFilterType.allCases
     
     // MARK: - LifeCycle
     
@@ -27,6 +29,11 @@ final class SearchDetailViewController: ViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        setup()
     }
     
     // MARK: - Inits
@@ -44,5 +51,41 @@ final class SearchDetailViewController: ViewController {
         let input = SearchDetailViewModel.Input()
         
         let output = viewModel.transform(input: input)
+    }
+    
+    func setup() {
+        mainView.filterCollectionView.delegate = self
+        mainView.filterCollectionView.dataSource = self
+        mainView.filterCollectionView.register(SearchFilterCell.self, forCellWithReuseIdentifier: SearchFilterCell.defaultReuseIdentifier)
+        mainView.filterCollectionView.reloadData()
+    }
+}
+
+extension SearchDetailViewController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return filterData.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: SearchFilterCell.defaultReuseIdentifier, for: indexPath) as! SearchFilterCell
+        
+        let item = filterData[indexPath.item]
+        
+        cell.bind(to: item)
+        
+        return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let item = filterData[indexPath.item]
+        
+        print(item.toString)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView,
+                        layout collectionViewLayout: UICollectionViewLayout,
+                        sizeForItemAt indexPath: IndexPath) -> CGSize {
+        
+        return CGSize(width: 80, height: 24)
     }
 }

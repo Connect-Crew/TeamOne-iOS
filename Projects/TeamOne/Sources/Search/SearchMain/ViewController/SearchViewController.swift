@@ -16,7 +16,7 @@ final class SearchViewController: ViewController {
     
     private let viewModel: SearchViewModel
     
-    private let mainView = SearchMainView(type: .after)
+    private let mainView = SearchMainView(type: .before)
     
     private let deleteHistory = PublishSubject<String>()
     
