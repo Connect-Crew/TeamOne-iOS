@@ -11,6 +11,7 @@ import Core
 import RxSwift
 import RxCocoa
 import Then
+import DSKit
 
 final class SearchDetailViewController: ViewController {
     
@@ -49,7 +50,8 @@ final class SearchDetailViewController: ViewController {
     
     override func bind() {
         let input = SearchDetailViewModel.Input(
-            viewWillAppear: rx.viewWillAppear.map { _ in }
+            viewWillAppear: rx.viewWillAppear.map { _ in },
+            tapBack: mainView.searchHeader.tapBack
         )
         
         let output = viewModel.transform(input: input)
@@ -62,6 +64,7 @@ final class SearchDetailViewController: ViewController {
                     
                     cell.selectionStyle = .none
                     cell.prepareForReuse()
+                    cell.backgroundColor = .teamOne.background
                     cell.initSetting(project: element)
                 }
             .disposed(by: disposeBag)

@@ -22,6 +22,7 @@ final class SearchDetailViewModel: ViewModel {
     
     struct Input {
         let viewWillAppear: Observable<Void>
+        let tapBack: Observable<Void>
     }
     
     struct Output {
@@ -39,6 +40,13 @@ final class SearchDetailViewModel: ViewModel {
                 return result
             }
             .bind(to: searchResult)
+            .disposed(by: disposeBag)
+        
+        input.tapBack
+            .withUnretained(self)
+            .bind { this, _ in
+                this.navigation.onNext(.finish)
+            }
             .disposed(by: disposeBag)
         
         return Output(

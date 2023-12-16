@@ -61,7 +61,9 @@ final class SearchMainView: UIView {
         $0.backgroundColor = .teamOne.background
     }
     
-    let searchResultTableView = UITableView()
+    let searchResultTableView = UITableView().then {
+        $0.backgroundColor = .teamOne.background
+    }
     
     override init(frame: CGRect) {
         super.init(frame: frame)

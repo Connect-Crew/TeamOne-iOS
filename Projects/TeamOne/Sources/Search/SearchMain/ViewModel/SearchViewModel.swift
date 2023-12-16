@@ -55,13 +55,15 @@ final class SearchViewModel: ViewModel {
             .disposed(by: disposeBag)
         
         // MARK: 검색 이벤트
-        input.tapSearch
-            .withLatestFrom(input.searchHistoryInput)
-            .withUnretained(self)
-            .subscribe(onNext: { this, text in
-                this.recentHistoryFacade.saveHistroy(text)
-            })
-            .disposed(by: disposeBag)
+        Observable.merge([
+            input.tapKeyword,
+            input.tapSearch.withLatestFrom(input.searchHistoryInput)
+        ])
+        .withUnretained(self)
+        .subscribe(onNext: { this, text in
+            this.recentHistoryFacade.saveHistroy(text)
+        })
+        .disposed(by: disposeBag)
         
         // MARK: 최근 검색 삭제
         input.tapDeleteHistory
