@@ -19,11 +19,7 @@ enum SearchNavigation {
 
 final class SearchViewModel: ViewModel {
     
-//    private let recentSearchHistoryUseCase = DIContainer.shared.resolve(RecentSearchHistoryUseCase.self)
-    
-    private let getRecentHistoryUseCase = DIContainer.shared.resolve(GetRecentHistoryUseCase.self)
-    private let addRecentHistoryUseCase = DIContainer.shared.resolve(AddRecentHistoryUseCase.self)
-    private let removeRecentHistoryUseCase = DIContainer.shared.resolve(RemoveRecentHistoryUseCase.self)
+    private let recentHistoryFacade = DIContainer.shared.resolve(RecentHistoryFacade.self)
     
     private let projectUseCase = DIContainer.shared.resolve(ProjectListUseCaseProtocol.self)
     
@@ -53,7 +49,7 @@ final class SearchViewModel: ViewModel {
         input.viewWillAppear
             .withUnretained(self)
             .subscribe(onNext: { this, _ in
-                let historyList = this.getRecentHistoryUseCase.getRecentSearchHistory()
+                let historyList = this.recentHistoryFacade.getHistory()
                 searchHistoryList.accept(historyList)
             })
             .disposed(by: disposeBag)
@@ -63,7 +59,7 @@ final class SearchViewModel: ViewModel {
             .withLatestFrom(input.searchHistoryInput)
             .withUnretained(self)
             .subscribe(onNext: { this, text in
-                this.addRecentHistoryUseCase.addSearchHistory(text)
+                this.recentHistoryFacade.saveHistroy(text)
             })
             .disposed(by: disposeBag)
         
@@ -71,7 +67,7 @@ final class SearchViewModel: ViewModel {
         input.tapDeleteHistory
             .withUnretained(self)
             .subscribe(onNext: { this, keyword in
-                this.removeRecentHistoryUseCase.deleteHistory(keyword)
+                this.recentHistoryFacade.removeHistroy(keyword)
             })
             .disposed(by: disposeBag)
         
@@ -79,7 +75,7 @@ final class SearchViewModel: ViewModel {
         input.tapClearAllHistory
             .withUnretained(self)
             .subscribe(onNext: { this, _ in
-                this.removeRecentHistoryUseCase.clearAllHistory()
+                this.recentHistoryFacade.removeAllHistory()
             })
             .disposed(by: disposeBag)
         
@@ -89,7 +85,7 @@ final class SearchViewModel: ViewModel {
         ])
         .withUnretained(self)
         .subscribe(onNext: { this, _ in
-            let historyList = this.getRecentHistoryUseCase.getRecentSearchHistory()
+            let historyList = this.recentHistoryFacade.getHistory()
             searchHistoryList.accept(historyList)
         })
         .disposed(by: disposeBag)
