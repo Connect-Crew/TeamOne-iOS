@@ -21,24 +21,28 @@ final class SearchDetailViewModel: ViewModel {
     public let searchKeyword = BehaviorSubject<[SideProjectListElement]>(value: [])
     
     struct Input {
-        
+        let viewWillAppear: Observable<Void>
     }
     
     struct Output {
-        
+        let searchResult: PublishRelay<[SideProjectListElement]>
     }
     
     var disposeBag: DisposeBag = .init()
     let navigation = PublishSubject<SearchDetailNavigation>()
     
     func transform(input: Input) -> Output {
+        let searchResult = PublishRelay<[SideProjectListElement]>()
         
-        self.searchKeyword
-            .subscribe(onNext: { keyword in
-                print("keyword : \(keyword)")
-            })
+        Observable.combineLatest(self.searchKeyword, input.viewWillAppear)
+            .map { result, _ -> [SideProjectListElement] in
+                return result
+            }
+            .bind(to: searchResult)
             .disposed(by: disposeBag)
         
-        return Output()
+        return Output(
+            searchResult: searchResult
+        )
     }
 }

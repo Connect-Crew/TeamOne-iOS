@@ -48,9 +48,23 @@ final class SearchDetailViewController: ViewController {
     }
     
     override func bind() {
-        let input = SearchDetailViewModel.Input()
+        let input = SearchDetailViewModel.Input(
+            viewWillAppear: rx.viewWillAppear.map { _ in }
+        )
         
         let output = viewModel.transform(input: input)
+        
+        output.searchResult
+            .bind(to: mainView.searchResultTableView.rx.items(
+                cellIdentifier: HomeTableViewCell.defaultReuseIdentifier,
+                cellType: HomeTableViewCell.self)) { [weak self] (_, element, cell) in
+                    guard let self = self else { return }
+                    
+                    cell.selectionStyle = .none
+                    cell.prepareForReuse()
+                    cell.initSetting(project: element)
+                }
+            .disposed(by: disposeBag)
     }
     
     func setup() {
@@ -58,6 +72,8 @@ final class SearchDetailViewController: ViewController {
         mainView.filterCollectionView.dataSource = self
         mainView.filterCollectionView.register(SearchFilterCell.self, forCellWithReuseIdentifier: SearchFilterCell.defaultReuseIdentifier)
         mainView.filterCollectionView.reloadData()
+        
+        mainView.searchResultTableView.register(HomeTableViewCell.self, forCellReuseIdentifier: HomeTableViewCell.defaultReuseIdentifier)
     }
 }
 
@@ -86,6 +102,29 @@ extension SearchDetailViewController: UICollectionViewDelegate, UICollectionView
                         layout collectionViewLayout: UICollectionViewLayout,
                         sizeForItemAt indexPath: IndexPath) -> CGSize {
         
-        return CGSize(width: 80, height: 24)
+        // 해당 indexPath의 데이터를 가져오거나 계산
+        let data = filterData[indexPath.item]
+
+        // 셀 내부 요소에 따라 동적으로 예상 크기를 계산
+        let estimatedSize = calculateEstimatedSize(for: data)
+
+        // collectionView에 현재 그려질 셀의 크기를 설정
+        (collectionViewLayout as? UICollectionViewFlowLayout)?.estimatedItemSize = estimatedSize
+        
+        return estimatedSize
+    }
+    
+    func calculateEstimatedSize(for data: ProjectFilterType) -> CGSize {
+        // data를 기반으로 셀 내부의 레이아웃을 설정하고, fittingSize를 계산
+        let contentView = SearchFilterCell() // YourCell의 실제 콘텐츠 뷰
+        contentView.bind(to: data)
+
+        let fittingSize = contentView.systemLayoutSizeFitting(CGSize(width: UIView.layoutFittingCompressedSize.width, height: 24))
+
+        // fittingSize에 필요한 여백 등을 추가하여 반환
+        let padding: CGFloat = 0
+        let estimatedSize = CGSize(width: fittingSize.width + padding, height: fittingSize.height)
+
+        return estimatedSize
     }
 }

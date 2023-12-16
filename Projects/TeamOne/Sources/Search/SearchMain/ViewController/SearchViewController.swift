@@ -48,7 +48,7 @@ final class SearchViewController: ViewController {
     }
     
     private func setup() {
-        mainView.tableView.register(SearchHistoryCell.self,
+        mainView.searchTableView.register(SearchHistoryCell.self,
                                     forCellReuseIdentifier: SearchHistoryCell.defaultReuseIdentifier)
     }
     
@@ -61,13 +61,13 @@ final class SearchViewController: ViewController {
             tapDeleteHistory: deleteHistory,
             tapClearAllHistory: mainView.recentSearchClearView.tapRecentHistoryClear,
             tapBack: mainView.searchHeader.tapBack,
-            tapKeyword: mainView.tableView.rx.modelSelected(String.self).asObservable()
+            tapKeyword: mainView.searchTableView.rx.modelSelected(String.self).asObservable()
         )
         
         let output = viewModel.transform(input: input)
         
         output.searchHistoryList
-            .bind(to: mainView.tableView.rx.items(
+            .bind(to: mainView.searchTableView.rx.items(
                 cellIdentifier: SearchHistoryCell.defaultReuseIdentifier,
                 cellType: SearchHistoryCell.self)) { [weak self] (_, element, cell) in
                     guard let self = self else { return }

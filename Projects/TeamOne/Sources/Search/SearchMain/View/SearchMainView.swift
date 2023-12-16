@@ -22,11 +22,22 @@ public enum SearchStyle {
 final class SearchMainView: UIView {
     
     let searchHeader = SearchHeaderView()
+    
     let containerStackView = UIStackView().then {
         $0.axis = .vertical
+        $0.backgroundColor = .clear
     }
-    let recentSearchClearView = RecentSearchClearView()
+    
+    let recentSearchClearView = RecentSearchClearView().then {
+        $0.backgroundColor = .teamOne.background
+    }
+    
+    let activeItemsView = ActiveItemsView().then {
+        $0.backgroundColor = .teamOne.background
+    }
+    
     private let filterContainerView = UIView()
+    
     let filterCollectionView: UICollectionView = {
         let flowLayout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
         flowLayout.scrollDirection = .horizontal
@@ -40,9 +51,17 @@ final class SearchMainView: UIView {
 
         return collectionView
     }()
-    private let contentView = UIView()
+    
+    private let contentView = UIView().then {
+        $0.backgroundColor = .teamOne.background
+    }
     let emptyView = HistoryEmptyView()
-    let tableView = UITableView()
+    
+    let searchTableView = UITableView().then {
+        $0.backgroundColor = .teamOne.background
+    }
+    
+    let searchResultTableView = UITableView()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -60,9 +79,15 @@ final class SearchMainView: UIView {
         case .before:
             filterContainerView.isHidden = true
             recentSearchClearView.isHidden = false
+            activeItemsView.isHidden = true
+            searchTableView.isHidden = false
+            searchResultTableView.isHidden = true
         case .after:
             filterContainerView.isHidden = false
             recentSearchClearView.isHidden = true
+            activeItemsView.isHidden = false
+            searchTableView.isHidden = true
+            searchResultTableView.isHidden = false
         }
         
     }
@@ -96,14 +121,21 @@ final class SearchMainView: UIView {
             make.height.equalTo(40)
         }
         
+        containerStackView.addArrangedSubview(activeItemsView)
+        
         addSubview(contentView)
         contentView.snp.makeConstraints { make in
             make.top.equalTo(containerStackView.snp.bottom)
             make.left.right.bottom.equalTo(safeAreaLayoutGuide)
         }
         
-        contentView.addSubview(tableView)
-        tableView.snp.makeConstraints { make in
+        contentView.addSubview(searchTableView)
+        searchTableView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+        
+        contentView.addSubview(searchResultTableView)
+        searchResultTableView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
         
@@ -112,7 +144,8 @@ final class SearchMainView: UIView {
             make.edges.equalToSuperview()
         }
         
-        tableView.separatorStyle = .none
+        searchTableView.separatorStyle = .none
+        searchResultTableView.separatorStyle = .none
         
         isEmpty(false)
     }

@@ -11,6 +11,7 @@ import Then
 import RxSwift
 
 import Core
+import DSKit
 import Domain
 
 class SearchHistoryCell: UITableViewCell {
@@ -59,6 +60,8 @@ class SearchHistoryCell: UITableViewCell {
     }
     
     private func layout() {
+        contentView.backgroundColor = .teamOne.background
+        
         contentView.addSubview(historyImage)
         historyImage.snp.makeConstraints { make in
             make.width.height.equalTo(16)

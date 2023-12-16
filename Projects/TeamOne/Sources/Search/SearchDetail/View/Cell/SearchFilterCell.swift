@@ -10,6 +10,11 @@ import UIKit
 import DSKit
 import Core
 
+public enum FilterCellState {
+    case normal
+    case used
+}
+
 class SearchFilterCell: UICollectionViewCell {
     
     private let containerView = UIView().then {
@@ -34,7 +39,6 @@ class SearchFilterCell: UICollectionViewCell {
     
     public override func prepareForReuse() {
         super.prepareForReuse()
-        
     }
     
     public func layout() {
@@ -65,9 +69,26 @@ class SearchFilterCell: UICollectionViewCell {
         if type == .reset {
             imageView.image = .image(dsimage: .reset)
             containerView.layer.borderColor = UIColor.teamOne.grayscaleFive.cgColor
+            containerView.backgroundColor = .teamOne.grayscaleTwo
         } else {
             imageView.image = .image(dsimage: .downTow)
             containerView.layer.borderColor = UIColor.teamOne.grayscaleOne.cgColor
+            containerView.backgroundColor = .white
+        }
+    }
+    
+    public func cellState(_ type: FilterCellState) {
+        switch type {
+        case .normal:
+            imageView.image = .image(dsimage: .downTow)
+            titleLabel.textColor = .teamOne.grayscaleSeven
+            containerView.layer.borderColor = UIColor.teamOne.grayscaleOne.cgColor
+            containerView.backgroundColor = .white
+        case .used:
+            imageView.image = .image(dsimage: .downTow)
+            titleLabel.textColor = .teamOne.mainColor
+            containerView.layer.borderColor = UIColor.teamOne.mainColor.cgColor
+            containerView.backgroundColor = .white
         }
     }
 }
