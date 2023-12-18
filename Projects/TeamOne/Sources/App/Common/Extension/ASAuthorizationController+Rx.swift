@@ -16,7 +16,6 @@ class ASAuthorizationControllerProxy: DelegateProxy<ASAuthorizationController, A
     private var presentationWindow = UIWindow()
     internal lazy var didComplete = PublishSubject<ASAuthorization>()
 
-
     // MARK: - Initializers
     init(controller: ASAuthorizationController) {
         super.init(parentObject: controller, delegateProxy: ASAuthorizationControllerProxy.self)

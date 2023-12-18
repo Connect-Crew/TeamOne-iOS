@@ -80,7 +80,7 @@ public extension UIView {
         self.layer.shadowOffset = CGSize(width: 0, height: 0)
     }
 
-    public func clearCorners(){
+    func clearCorners(){
         self.layer.maskedCorners.remove([.layerMinXMinYCorner, .layerMaxXMinYCorner, .layerMinXMaxYCorner, .layerMaxXMaxYCorner])
     }
 }

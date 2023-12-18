@@ -116,5 +116,57 @@ public class Provider: ProviderProtocol {
             }
         }
     }
+
+//    public func request<T: Decodable>(_ urlConvertible: URLRequestConvertible) -> Single<T> {
+//            return Single.create { single in
+//                let request = self.session
+//                    .request(urlConvertible)
+//                    .validate(statusCode: 200 ..< 300)
+//                    .responseDecodable(of: T.self) { response in
+//                        switch response.result {
+//                        case let .success(data):
+//                            single(.success(data))
+//                        case let .failure(error):
+//                            if let underlyingError = error.underlyingError as? URLError {
+//                                switch underlyingError.code {
+//                                case .notConnectedToInternet:
+//                                    single(.failure(NetworkError.notReachable))
+//                                case .timedOut:
+//                                    single(.failure(NetworkError.timeOut))
+//                                default:
+//                                    single(.failure(NetworkError.unknown))
+//                                }
+//                            } else if error.isRequestRetryError || error.isRequestAdaptationError {
+//                                switch error {
+//                                case .requestRetryFailed(retryError: let retryError, originalError: _):
+//                                    single(.failure(retryError))
+//                                case .requestAdaptationFailed(error: let error):
+//                                    single(.failure(error))
+//                                default:
+//                                    single(.failure(NetworkError.unknown))
+//                                }
+//                            } else {
+//                                if let errorData = response.data {
+//                                    do {
+//                                        let networkError = try JSONDecoder().decode(NetworkError.self, from: errorData)
+//                                        if networkError.code == .notFoundRefreshToken {
+//                                            single(.failure(NetworkError.tokenExpired))
+//                                        } else {
+//                                            single(.failure(networkError))
+//                                        }
+//                                    } catch {
+//                                        single(.failure(NetworkError.unknown))
+//                                    }
+//                                } else {
+//                                    single(.failure(NetworkError.unknown))
+//                                }
+//                            }
+//                        }
+//                    }
+//                return Disposables.create {
+//                    request.cancel()
+//                }
+//            }
+//        }
 }
 

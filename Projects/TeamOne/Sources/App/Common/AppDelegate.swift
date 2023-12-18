@@ -28,14 +28,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication,
                      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
 
+        RxKakaoSDK.initSDK(appKey: AppKey.kakaoNativeAppKey)
+        FirebaseApp.configure()
+
         #if DEV
         print("Develop")
+        Crashlytics.crashlytics().setCrashlyticsCollectionEnabled(false)
         #else
         print("Product")
         #endif
-
-        RxKakaoSDK.initSDK(appKey: AppKey.kakaoNativeAppKey)
-        FirebaseApp.configure()
 
         // 폰트생성
 

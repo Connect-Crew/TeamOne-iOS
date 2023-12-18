@@ -19,6 +19,12 @@ public class KM {
     private var data: [String: String] = [:]
     private var region: [String: String] = [:]
 
+    public var jobMajorCategory: [String] = []
+
+    public var jobSubCategory: [String: [String]] = [:]
+
+    public var skills: [String] = []
+
 
     private let baseProjectInformationUseCase: BaseProjectInformationUseCaseProtocol
 
@@ -34,17 +40,23 @@ public class KM {
     private func loadAndParseData() {
         
         self.baseProjectInformationUseCase.baseInformation()
-            .subscribe(onNext: { response in
+            .subscribe(onNext: { [self] response in
 
                 // MARK: - data
                 response.category.forEach {
                     self.data[$0.name] = $0.key
                 }
 
-                response.job.forEach {
-                    self.data[$0.name] = $0.key
-                    $0.value.forEach {
-                        self.data[$0.name] = $0.key
+                response.job.forEach { job in
+
+                    jobMajorCategory.append(job.name)
+                    jobSubCategory[job.name] = []
+
+                    self.data[job.name] = job.key
+
+                    job.value.forEach { value in
+                        self.data[value.name] = value.key
+                        self.jobSubCategory[job.name]?.append(value.name)
                     }
                 }
 
@@ -55,6 +67,10 @@ public class KM {
                 // MARK: - region
                 response.region.forEach {
                     self.region[$0.name] = $0.key
+                }
+
+                response.skill.forEach {
+                    self.skills.append($0)
                 }
             })
             .disposed(by: disposeBag)

@@ -12,6 +12,7 @@ import RxSwift
 import RxCocoa
 import Then
 import DSKit
+import Domain
 
 final class ProjectCreateMainViewController: ViewController {
 
@@ -30,12 +31,9 @@ final class ProjectCreateMainViewController: ViewController {
 
     let purposeCareerVC = ProjectSetPurposeCareerViewController()
 
-    let childVC4 = ViewController().then {
-        $0.view.backgroundColor = .systemPink
-    }
-    let childVC5 = ViewController().then {
-        $0.view.backgroundColor = .green
-    }
+    let categoryVC = ProjectSetCategoryViewController()
+
+    let postVC = ProjectSetPostViewController()
 
     // MARK: - LifeCycle
 
@@ -77,7 +75,7 @@ final class ProjectCreateMainViewController: ViewController {
     }
 
     private func initPages() {
-        pageViewController.addVC(addList: [nameVC, stateRegionVC, purposeCareerVC, childVC4, childVC5])
+        pageViewController.addVC(addList: [nameVC, stateRegionVC, purposeCareerVC, categoryVC, postVC])
     }
 
     override func bind() {
@@ -87,11 +85,15 @@ final class ProjectCreateMainViewController: ViewController {
                 .throttle(.seconds(1), latest: true, scheduler: MainScheduler.instance),
             nextButtonTap: Observable.merge(
                 nameVC.buttonNext.rx.tap.map { _ in return ()},
-                stateRegionVC.buttonNext.rx.tap.map { _ in return ()}
+                stateRegionVC.buttonNext.rx.tap.map { _ in return ()},
+                purposeCareerVC.buttonNext.rx.tap.map { _ in return ()},
+                categoryVC.buttonNext.rx.tap.map { _ in return () }
             ).throttle(.seconds(1), latest: true, scheduler: MainScheduler.asyncInstance),
             projectName: nameVC.textFieldName.rx.text.orEmpty.asObservable(),
             beforeButtonTap: Observable.merge(
-                stateRegionVC.buttonBefore.rx.tap.map { _ in return () }
+                stateRegionVC.buttonBefore.rx.tap.map { _ in return () },
+                purposeCareerVC.buttonBefore.rx.tap.map { _ in return () },
+                categoryVC.buttonBefore.rx.tap.map { _ in return () }
             ).throttle(.seconds(1), latest: true, scheduler: MainScheduler.instance)
             ,
             stateBeforeTap: stateRegionVC.buttonStateBefore.rx.tap
@@ -104,7 +106,31 @@ final class ProjectCreateMainViewController: ViewController {
                 .throttle(.seconds(1), scheduler: MainScheduler.instance),
             regionOfflineTap: stateRegionVC.buttonRegionOffline.rx.tap
                 .throttle(.seconds(1), scheduler: MainScheduler.instance),
-            selectLocation: stateRegionVC.locaionListStackView.selectLocationSubject
+            selectLocation: stateRegionVC.locaionListStackView.selectLocationSubject,
+
+            purposeStartUpTap: purposeCareerVC.buttonPurposeStartup.rx.tap
+                .throttle(.seconds(1), scheduler: MainScheduler.instance),
+            purposePortfolioTap: purposeCareerVC.buttonPurposePortfolio.rx.tap
+                .throttle(.seconds(1), scheduler: MainScheduler.instance),
+            noRequiredExperienceTap: purposeCareerVC.buttonnoExperienceRequiredCheckBox.rx.tap
+                .throttle(.seconds(1), scheduler: MainScheduler.instance),
+            selectedMinCareer:
+                purposeCareerVC.minCareerSubject.map { $0.0 },
+            selectedMaxCareer: purposeCareerVC.maxCareerSubject.map { $0.0 },
+            categoryTap: categoryVC.categoryTapSubject,
+            
+            selectedImage: postVC.selectedImage,
+            deleteImageTap: postVC.deleteImage,
+            recruitTeamOne: postVC.viewSetPart.rxRecruits.map { $0.map { Recurit(part: $0.partSub, comment: $0.comment, max: $0.max)} },
+
+            introduce: postVC.textViewIntroduce.rx.text.orEmpty.asObservable(),
+
+            leaderPart: postVC.seledtedLeaderMajorSubClass.map { $0.0 },
+
+            selectedSkillTap: postVC.viewSelectSkill.selectedSkillSubject,
+            deleteSkillTap: postVC.viewSelectedStack.deleteButtonTapSubject,
+            createButtonTap: postVC.buttonCreateProject.rx.tap
+                .throttle(.seconds(1), latest: true, scheduler: MainScheduler.instance)
         )
 
         let output = viewModel.transform(input: input)
@@ -114,6 +140,9 @@ final class ProjectCreateMainViewController: ViewController {
         bindStateRegionVC(output: output)
 
         stateRegionVC.bind(output: output)
+        purposeCareerVC.bind(output: output)
+        categoryVC.bind(output: output)
+        postVC.bind(output: output)
     }
 
     func bindPage(output: ProjectCreateMainViewModel.Output) {
@@ -136,5 +165,11 @@ final class ProjectCreateMainViewController: ViewController {
     func bindStateRegionVC(output: ProjectCreateMainViewModel.Output) {
         output.locationList .drive(stateRegionVC.locaionListStackView.rx.regions)
             .disposed(by: disposeBag)
+    }
+
+    deinit {
+        print("!!!!!!!!!!!\(self)::::")
+        print("Deinit")
+        print("!!!!!!!!!!!!")
     }
 }

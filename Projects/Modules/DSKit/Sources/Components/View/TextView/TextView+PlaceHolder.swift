@@ -20,10 +20,22 @@ open class TextView_PlaceHolder: UITextView {
         }
     }
 
+    public var placeholderTextColor: UIColor = .black {
+        didSet {
+            self.textColor = placeholderTextColor
+        }
+    }
+
     public var maxTextCount: Int = .max
 
     public override init(frame: CGRect, textContainer: NSTextContainer?) {
         super.init(frame: frame, textContainer: textContainer)
+
+        bindTextView()
+    }
+
+    public init() {
+        super.init(frame: .zero, textContainer: nil)
 
         bindTextView()
     }
@@ -42,6 +54,7 @@ open class TextView_PlaceHolder: UITextView {
             .subscribe(onNext: { [weak self] in
                 if $0 == true {
                     self?.text = nil
+                    self?.textColor = .black
                 }
             })
             .disposed(by: disposeBag)
@@ -52,6 +65,7 @@ open class TextView_PlaceHolder: UITextView {
             .subscribe(onNext: { [weak self] in
                 if $0 == true {
                     self?.text = self?.placeholder
+                    self?.textColor = self?.placeholderTextColor
                 }
             })
             .disposed(by: disposeBag)

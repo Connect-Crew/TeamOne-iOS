@@ -21,7 +21,10 @@ final class LoginMainView: UIView {
     private let logoImageView = UIImageView().then {
         $0.contentMode = .scaleToFill
         $0.backgroundColor = .clear
-        $0.image = .image(dsimage: .logo)
+        $0.image = .image(dsimage: .AppIcon)
+        $0.snp.makeConstraints { make in
+            make.width.height.equalTo(50)
+        }
     }
 
     private let titleLabel = UILabel().then {
