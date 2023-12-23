@@ -35,31 +35,11 @@ final class SearchCoordinator: BaseCoordinator<SearchCoordinatorResult> {
                 case .finish:
                     // 뒤로가기 버튼
                     self?.finish.onNext(.finish)
-                case .search(let keyword):
-                    self?.pushToKeyword(keyword)
                 }
             })
             .disposed(by: disposeBag)
 
         let viewController = Inject.ViewControllerHost(SearchViewController(viewModel: viewModel))
-        
-        pushTabbar(viewController, animated: true)
-    }
-    
-    func pushToKeyword(_ result: [SideProjectListElement]) {
-        let viewModel = SearchDetailViewModel()
-        let viewController = SearchDetailViewController(viewModel: viewModel)
-        
-        viewModel.searchKeyword.onNext(result)
-        
-        viewModel.navigation
-            .subscribe(onNext: { [weak self] in
-                switch $0 {
-                case .finish:
-                    self?.finish.onNext(.finish)
-                }
-            })
-            .disposed(by: disposeBag)
         
         pushTabbar(viewController, animated: true)
     }

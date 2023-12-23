@@ -14,7 +14,6 @@ import Core
 
 enum SearchNavigation {
     case finish
-    case search([SideProjectListElement])
 }
 
 final class SearchViewModel: ViewModel {
@@ -36,6 +35,7 @@ final class SearchViewModel: ViewModel {
     struct Output {
         let searchHistoryList: PublishRelay<[String]>
         let searchIsEmpty: PublishRelay<Bool>
+        let searchResult: PublishRelay<[SideProjectListElement]>
     }
     
     var disposeBag: DisposeBag = .init()
@@ -45,6 +45,7 @@ final class SearchViewModel: ViewModel {
         
         let searchHistoryList = PublishRelay<[String]>()
         let searchIsEmpty = PublishRelay<Bool>()
+        let searchResult = PublishRelay<[SideProjectListElement]>()
         
         input.viewWillAppear
             .withUnretained(self)
@@ -118,16 +119,13 @@ final class SearchViewModel: ViewModel {
                 return true
             }
         }
-        .withUnretained(self)
-        .bind { this, result in
-            print("result: \(result)")
-            this.navigation.onNext(.search(result))
-        }
+        .bind(to: searchResult)
         .disposed(by: disposeBag)
         
         return Output(
             searchHistoryList: searchHistoryList,
-            searchIsEmpty: searchIsEmpty
+            searchIsEmpty: searchIsEmpty,
+            searchResult: searchResult
         )
     }
 }

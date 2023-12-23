@@ -16,7 +16,7 @@ final class SearchViewController: ViewController {
     
     private let viewModel: SearchViewModel
     
-    private let mainView = SearchMainView(type: .before)
+    private let mainView = SearchMainView()
     
     private let deleteHistory = PublishSubject<String>()
     
@@ -48,8 +48,13 @@ final class SearchViewController: ViewController {
     }
     
     private func setup() {
+        mainView.applaySyle(.before)
+        
         mainView.searchTableView.register(SearchHistoryCell.self,
                                     forCellReuseIdentifier: SearchHistoryCell.defaultReuseIdentifier)
+        
+        mainView.searchResultTableView.register(HomeTableViewCell.self,
+                                                forCellReuseIdentifier: HomeTableViewCell.defaultReuseIdentifier)
     }
     
     override func bind() {
@@ -89,6 +94,27 @@ final class SearchViewController: ViewController {
             .subscribe(onNext: { this, isEmpty in
                 this.mainView.isEmpty(isEmpty)
             })
+            .disposed(by: disposeBag)
+        
+        output.searchResult
+            .observe(on: MainScheduler.instance)
+            .withUnretained(self)
+            .subscribe(onNext: { this, _ in
+                this.mainView.applaySyle(.after)
+            })
+            .disposed(by: disposeBag)
+        
+        output.searchResult
+            .bind(to: mainView.searchResultTableView.rx.items(
+                cellIdentifier: HomeTableViewCell.defaultReuseIdentifier,
+                cellType: HomeTableViewCell.self)) { [weak self] (_, element, cell) in
+                    guard let self = self else { return }
+                    
+                    cell.selectionStyle = .none
+                    cell.prepareForReuse()
+                    cell.backgroundColor = .teamOne.background
+                    cell.initSetting(project: element)
+                }
             .disposed(by: disposeBag)
     }
     

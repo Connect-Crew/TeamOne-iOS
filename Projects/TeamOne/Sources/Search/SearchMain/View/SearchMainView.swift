@@ -32,26 +32,6 @@ final class SearchMainView: UIView {
         $0.backgroundColor = .teamOne.background
     }
     
-    let activeItemsView = ActiveItemsView().then {
-        $0.backgroundColor = .teamOne.background
-    }
-    
-    private let filterContainerView = UIView()
-    
-    let filterCollectionView: UICollectionView = {
-        let flowLayout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
-        flowLayout.scrollDirection = .horizontal
-        flowLayout.minimumLineSpacing = 10
-        flowLayout.minimumInteritemSpacing = 0
-
-        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: flowLayout)
-        collectionView.contentInsetAdjustmentBehavior = .always
-        collectionView.showsVerticalScrollIndicator = false
-        collectionView.showsHorizontalScrollIndicator = false
-
-        return collectionView
-    }()
-    
     private let contentView = UIView().then {
         $0.backgroundColor = .teamOne.background
     }
@@ -74,26 +54,6 @@ final class SearchMainView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    convenience init(type: SearchStyle) {
-        self.init(frame: .zero)
-        
-        switch type {
-        case .before:
-            filterContainerView.isHidden = true
-            recentSearchClearView.isHidden = false
-            activeItemsView.isHidden = true
-            searchTableView.isHidden = false
-            searchResultTableView.isHidden = true
-        case .after:
-            filterContainerView.isHidden = false
-            recentSearchClearView.isHidden = true
-            activeItemsView.isHidden = false
-            searchTableView.isHidden = true
-            searchResultTableView.isHidden = false
-        }
-        
-    }
-    
     private func layout() {
         addSubview(searchHeader)
         searchHeader.snp.makeConstraints { make in
@@ -112,19 +72,6 @@ final class SearchMainView: UIView {
             make.height.equalTo(53)
         }
         
-        filterContainerView.addSubview(filterCollectionView)
-        filterCollectionView.snp.makeConstraints { make in
-            make.top.bottom.equalToSuperview().inset(8)
-            make.left.right.equalToSuperview().inset(24)
-        }
-        
-        containerStackView.addArrangedSubview(filterContainerView)
-        filterContainerView.snp.makeConstraints { make in
-            make.height.equalTo(40)
-        }
-        
-        containerStackView.addArrangedSubview(activeItemsView)
-        
         addSubview(contentView)
         contentView.snp.makeConstraints { make in
             make.top.equalTo(containerStackView.snp.bottom)
@@ -138,7 +85,8 @@ final class SearchMainView: UIView {
         
         contentView.addSubview(searchResultTableView)
         searchResultTableView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
+            make.top.equalToSuperview().inset(20)
+            make.left.right.bottom.equalToSuperview()
         }
         
         contentView.addSubview(emptyView)
@@ -150,6 +98,21 @@ final class SearchMainView: UIView {
         searchResultTableView.separatorStyle = .none
         
         isEmpty(false)
+        
+        searchHeader.setBaseShadow(radius: 8)
+    }
+    
+    func applaySyle(_ type: SearchStyle) {
+        switch type {
+        case .before:
+            searchTableView.isHidden = false
+            searchResultTableView.isHidden = true
+            recentSearchClearView.isHidden = false
+        case .after:
+            searchTableView.isHidden = true
+            searchResultTableView.isHidden = false
+            recentSearchClearView.isHidden = true
+        }
     }
     
     func isEmpty(_ empty: Bool) {
