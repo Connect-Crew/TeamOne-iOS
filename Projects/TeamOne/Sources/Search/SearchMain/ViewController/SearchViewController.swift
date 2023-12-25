@@ -12,16 +12,23 @@ import RxSwift
 import RxCocoa
 import Then
 import DSKit
+import Domain
 
 final class SearchViewController: ViewController {
     
-    private enum Section {
-        case main
+    private enum Section: Int, CaseIterable {
+        case history
+        case result
     }
     
     private var searchItems = [String]()
+    private var resultItems = [SideProjectListElement]()
     
-    typealias Item = String
+    enum Item: Hashable {
+        case history(String)
+        case result(SideProjectListElement)
+        
+    }
     
     private var collectionView: UICollectionView!
     
@@ -70,9 +77,10 @@ final class SearchViewController: ViewController {
     
     private func setupColectionView() {
         
-        collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout())
+        collectionView = UICollectionView(frame: .zero, collectionViewLayout: createLayout())
         collectionView.backgroundColor = .teamOne.background
         collectionView.register(SearchHistoryCell.self, forCellWithReuseIdentifier: SearchHistoryCell.defaultReuseIdentifier)
+        collectionView.register(HomeCell.self, forCellWithReuseIdentifier: HomeCell.defaultReuseIdentifier)
         collectionView.delegate = self
         
         mainView.contentView.addSubview(collectionView)
@@ -82,39 +90,87 @@ final class SearchViewController: ViewController {
         
         dataSource = UICollectionViewDiffableDataSource<Section, Item>(collectionView: self.collectionView, 
                                                                        cellProvider: { [weak self] collectionView, indexPath, item in
-            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: SearchHistoryCell.defaultReuseIdentifier, for: indexPath) as? SearchHistoryCell else { return nil }
             guard let this = self else { return nil }
-            cell.bind(title: item)
-            
-            cell.deleteHistoryButton.rx.tap
-                .withUnretained(this)
-                .subscribe(onNext: { this, _ in
-                    this.deleteHistory.onNext(cell.historyTitle)
-                })
-                .disposed(by: cell.disposeBag)
-            
-            return cell
+            return this.createCell(for: item, indexPath: indexPath, collectionView: collectionView)
         })
     }
     
-    private func layout() -> UICollectionViewCompositionalLayout {
+    func createCell(for item: Item, indexPath: IndexPath, collectionView: UICollectionView) -> UICollectionViewCell? {
+        switch item {
+        case .history(let history):
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: SearchHistoryCell.defaultReuseIdentifier, for: indexPath) as! SearchHistoryCell
+            cell.configure(history)
+            
+            cell.deleteHistoryButton.rx.tap
+                .map { cell.historyLabel.text ?? "" }
+                .bind(to: deleteHistory)
+                .disposed(by: cell.disposeBag)
+            
+            return cell
+        case .result(let project):
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: HomeCell.defaultReuseIdentifier, for: indexPath) as! HomeCell
+            cell.initSetting(project: project)
+            return cell
+        }
+    }
+    
+    private func createLayout() -> UICollectionViewCompositionalLayout {
         
-        let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .estimated(50))
-        let item = NSCollectionLayoutItem(layoutSize: itemSize)
+        let layout = UICollectionViewCompositionalLayout { (sectionIndex: Int,
+                                                            layoutEnvironment: NSCollectionLayoutEnvironment) -> NSCollectionLayoutSection? in
+            guard let sectionKind = Section(rawValue: sectionIndex) else { return nil }
+            
+            let section: NSCollectionLayoutSection
+            
+            let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .estimated(50))
+            let item = NSCollectionLayoutItem(layoutSize: itemSize)
+            
+            let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .estimated(50))
+            let group = NSCollectionLayoutGroup.vertical(layoutSize: groupSize, subitems: [item])
+            
+            switch sectionKind {
+            case .history:
+                section = NSCollectionLayoutSection(group: group)
+                section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0)
+            case .result:
+                section = NSCollectionLayoutSection(group: group)
+                section.contentInsets = NSDirectionalEdgeInsets(top: 28, leading: 0, bottom: 0, trailing: 0)
+            }
+            return section
+        }
         
-        let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .estimated(50))
-        let group = NSCollectionLayoutGroup.vertical(layoutSize: groupSize, subitems: [item])
-        
-        let section = NSCollectionLayoutSection(group: group)
-        
-        let layout = UICollectionViewCompositionalLayout(section: section)
         return layout
     }
     
     private func applySnapshot() {
         var snapshot = NSDiffableDataSourceSnapshot<Section, Item>()
-        snapshot.appendSections([.main])
-        snapshot.appendItems(searchItems, toSection: .main)
+        let sectionItems = Section.allCases
+        
+        snapshot.appendSections(sectionItems)
+        
+        sectionItems.forEach {
+            switch $0 {
+            case .history:
+                snapshot.appendItems(searchItems.map { Item.history($0) }, toSection: .history)
+            case .result:
+                snapshot.appendItems(resultItems.map { Item.result($0) }, toSection: .result)
+            }
+        }
+        
+        self.dataSource.apply(snapshot)
+    }
+    
+    private func updateSnapshotFor(_ sectionToShow: Section) {
+        var snapshot = NSDiffableDataSourceSnapshot<Section, Item>()
+        let sectionItems = Section.allCases
+        snapshot.appendSections(sectionItems)
+        
+        switch sectionToShow {
+        case .history:
+            snapshot.appendItems(searchItems.map { Item.history($0) }, toSection: .history)
+        case .result:
+            snapshot.appendItems(resultItems.map { Item.result($0) }, toSection: .result)
+        }
         self.dataSource.apply(snapshot)
     }
     
@@ -136,25 +192,9 @@ final class SearchViewController: ViewController {
             .withUnretained(self)
             .subscribe(onNext: { this, result in
                 this.searchItems = result
-                this.applySnapshot()
+                this.updateSnapshotFor(.history)
             })
             .disposed(by: disposeBag)
-        
-//            .bind(to: mainView.searchTableView.rx.items(
-//                cellIdentifier: SearchHistoryCell.defaultReuseIdentifier,
-//                cellType: SearchHistoryCell.self)) { [weak self] (_, element, cell) in
-//                    guard let self = self else { return }
-//                    
-//                    cell.bind(title: element)
-//                    
-//                    cell.deleteHistoryButton.rx.tap
-//                        .withUnretained(self)
-//                        .subscribe(onNext: { this, _ in
-//                            this.deleteHistory.onNext(cell.historyTitle)
-//                        })
-//                        .disposed(by: cell.disposeBag)
-//            }
-//            .disposed(by: disposeBag)
         
         output.searchIsEmpty
             .observe(on: MainScheduler.instance)
@@ -165,13 +205,15 @@ final class SearchViewController: ViewController {
             })
             .disposed(by: disposeBag)
         
-//        output.searchResult
-//            .observe(on: MainScheduler.instance)
-//            .withUnretained(self)
-//            .subscribe(onNext: { this, _ in
-//                this.mainView.applaySyle(.after)
-//            })
-//            .disposed(by: disposeBag)
+        output.searchResult
+            .withUnretained(self)
+            .subscribe(onNext: { this, result in
+                this.mainView.applaySyle(.after)
+                
+                this.resultItems = result
+                this.updateSnapshotFor(.result)
+            })
+            .disposed(by: disposeBag)
         
 //        output.searchResult
 //            .bind(to: mainView.searchResultTableView.rx.items(
@@ -187,7 +229,13 @@ final class SearchViewController: ViewController {
 }
 extension SearchViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        guard let title = self.dataSource.itemIdentifier(for: indexPath) else { return }
-        modelSelected.onNext(title)
+        guard let item = self.dataSource.itemIdentifier(for: indexPath) else { return }
+        switch item {
+        case .history(let data):
+            modelSelected.onNext(data)
+        case .result:
+            modelSelected.onNext("")
+        }
+        
     }
 }

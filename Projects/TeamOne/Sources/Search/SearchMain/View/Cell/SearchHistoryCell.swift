@@ -22,7 +22,7 @@ class SearchHistoryCell: UICollectionViewCell {
         $0.image = .image(dsimage: .clock)
     }
     
-    private let historyLabel = UILabel().then {
+    public let historyLabel = UILabel().then {
         $0.setLabel(text: "", typo: .button2, color: .teamOne.grayscaleFive)
         $0.numberOfLines = 0
     }
@@ -77,7 +77,7 @@ class SearchHistoryCell: UICollectionViewCell {
         }
     }
 
-    func bind(title: String) {
+    func configure(_ title: String) {
         self.historyLabel.setLabel(text: title, typo: .button2, color: .teamOne.grayscaleFive)
     }
 }
