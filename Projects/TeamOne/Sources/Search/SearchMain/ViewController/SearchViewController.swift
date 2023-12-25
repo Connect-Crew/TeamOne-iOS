@@ -11,6 +11,7 @@ import Core
 import RxSwift
 import RxCocoa
 import Then
+import DSKit
 
 final class SearchViewController: ViewController {
     
@@ -22,13 +23,16 @@ final class SearchViewController: ViewController {
     
     typealias Item = String
     
-    private var dataSource: UITableViewDiffableDataSource<Section, Item>!
+    private var collectionView: UICollectionView!
+    
+    private var dataSource: UICollectionViewDiffableDataSource<Section, Item>!
     
     private let viewModel: SearchViewModel
     
     private let mainView = SearchMainView()
     
     private let deleteHistory = PublishSubject<String>()
+    private let modelSelected = PublishSubject<String>()
     
     // MARK: - LifeCycle
     
@@ -38,6 +42,9 @@ final class SearchViewController: ViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        setupColectionView()
+        applySnapshot()
         view.backgroundColor = .white
     }
     
@@ -59,14 +66,23 @@ final class SearchViewController: ViewController {
     
     private func setup() {
         mainView.applaySyle(.before)
+    }
+    
+    private func setupColectionView() {
         
-        mainView.searchTableView.register(SearchHistoryCell.self,
-                                    forCellReuseIdentifier: SearchHistoryCell.defaultReuseIdentifier)
+        collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout())
+        collectionView.backgroundColor = .teamOne.background
+        collectionView.register(SearchHistoryCell.self, forCellWithReuseIdentifier: SearchHistoryCell.defaultReuseIdentifier)
+        collectionView.delegate = self
         
-        dataSource = UITableViewDiffableDataSource<Section, Item>(tableView: self.mainView.searchTableView) { [weak self]
-            (tableView, indexPath, item) -> SearchHistoryCell? in
-            guard let cell = tableView.dequeueReusableCell(withIdentifier: SearchHistoryCell.defaultReuseIdentifier,
-                                                           for: indexPath) as? SearchHistoryCell else { return nil }
+        mainView.contentView.addSubview(collectionView)
+        collectionView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+        
+        dataSource = UICollectionViewDiffableDataSource<Section, Item>(collectionView: self.collectionView, 
+                                                                       cellProvider: { [weak self] collectionView, indexPath, item in
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: SearchHistoryCell.defaultReuseIdentifier, for: indexPath) as? SearchHistoryCell else { return nil }
             guard let this = self else { return nil }
             cell.bind(title: item)
             
@@ -78,15 +94,24 @@ final class SearchViewController: ViewController {
                 .disposed(by: cell.disposeBag)
             
             return cell
-        }
-        
-        applySnapshot()
-        
-        mainView.searchResultTableView.register(HomeTableViewCell.self,
-                                                forCellReuseIdentifier: HomeTableViewCell.defaultReuseIdentifier)
+        })
     }
     
-    func applySnapshot() {
+    private func layout() -> UICollectionViewCompositionalLayout {
+        
+        let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .estimated(50))
+        let item = NSCollectionLayoutItem(layoutSize: itemSize)
+        
+        let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .estimated(50))
+        let group = NSCollectionLayoutGroup.vertical(layoutSize: groupSize, subitems: [item])
+        
+        let section = NSCollectionLayoutSection(group: group)
+        
+        let layout = UICollectionViewCompositionalLayout(section: section)
+        return layout
+    }
+    
+    private func applySnapshot() {
         var snapshot = NSDiffableDataSourceSnapshot<Section, Item>()
         snapshot.appendSections([.main])
         snapshot.appendItems(searchItems, toSection: .main)
@@ -102,7 +127,7 @@ final class SearchViewController: ViewController {
             tapDeleteHistory: deleteHistory,
             tapClearAllHistory: mainView.recentSearchClearView.tapRecentHistoryClear,
             tapBack: mainView.searchHeader.tapBack,
-            tapKeyword: mainView.searchTableView.rx.modelSelected(String.self).asObservable()
+            tapKeyword: modelSelected
         )
         
         let output = viewModel.transform(input: input)
@@ -136,26 +161,33 @@ final class SearchViewController: ViewController {
             .withUnretained(self)
             .subscribe(onNext: { this, isEmpty in
                 this.mainView.isEmpty(isEmpty)
+                this.collectionView.isHidden = isEmpty
             })
             .disposed(by: disposeBag)
         
-        output.searchResult
-            .observe(on: MainScheduler.instance)
-            .withUnretained(self)
-            .subscribe(onNext: { this, _ in
-                this.mainView.applaySyle(.after)
-            })
-            .disposed(by: disposeBag)
+//        output.searchResult
+//            .observe(on: MainScheduler.instance)
+//            .withUnretained(self)
+//            .subscribe(onNext: { this, _ in
+//                this.mainView.applaySyle(.after)
+//            })
+//            .disposed(by: disposeBag)
         
-        output.searchResult
-            .bind(to: mainView.searchResultTableView.rx.items(
-                cellIdentifier: HomeTableViewCell.defaultReuseIdentifier,
-                cellType: HomeTableViewCell.self)) { [weak self] (_, element, cell) in
-                    cell.selectionStyle = .none
-                    cell.prepareForReuse()
-                    cell.backgroundColor = .teamOne.background
-                    cell.initSetting(project: element)
-                }
-            .disposed(by: disposeBag)
+//        output.searchResult
+//            .bind(to: mainView.searchResultTableView.rx.items(
+//                cellIdentifier: HomeTableViewCell.defaultReuseIdentifier,
+//                cellType: HomeTableViewCell.self)) { [weak self] (_, element, cell) in
+//                    cell.selectionStyle = .none
+//                    cell.prepareForReuse()
+//                    cell.backgroundColor = .teamOne.background
+//                    cell.initSetting(project: element)
+//                }
+//            .disposed(by: disposeBag)
+    }
+}
+extension SearchViewController: UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        guard let title = self.dataSource.itemIdentifier(for: indexPath) else { return }
+        modelSelected.onNext(title)
     }
 }

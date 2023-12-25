@@ -32,18 +32,18 @@ final class SearchMainView: UIView {
         $0.backgroundColor = .teamOne.background
     }
     
-    private let contentView = UIView().then {
+    let contentView = UIView().then {
         $0.backgroundColor = .teamOne.background
     }
     let emptyView = HistoryEmptyView()
     
-    let searchTableView = UITableView().then {
-        $0.backgroundColor = .teamOne.background
-    }
-    
-    let searchResultTableView = UITableView().then {
-        $0.backgroundColor = .teamOne.background
-    }
+//    let searchTableView = UITableView().then {
+//        $0.backgroundColor = .teamOne.background
+//    }
+//    
+//    let searchResultTableView = UITableView().then {
+//        $0.backgroundColor = .teamOne.background
+//    }
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -78,26 +78,12 @@ final class SearchMainView: UIView {
             make.left.right.bottom.equalTo(safeAreaLayoutGuide)
         }
         
-        contentView.addSubview(searchTableView)
-        searchTableView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
-        
-        contentView.addSubview(searchResultTableView)
-        searchResultTableView.snp.makeConstraints { make in
-            make.top.equalToSuperview().inset(20)
-            make.left.right.bottom.equalToSuperview()
-        }
-        
         contentView.addSubview(emptyView)
         emptyView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
         
-        searchTableView.separatorStyle = .none
-        searchResultTableView.separatorStyle = .none
-        
-        isEmpty(false)
+        isEmpty(true)
         
         searchHeader.setBaseShadow(radius: 8)
     }
@@ -105,12 +91,8 @@ final class SearchMainView: UIView {
     func applaySyle(_ type: SearchStyle) {
         switch type {
         case .before:
-            searchTableView.isHidden = false
-            searchResultTableView.isHidden = true
             recentSearchClearView.isHidden = false
         case .after:
-            searchTableView.isHidden = true
-            searchResultTableView.isHidden = false
             recentSearchClearView.isHidden = true
         }
     }

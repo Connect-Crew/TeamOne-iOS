@@ -14,7 +14,7 @@ import Core
 import DSKit
 import Domain
 
-class SearchHistoryCell: UITableViewCell {
+class SearchHistoryCell: UICollectionViewCell {
 
     public var disposeBag = DisposeBag()
     
@@ -24,7 +24,7 @@ class SearchHistoryCell: UITableViewCell {
     
     private let historyLabel = UILabel().then {
         $0.setLabel(text: "", typo: .button2, color: .teamOne.grayscaleFive)
-        $0.numberOfLines = 1
+        $0.numberOfLines = 0
     }
     
     public var historyTitle: String {
@@ -35,11 +35,10 @@ class SearchHistoryCell: UITableViewCell {
         $0.setImage(.image(dsimage: .closeButtonX), for: .normal)
     }
     
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
-        self.layout()
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        layout()
     }
-    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -51,12 +50,6 @@ class SearchHistoryCell: UITableViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         disposeBag = DisposeBag()
-    }
-
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-
-        // Configure the view for the selected state
     }
     
     private func layout() {
@@ -78,9 +71,9 @@ class SearchHistoryCell: UITableViewCell {
         
         contentView.addSubview(historyLabel)
         historyLabel.snp.makeConstraints { make in
+            make.top.bottom.equalToSuperview().inset(9)
             make.left.equalTo(historyImage.snp.right).offset(12)
-            make.right.greaterThanOrEqualTo(deleteHistoryButton.snp.left).offset(12)
-            make.centerY.equalToSuperview()
+            make.right.lessThanOrEqualTo(deleteHistoryButton.snp.left).offset(-12)
         }
     }
 
