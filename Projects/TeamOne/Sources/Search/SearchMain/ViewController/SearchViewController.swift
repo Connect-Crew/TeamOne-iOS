@@ -233,8 +233,8 @@ extension SearchViewController: UICollectionViewDelegate {
         switch item {
         case .history(let data):
             modelSelected.onNext(data)
-        case .result:
-            modelSelected.onNext("")
+        case .result(let data):
+            print("data : \(data)")
         }
         
     }
