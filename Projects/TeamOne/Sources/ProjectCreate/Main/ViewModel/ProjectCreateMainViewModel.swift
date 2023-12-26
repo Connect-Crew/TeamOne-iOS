@@ -93,7 +93,7 @@ final class ProjectCreateMainViewModel: ViewModel {
 
     // MARK: - Output
 
-    let currentPage = BehaviorSubject<Int>(value: 4)
+    let currentPage = BehaviorSubject<Int>(value: 0)
     let cancleAlertSubject = PublishSubject<ResultAlertView_Image_Title_Content_Alert>()
     let state = PublishSubject<ProjectState?>()
     let region = BehaviorSubject<Region>(value: .none)

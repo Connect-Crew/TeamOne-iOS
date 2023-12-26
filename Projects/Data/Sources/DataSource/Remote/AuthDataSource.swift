@@ -17,11 +17,11 @@ extension NetworkConstant {
 
 public protocol AuthDataSourceProtocol {
 
-    func signup(_ request: AuthRegisterRequestDTO) -> Observable<AuthResponseResponseDTO>
+    func signup(_ request: AuthRegisterRequestDTO) -> Single<AuthResponseResponseDTO>
 
-    func login(_ request: AuthLoginRequestDTO) -> Observable<AuthResponseResponseDTO>
+    func login(_ request: AuthLoginRequestDTO) -> Single<AuthResponseResponseDTO>
 
-    func reissuance() -> Observable<AuthRefreshResponseDTO>
+    func reissuance() -> Single<AuthRefreshResponseDTO>
 }
 
 public struct AuthDataSource: AuthDataSourceProtocol {
@@ -32,15 +32,15 @@ public struct AuthDataSource: AuthDataSourceProtocol {
         self.provider = Provider.default
     }
 
-    public func login(_ request: AuthLoginRequestDTO) -> Observable<AuthResponseResponseDTO> {
+    public func login(_ request: AuthLoginRequestDTO) -> Single<AuthResponseResponseDTO> {
         return provider.request(AuthTarget.login(request: request))
     }
 
-    public func signup(_ request: AuthRegisterRequestDTO) -> Observable<AuthResponseResponseDTO> {
+    public func signup(_ request: AuthRegisterRequestDTO) -> Single<AuthResponseResponseDTO> {
         return provider.request(AuthTarget.register(requst: request))
     }
 
-    public func reissuance() -> Observable<AuthRefreshResponseDTO> {
+    public func reissuance() -> Single<AuthRefreshResponseDTO> {
         let request = AuthRefreshRequtstDTO(
             refreshToken: UserDefaultKeyList.Auth.appRefreshToken ?? ""
         )

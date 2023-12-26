@@ -10,7 +10,7 @@ import Foundation
 import RxSwift
 
 public protocol SignUpUseCaseProtocol {
-    func signUp(signUpProps: OAuthSignUpProps) -> Observable<Bool>
+    func signUp(signUpProps: OAuthSignUpProps) -> Single<Bool>
 }
 
 public struct SignUpUseCase: SignUpUseCaseProtocol {
@@ -23,7 +23,7 @@ public struct SignUpUseCase: SignUpUseCaseProtocol {
         self.tokenRepository = tokenRepository
     }
 
-    public func signUp(signUpProps: OAuthSignUpProps) -> Observable<Bool> {
+    public func signUp(signUpProps: OAuthSignUpProps) -> Single<Bool> {
         return authRepository.register(props: signUpProps)
     }
 }

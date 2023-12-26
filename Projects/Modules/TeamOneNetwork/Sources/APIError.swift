@@ -9,12 +9,11 @@
 import Foundation
 
 public enum APIError: Error, Equatable {
-    case network(statusCode: Int)
+    case network(statusCode: Int, message: String)
+    case notToken
     case unknown
-    case tokenReissuanceFailed
 
-    init(error: Error, statusCode: Int? = 0) {
-        guard let statusCode else { self = .unknown ; return }
-        self = .network(statusCode: statusCode)
+    init(error: ErrorEntity) {
+        self = .network(statusCode: error.status, message: error.message)
     }
 }

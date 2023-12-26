@@ -10,8 +10,8 @@ import Alamofire
 import RxSwift
 
 public protocol ProviderProtocol: AnyObject {
-//    func request<Success: Decodable, Error: Decodable>(_ urlConvertible: URLRequestConvertible) -> Observable<GenericAPIResponse<Success, Error>>
-    
     func request<T: Decodable>(_ urlConvertible: URLRequestConvertible) -> Observable<T>
+
+    func request<T: Decodable>(_ urlConvertible: URLRequestConvertible) -> Single<T> 
 }
 

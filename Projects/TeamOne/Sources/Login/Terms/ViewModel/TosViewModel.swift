@@ -11,6 +11,7 @@ import RxSwift
 import RxCocoa
 import Core
 import Domain
+import UIKit
 
 enum TosNavigation {
     case finish(OAuthSignUpProps)
@@ -33,6 +34,8 @@ final class TosViewModel: ViewModel {
         let nextButtonTap: Observable<Void>
         let backButtonTap: Observable<Void>
         let closeButtonTap: Observable<Void>
+        let goToServiceTerms: Observable<Void>
+        let gotoPersonalInfoPolicy: Observable<Void>
     }
 
     struct Output {
@@ -101,6 +104,22 @@ final class TosViewModel: ViewModel {
                 self?.serviceTermSelected.onNext($0)
                 self?.personalInfoPolycy.onNext($0)
                 self?.allSelected.onNext($0)
+            })
+            .disposed(by: disposeBag)
+
+        input.goToServiceTerms
+            .subscribe(onNext: {
+                if let url = URL(string: "https://hong-cho.notion.site/TEAM-no-1-70f007a62fdf4f8db5321115b09ff2ec") {
+                    UIApplication.shared.open(url)
+                }
+            })
+            .disposed(by: disposeBag)
+
+        input.gotoPersonalInfoPolicy
+            .subscribe(onNext: {
+                if let url = URL(string: "https://hong-cho.notion.site/TEAM-no-1-70f007a62fdf4f8db5321115b09ff2ec") {
+                    UIApplication.shared.open(url)
+                }
             })
             .disposed(by: disposeBag)
 

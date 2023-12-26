@@ -62,23 +62,5 @@ public struct ProjectRepository: ProjectRepositoryProtocol {
 
         return projectDataSource.apply(request)
             .map { $0.toDomain() }
-            .catch({ error in
-                guard let error = error as? APIError else
-                {
-                    return Observable.error(APIError.unknown)
-                }
-
-                switch error {
-                case .network(let statusCode):
-                    if statusCode == 400 {
-                        return Observable.error(ApplyError.recruitComplete)
-                    } else {
-                        return Observable.error(ApplyError.recruitOthers)
-                    }
-
-                default: return Observable.error(ApplyError.recruitOthers)
-                }
-            })
-
     }
 }

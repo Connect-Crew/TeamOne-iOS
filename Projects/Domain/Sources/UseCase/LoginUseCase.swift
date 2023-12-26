@@ -11,7 +11,7 @@ import RxSwift
 import Core
 
 public protocol LoginUseCaseProtocol {
-    func login(props: OAuthLoginProps) -> Observable<Bool>
+    func login(props: OAuthLoginProps) -> Single<Bool>
 }
 
 public struct LoginUseCase: LoginUseCaseProtocol {
@@ -24,7 +24,8 @@ public struct LoginUseCase: LoginUseCaseProtocol {
         self.tokenRepository = tokenRepository
     }
 
-    public func login(props: OAuthLoginProps) -> Observable<Bool> {
+    public func login(props: OAuthLoginProps) -> Single<Bool> {
         return authRepository.login(request: props)
+            .catchAndReturn(false)
     }
 }

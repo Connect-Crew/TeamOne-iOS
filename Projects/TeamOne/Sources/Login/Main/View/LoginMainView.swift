@@ -23,7 +23,7 @@ final class LoginMainView: UIView {
         $0.backgroundColor = .clear
         $0.image = .image(dsimage: .AppIcon)
         $0.snp.makeConstraints { make in
-            make.width.height.equalTo(50)
+            make.width.height.equalTo(150)
         }
     }
 
@@ -72,15 +72,21 @@ final class LoginMainView: UIView {
             $0.alignment = .center
         }
 
-    lazy var contentView = UIStackView(arrangedSubviews: [
+    lazy var verticalStackView = UIStackView(arrangedSubviews: [
         UIView(),
         logoStackView,
         buttonStackView,
         UIView()
     ]).then {
         $0.axis = .vertical
-        $0.alignment = .center
         $0.setCustomSpacing(56, after: logoStackView)
+    }
+
+    lazy var contentView = UIStackView(arrangedSubviews: [
+        verticalStackView
+    ]).then {
+        $0.axis = .horizontal
+        $0.alignment = .center
     }
 
     override init(frame: CGRect) {

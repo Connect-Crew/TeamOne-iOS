@@ -9,11 +9,15 @@
 import Foundation
 
 public struct RefreshToken {
-    let token: String
-    let exp: String
+    public let token: String
+    public let exp: String
+    public let refresh: String
+    public let refreshExp: String
 
-    public init(token: String, exp: String) {
+    public init(token: String, exp: String, refresh: String, refreshExp: String) {
         self.token = token
         self.exp = exp
+        self.refresh = refresh
+        self.refreshExp = refreshExp
     }
 }

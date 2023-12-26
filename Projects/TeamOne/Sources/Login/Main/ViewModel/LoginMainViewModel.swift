@@ -122,21 +122,26 @@ final class LoginMainViewModel: ViewModel {
             }
             .withUnretained(self)
             .flatMap { viewModel, data in
-                viewModel.loginUseCase.login(props: OAuthLoginProps(token: data.token, social: .kakao))
-                    .map { result in
-                        print("!!!!!!!!!!!KAKAOLOGINRESULT")
-                        print(result)
-                        print("!!!!!!!!!!!!")
-                        if result == true {
-                            return LoginNavigation.finish
-                        } else {
-                            return LoginNavigation.getToken(OAuthSignUpProps(
-                                token: data.token,
-                                social: .kakao,
-                                username: data.name,
-                                email: data.email))
-                        }
+                viewModel.loginUseCase.login(
+                    props: OAuthLoginProps(
+                        token: data.token,
+                        social: .kakao
+                    )
+                )
+                .map { result in
+                    print("!!!!!!!!!!!KAKAOLOGINRESULT")
+                    print(result)
+                    print("!!!!!!!!!!!!")
+                    if result == true {
+                        return LoginNavigation.finish
+                    } else {
+                        return LoginNavigation.getToken(OAuthSignUpProps(
+                            token: data.token,
+                            social: .kakao,
+                            username: data.name,
+                            email: data.email))
                     }
+                }
             }
             .bind(to: navigation)
             .disposed(by: disposeBag)
@@ -173,7 +178,9 @@ final class LoginMainViewModel: ViewModel {
                                         email: email))
                                 }
                             }
-                            .bind(to: viewModel.navigation)
+                            .subscribe(onSuccess: {
+                                viewModel.navigation.onNext($0)
+                            })
                             .disposed(by: viewModel.disposeBag)
                     }
 

@@ -87,19 +87,12 @@ final class SetNickNameViewModel: ViewModel {
                 return auth
             }
             .flatMap {
-                self.signUpUseCase.signUp(signUpProps: $0).asResult()
+                self.signUpUseCase.signUp(signUpProps: $0)
             }
-            .subscribe(onNext: {
-                switch $0 {
-                case let .success(bool):
-                    if bool { self.navigation.onNext(.finish) }
-                case let .failure(error):
-                    self.errorText.onNext(error.localizedDescription)
-                    self.isEnabled.onNext(false)
-                }
+            .subscribe(onNext: { bool in
+                if bool { self.navigation.onNext(.finish) }
             })
             .disposed(by: disposeBag)
- 
 
         input.backButtonTapped
             .map { SetNickNameNavigation.back }
