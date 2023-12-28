@@ -172,6 +172,22 @@ extension AppDelegate {
         container.register(interface: RecentSearchHistoryUseCase.self) { _ in
             RecentSearchHistory()
         }
+        
+        container.register(interface: GetRecentHistoryUseCase.self) { _ in
+            GetRecentHistory()
+        }
+        
+        container.register(interface: AddRecentHistoryUseCase.self) { _ in
+            AddRecentHistory()
+        }
+        
+        container.register(interface: RemoveRecentHistoryUseCase.self) { _ in
+            RemoveRecentHistory()
+        }
+        
+        container.register(interface: RecentHistoryFacade.self) { _ in
+            RecentHistory()
+        }
 
         // MARK: - ViewModel
 

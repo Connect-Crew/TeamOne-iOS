@@ -82,6 +82,7 @@ public enum DSKitImage {
     case downTow
     case newTagBG
     case clock
+    case emptyLogo
 
     case homeHeader
 
@@ -120,6 +121,7 @@ public enum DSKitImage {
     case write
     case CheckBoxChecked
     case CheckBoxNotChecked
+    case reset
 
     var toName: String {
         switch self {
@@ -256,11 +258,14 @@ public enum DSKitImage {
         case .complete: return "complete"
         case .warinning: return "warinning"
         case .write: return "write"
-
+        case .clock: return "Clock"
+        case .emptyLogo: return "EmptyLogo"
+        case .reset: return "reset"
+            
             // MARK: - CheckBox
         case .CheckBoxChecked: return "CheckBoxChecked"
         case .CheckBoxNotChecked: return "CheckBoxNotChecked"
-        case .clock: return "Clock"
+        
         }
     }
 }

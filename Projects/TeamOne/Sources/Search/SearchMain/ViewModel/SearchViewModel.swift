@@ -14,12 +14,13 @@ import Core
 
 enum SearchNavigation {
     case finish
-    case search(String)
 }
 
 final class SearchViewModel: ViewModel {
     
-    private let recentSearchHistoryUseCase = DIContainer.shared.resolve(RecentSearchHistoryUseCase.self)
+    private let recentHistoryFacade = DIContainer.shared.resolve(RecentHistoryFacade.self)
+    
+    private let projectUseCase = DIContainer.shared.resolve(ProjectListUseCaseProtocol.self)
     
     struct Input {
         let viewWillAppear: Observable<Void>
@@ -28,10 +29,13 @@ final class SearchViewModel: ViewModel {
         let tapDeleteHistory: Observable<String>
         let tapClearAllHistory: Observable<Void>
         let tapBack: Observable<Void>
+        let tapKeyword: Observable<String>
     }
     
     struct Output {
         let searchHistoryList: PublishRelay<[String]>
+        let searchIsEmpty: PublishRelay<Bool>
+        let searchResult: PublishRelay<[SideProjectListElement]>
     }
     
     var disposeBag: DisposeBag = .init()
@@ -39,31 +43,34 @@ final class SearchViewModel: ViewModel {
     
     func transform(input: Input) -> Output {
         
-        let navigation = PublishSubject<SearchCoordinatorResult>()
         let searchHistoryList = PublishRelay<[String]>()
+        let searchIsEmpty = PublishRelay<Bool>()
+        let searchResult = PublishRelay<[SideProjectListElement]>()
         
         input.viewWillAppear
             .withUnretained(self)
             .subscribe(onNext: { this, _ in
-                let historyList = this.recentSearchHistoryUseCase.getRecentSearchHistory()
+                let historyList = this.recentHistoryFacade.getHistory()
                 searchHistoryList.accept(historyList)
             })
             .disposed(by: disposeBag)
         
         // MARK: 검색 이벤트
-        input.tapSearch
-            .withLatestFrom(input.searchHistoryInput)
-            .withUnretained(self)
-            .subscribe(onNext: { this, text in
-                this.recentSearchHistoryUseCase.saveSearchHistory(text)
-            })
-            .disposed(by: disposeBag)
+        Observable.merge([
+            input.tapKeyword,
+            input.tapSearch.withLatestFrom(input.searchHistoryInput)
+        ])
+        .withUnretained(self)
+        .subscribe(onNext: { this, text in
+            this.recentHistoryFacade.saveHistroy(text)
+        })
+        .disposed(by: disposeBag)
         
         // MARK: 최근 검색 삭제
         input.tapDeleteHistory
             .withUnretained(self)
             .subscribe(onNext: { this, keyword in
-                this.recentSearchHistoryUseCase.deleteHistory(keyword)
+                this.recentHistoryFacade.removeHistroy(keyword)
             })
             .disposed(by: disposeBag)
         
@@ -71,7 +78,7 @@ final class SearchViewModel: ViewModel {
         input.tapClearAllHistory
             .withUnretained(self)
             .subscribe(onNext: { this, _ in
-                this.recentSearchHistoryUseCase.clearAllHistory()
+                this.recentHistoryFacade.removeAllHistory()
             })
             .disposed(by: disposeBag)
         
@@ -81,7 +88,7 @@ final class SearchViewModel: ViewModel {
         ])
         .withUnretained(self)
         .subscribe(onNext: { this, _ in
-            let historyList = this.recentSearchHistoryUseCase.getRecentSearchHistory()
+            let historyList = this.recentHistoryFacade.getHistory()
             searchHistoryList.accept(historyList)
         })
         .disposed(by: disposeBag)
@@ -94,8 +101,31 @@ final class SearchViewModel: ViewModel {
             })
             .disposed(by: disposeBag)
         
+        // MARK: 검색
+        Observable.merge([
+            input.tapKeyword,
+            input.tapSearch.withLatestFrom(input.searchHistoryInput)
+        ])
+        .withUnretained(self)
+        .flatMap({ this, keyword in
+            this.projectUseCase.projectList(request: ProjectFilterRequest(size: 30, search: keyword))
+        })
+        .filter {
+            if $0.isEmpty {
+                searchIsEmpty.accept(true)
+                return false
+            } else {
+                searchIsEmpty.accept(false)
+                return true
+            }
+        }
+        .bind(to: searchResult)
+        .disposed(by: disposeBag)
+        
         return Output(
-            searchHistoryList: searchHistoryList
+            searchHistoryList: searchHistoryList,
+            searchIsEmpty: searchIsEmpty,
+            searchResult: searchResult
         )
     }
 }

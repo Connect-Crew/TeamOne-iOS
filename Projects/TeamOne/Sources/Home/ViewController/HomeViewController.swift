@@ -84,8 +84,7 @@ final class HomeViewController: ViewController {
                 else {
                     return UITableViewCell()
                 }
-
-                cell.selectionStyle = .none
+                
                 cell.prepareForReuse()
                 cell.initSetting(project: project)
                 cell.buttonParticipantsTap

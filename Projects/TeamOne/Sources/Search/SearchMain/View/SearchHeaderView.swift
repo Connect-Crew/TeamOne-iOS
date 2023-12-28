@@ -68,8 +68,6 @@ final class SearchHeaderView: UIView {
             make.top.bottom.equalToSuperview().inset(9)
         }
         
-        self.setBaseShadow(radius: 8)
-        
         backButton.rx.tap
             .bind(to: tapBack)
             .disposed(by: disposeBag)

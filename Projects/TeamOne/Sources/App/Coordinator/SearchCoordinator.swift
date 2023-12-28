@@ -11,6 +11,7 @@ import RxSwift
 import Inject
 
 import Core
+import Domain
 
 enum SearchCoordinatorResult {
     case finish
@@ -34,8 +35,6 @@ final class SearchCoordinator: BaseCoordinator<SearchCoordinatorResult> {
                 case .finish:
                     // 뒤로가기 버튼
                     self?.finish.onNext(.finish)
-                case .search(let keyword):
-                    self?.pushToKeyword(keyword)
                 }
             })
             .disposed(by: disposeBag)
@@ -43,9 +42,5 @@ final class SearchCoordinator: BaseCoordinator<SearchCoordinatorResult> {
         let viewController = Inject.ViewControllerHost(SearchViewController(viewModel: viewModel))
         
         pushTabbar(viewController, animated: true)
-    }
-    
-    func pushToKeyword(_ key: String) {
-        
     }
 }

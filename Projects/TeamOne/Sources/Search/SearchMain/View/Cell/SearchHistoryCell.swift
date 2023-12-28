@@ -11,19 +11,20 @@ import Then
 import RxSwift
 
 import Core
+import DSKit
 import Domain
 
-class SearchHistoryCell: UITableViewCell {
+class SearchHistoryCell: UICollectionViewCell {
 
-    public let disposeBag = DisposeBag()
+    public var disposeBag = DisposeBag()
     
     private let historyImage = UIImageView().then {
         $0.image = .image(dsimage: .clock)
     }
     
-    private let historyLabel = UILabel().then {
+    public let historyLabel = UILabel().then {
         $0.setLabel(text: "", typo: .button2, color: .teamOne.grayscaleFive)
-        $0.numberOfLines = 1
+        $0.numberOfLines = 0
     }
     
     public var historyTitle: String {
@@ -34,11 +35,10 @@ class SearchHistoryCell: UITableViewCell {
         $0.setImage(.image(dsimage: .closeButtonX), for: .normal)
     }
     
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
-        self.layout()
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        layout()
     }
-    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -46,14 +46,15 @@ class SearchHistoryCell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
     }
-
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-
-        // Configure the view for the selected state
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        disposeBag = DisposeBag()
     }
     
     private func layout() {
+        contentView.backgroundColor = .teamOne.background
+        
         contentView.addSubview(historyImage)
         historyImage.snp.makeConstraints { make in
             make.width.height.equalTo(16)
@@ -70,13 +71,13 @@ class SearchHistoryCell: UITableViewCell {
         
         contentView.addSubview(historyLabel)
         historyLabel.snp.makeConstraints { make in
+            make.top.bottom.equalToSuperview().inset(9)
             make.left.equalTo(historyImage.snp.right).offset(12)
-            make.right.greaterThanOrEqualTo(deleteHistoryButton.snp.left).offset(12)
-            make.centerY.equalToSuperview()
+            make.right.lessThanOrEqualTo(deleteHistoryButton.snp.left).offset(-12)
         }
     }
 
-    func bind(title: String) {
+    func configure(_ title: String) {
         self.historyLabel.setLabel(text: title, typo: .button2, color: .teamOne.grayscaleFive)
     }
 }

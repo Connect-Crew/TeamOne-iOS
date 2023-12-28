@@ -8,7 +8,15 @@
 
 import UIKit
 
-public struct SideProjectListElement {
+public struct SideProjectListElement: Hashable {
+    public static func == (lhs: SideProjectListElement, rhs: SideProjectListElement) -> Bool {
+        return lhs.id == rhs.id
+    }
+    
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(0)
+    }
+    
 
     public let id: Int
     public let title: String

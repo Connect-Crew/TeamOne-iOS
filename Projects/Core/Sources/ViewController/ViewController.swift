@@ -27,4 +27,8 @@ open class ViewController: UIViewController {
     open override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         view.endEditing(true)
     }
+    
+    deinit {
+        print("Deinit \(type(of: self))")
+    }
 }
