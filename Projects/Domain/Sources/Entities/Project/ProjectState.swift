@@ -11,4 +11,13 @@ import Foundation
 public enum ProjectState {
     case before
     case running
+    
+    public func toMultiPartValue() -> String {
+        switch self {
+        case .before:
+            return "NOT_STARTED"
+        case .running:
+            return "IN_PROGRESS"
+        }
+    }
 }

@@ -103,4 +103,10 @@ final class ProjectDetailMainViewController: ViewController {
 
         let output = viewModel.transform(input: input)
     }
+
+    deinit {
+        print("!!!!!!!!!!!\(self)::::")
+        print("Deinit")
+        print("!!!!!!!!!!!!")
+    }
 }

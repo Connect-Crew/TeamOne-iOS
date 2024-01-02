@@ -26,16 +26,18 @@ enum AuthError: Error {
 }
 
 public struct AuthRepository: AuthRepositoryProtocol {
-
+    
     let authDataSource: AuthDataSourceProtocol
 
     public init(authDataSource: AuthDataSourceProtocol) {
         self.authDataSource = authDataSource
     }
 
-    public func login(request: OAuthLoginProps) -> Observable<Bool> {
+    public func login(request: OAuthLoginProps) -> Single<Bool> {
 
-        guard let token = UserDefaultKeyList.Auth.APNsToken else { return Observable.error(AuthError.apnsError) }
+        guard let token = UserDefaultKeyList.Auth.APNsToken else {
+            return Single.error(AuthError.apnsError)
+        }
 
         let requestDTO = AuthLoginRequestDTO(
             token: request.token,
@@ -51,36 +53,31 @@ public struct AuthRepository: AuthRepositoryProtocol {
 
                 return true
             }
-            .catch({ error in
-
-                guard
-                    let error = error as? APIError,
-                    case .network(let statusCode) = error,
-                    statusCode == 400
-                else {
-                    return self.authDataSource.reissuance()
-                        .do(onNext: { newAccessToken in
-                            UserDefaultKeyList.Auth.appAccessToken = newAccessToken.token
-                        })
-                        .map { _ in true }
-                        .catch({ _ in return Observable.just(false) })
-                }
-
-                return Observable.just(false)
-            })
     }
 
-    public func autoLogin() -> Observable<Bool> {
+    public func reissuance() -> Single<RefreshToken> {
         return authDataSource.reissuance()
-            .do(onNext: { newAccessToken in
-                UserDefaultKeyList.Auth.appAccessToken = newAccessToken.token
-            })
-            .map { _ in true }
+            .map { $0.toDomain() }
     }
 
-    public func register(props: OAuthSignUpProps) -> Observable<Bool> {
+    public func autoLogin() -> Single<Void> {
+        
+        return Single.create { single in
+            guard let _ = UserDefaultKeyList.Auth.appAccessToken,
+                  let _ = UserDefaultKeyList.Auth.appRefreshToken else {
+                
+                single(.failure(APIError.notToken))
+                return Disposables.create()
+            }
+            
+            single(.success(()))
+            return Disposables.create()
+        }
+    }
 
-        guard let token = UserDefaultKeyList.Auth.APNsToken else { return Observable.error(AuthError.apnsError) }
+    public func register(props: OAuthSignUpProps) -> Single<Bool> {
+
+        guard let token = UserDefaultKeyList.Auth.APNsToken else { return Single.error(AuthError.apnsError) }
 
         let requestDTO = AuthRegisterRequestDTO(
             token: props.token,

@@ -56,17 +56,19 @@ final class HomeViewController: ViewController {
 
     override func bind() {
         let input = HomeViewModel.Input(
-            viewDidAppear: rx.viewDidAppear.map { _ in return }.asObservable(),
+            viewDidLoad: rx.viewWillAppear.take(1).map { _ in return }.asObservable(),
             parts: mainView.selected,
             writeButtonTap: mainView.buttonWrite.rx.tap
-                .throttle(.seconds(1), scheduler: MainScheduler.instance),
+                .throttle(.seconds(1), latest: true, scheduler: MainScheduler.instance),
             participantsButtonTap: participantsButtonTap,
-            likeButtonTap: likeButtonTap,
+            likeButtonTap: likeButtonTap
+                .throttle(.seconds(1), latest: true, scheduler: MainScheduler.instance),
             didScrolledEnd: mainView.tableView.rx.reachedBottom
-                .throttle(.seconds(1), scheduler: MainScheduler.instance),
+                .throttle(.seconds(1), latest: true, scheduler: MainScheduler.instance),
             didSelectedCell: mainView.tableView.rx.itemSelected
                 .throttle(.seconds(1), scheduler: MainScheduler.instance),
             tapSearch: mainView.searchButton.rx.tap.asObservable()
+                .throttle(.seconds(1), latest: true, scheduler: MainScheduler.instance)
         )
 
         let output = viewModel.transform(input: input)
@@ -103,12 +105,12 @@ final class HomeViewController: ViewController {
             }
             .disposed(by: disposeBag)
 
-        output.isEmpty
-            .drive(onNext: { [weak self] bool in
-                self?.tableView.rx.isHidden.onNext(bool)
-                self?.mainView.viewEmpty.rx.isHidden.onNext(!bool)
-            })
-            .disposed(by: disposeBag)
+//        output.isEmpty
+//            .drive(onNext: { [weak self] bool in
+//                self?.tableView.rx.isHidden.onNext(bool)
+//                self?.mainView.viewEmpty.rx.isHidden.onNext(!bool)
+//            })
+//            .disposed(by: disposeBag)
     }
 }
 

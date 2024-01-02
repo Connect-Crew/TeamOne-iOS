@@ -23,13 +23,13 @@ public struct SideProjectListElement: Hashable {
     public let thumbnail: String?
     public let region: String
     public let online: Bool
-    public let careerMin, careerMax: String
+    public let careerMin, careerMax: Career
     public let createdAt: String
     public let state: String
     public var favorite: Int
     public var myFavorite: Bool
     public let category: [String]
-    public let goal: String
+    public let goal: Purpose
     public let recruitStatus: [RecruitStatus]
     public var HashTags: [HashTag] = []
 
@@ -53,24 +53,23 @@ public struct SideProjectListElement: Hashable {
         self.thumbnail = thumbnail
         self.region = region
         self.online = online
-        self.careerMin = careerMin
-        self.careerMax = careerMax
+        self.careerMin = Career.findCareer(string: careerMin)
+        self.careerMax = Career.findCareer(string: careerMax)
         self.createdAt = createdAt
         self.state = state
         self.favorite = favorite
         self.myFavorite = myFavorite
         self.category = category
-        self.goal = goal
+        self.goal = Purpose.findCellStringToPurpose(string: goal)
         self.recruitStatus = recruitStatus
-
+        
+        setHashTags()
+    }
+    
+    mutating func setHashTags() {
         self.HashTags.append(HashTag(title: state, background: .pink, titleColor: .gray))
-
-        if careerMin == "경력무관" {
-            self.HashTags.append(HashTag(title: "경력 무관", background: .pink, titleColor: .gray))
-        } else {
-            self.HashTags.append(HashTag(title: "\(careerMin) 차 이상", background: .pink, titleColor: .gray))
-        }
-        self.HashTags.append(HashTag(title: goal, background: .gray, titleColor: .gray))
+        self.HashTags.append(HashTag(title: "\(self.careerMin.toCellString())", background: .pink, titleColor: .gray))
+        self.HashTags.append(HashTag(title: "\(self.goal.toCellString())", background: .gray, titleColor: .gray))
         category.forEach {
             self.HashTags.append(HashTag(title: $0, background: .gray, titleColor: .gray))
         }

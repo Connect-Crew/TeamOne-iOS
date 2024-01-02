@@ -11,7 +11,7 @@ import RxSwift
 import Core
 
 public protocol AutoLoginUseCaseProtocol {
-    func autoLogin() -> Observable<Bool>
+    func autoLogin() -> Single<Void>
 }
 
 public struct AutoLoginUseCase: AutoLoginUseCaseProtocol {
@@ -22,7 +22,7 @@ public struct AutoLoginUseCase: AutoLoginUseCaseProtocol {
         self.authRepository = authRepository
     }
 
-    public func autoLogin() -> Observable<Bool> {
+    public func autoLogin() -> Single<Void> {
         return authRepository.autoLogin()
     }
 }

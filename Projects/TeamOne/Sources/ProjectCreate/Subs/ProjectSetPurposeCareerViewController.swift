@@ -13,6 +13,7 @@ import RxCocoa
 import Then
 import DSKit
 import SnapKit
+import Domain
 
 final class ProjectSetPurposeCareerViewController: ViewController {
 
@@ -42,6 +43,20 @@ final class ProjectSetPurposeCareerViewController: ViewController {
         $0.setLabel(text: "취준생부터 경력 10년 이상까지 선택 가능합니다.", typo: .caption2, color: .teamOne.grayscaleEight)
     }
 
+    let buttonMinCareer = Button_DropBoxResult(frame: .zero).then {
+        $0.noneSelectedText = "경력 선택"
+    }
+
+    let labelBetweenCareerButton = UILabel().then {
+        $0.setLabel(text: "~", typo: .button2, color: .teamOne.grayscaleSeven)
+    }
+
+    let buttonMaxCareer = Button_DropBoxResult(frame: .zero).then {
+        $0.noneSelectedText = "경력 선택"
+    }
+
+    let dropBoxCareer = BaseDropBox()
+
     let buttonBefore = UIButton().then {
         $0.backgroundColor = .teamOne.grayscaleTwo
         $0.setButton(text: "이전", typo: .button1, color: .teamOne.grayscaleFive)
@@ -63,6 +78,14 @@ final class ProjectSetPurposeCareerViewController: ViewController {
         $0.setFont(typo: .button1)
     }
 
+    lazy var setCareerStackView = UIStackView(arrangedSubviews: [
+        buttonMinCareer,
+        buttonMaxCareer
+    ]).then {
+        $0.spacing = 20
+        $0.distribution = .fillEqually
+    }
+
     lazy var contentStackView = UIStackView(arrangedSubviews: [
         createFirstStackView(),
         createSecondStackView()
@@ -81,7 +104,14 @@ final class ProjectSetPurposeCareerViewController: ViewController {
         $0.isLayoutMarginsRelativeArrangement = true
         $0.distribution = .fillEqually
         $0.spacing = 20
+        $0.backgroundColor = .white
     }
+
+    private let careerDataSource = Career.allCareerStringValues()
+    private var careerMaxDataSource: [String] = []
+    
+    let minCareerSubject = PublishSubject<Career>()
+    let maxCareerSubject = PublishSubject<Career>()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -106,6 +136,143 @@ final class ProjectSetPurposeCareerViewController: ViewController {
         buttonStackView.snp.makeConstraints {
             $0.leading.trailing.bottom.equalToSuperview()
         }
+
+        self.scrollView.contentView.addSubview(labelBetweenCareerButton)
+
+        labelBetweenCareerButton.snp.makeConstraints {
+            $0.center.equalTo(setCareerStackView)
+        }
+    }
+
+    override func bind() {
+        
+        let minCareerSubject = PublishSubject<(String, Int)>()
+        let maxCareerSubject = PublishSubject<(String, Int)>()
+
+        buttonMinCareer.button.rx.tap
+            .throttle(.seconds(1), latest: true, scheduler: MainScheduler.instance)
+            .withUnretained(self)
+            .bind(onNext: { careerVC, _ in
+
+                if careerVC.buttonMinCareer.isDropDownOpend == false {
+                    
+                    careerVC.dropBoxCareer.openDropBox(
+                        dataSource: careerVC.careerDataSource,
+                        onSelectSubject: minCareerSubject
+                    )
+                    
+                    careerVC.buttonMinCareer.isDropDownOpend = true
+                }
+            })
+            .disposed(by: disposeBag)
+
+        minCareerSubject
+            .withUnretained(self)
+            .subscribe(onNext: { careerVC, result in
+                let selectedCareer = Career.findCareer(string: result.0)
+                
+                careerVC.minCareerSubject.onNext(selectedCareer)
+                
+                careerVC.buttonMinCareer.isDropDownOpend = false
+                careerVC.buttonMinCareer.isSelected = true
+
+                let range = (result.1)..<(careerVC.careerDataSource.count)
+
+                careerVC.careerMaxDataSource = Array(careerVC.careerDataSource[range])
+            })
+            .disposed(by: disposeBag)
+
+        buttonMaxCareer.button.rx.tap
+            .throttle(.seconds(1), latest: true, scheduler: MainScheduler.instance)
+            .withUnretained(self)
+            .bind(onNext: { careerVC, _ in
+
+                if careerVC.buttonMaxCareer.isDropDownOpend == false && careerVC.buttonMinCareer.isDropDownOpend == false {
+
+                    careerVC.dropBoxCareer.openDropBox(
+                        dataSource: careerVC.careerMaxDataSource,
+                        onSelectSubject: maxCareerSubject
+                    )
+
+                    careerVC.buttonMaxCareer.isDropDownOpend = true
+
+                }
+            })
+            .disposed(by: disposeBag)
+
+        maxCareerSubject
+            .withUnretained(self)
+            .subscribe(onNext: { careerVC, result in
+                let selectedCareer = Career.findCareer(string: result.0)
+                
+                careerVC.maxCareerSubject.onNext(selectedCareer)
+            
+                careerVC.buttonMaxCareer.isDropDownOpend = false
+                careerVC.buttonMaxCareer.isSelected = true
+            })
+            .disposed(by: disposeBag)
+    }
+
+    func bind(output: ProjectCreateMainViewModel.Output) {
+
+        output.isNoRequiredExperience
+            .drive(buttonnoExperienceRequiredCheckBox.rx.isSelected)
+            .disposed(by: disposeBag)
+
+        output.isNoRequiredExperience
+            .drive(onNext: { [weak self] bool in
+                if bool == true {
+                    self?.buttonMinCareer.isUserInteractionEnabled = false
+                    self?.buttonMaxCareer.isUserInteractionEnabled = false
+                } else {
+                    self?.buttonMinCareer.isUserInteractionEnabled = true
+                    self?.buttonMaxCareer.isUserInteractionEnabled = true
+                }
+            })
+            .disposed(by: disposeBag)
+        
+        output.minCareer
+            .map { $0.toString() }
+            .drive(onNext: { [weak self] string in
+                self?.buttonMinCareer.selectedText = string
+            })
+            .disposed(by: disposeBag)
+        
+        output.minCareerSelected
+            .drive(buttonMinCareer.rx.isSelected)
+            .disposed(by: disposeBag)
+        
+        output.maxCareer
+            .map { $0.toString() }
+            .drive(onNext: { [weak self] string in
+                self?.buttonMaxCareer.selectedText = string
+            })
+            .disposed(by: disposeBag)
+        
+        output.maxCareerSelected
+            .drive(buttonMaxCareer.rx.isSelected)
+            .disposed(by: disposeBag)
+        
+        output.purpose
+            .drive(onNext: { [weak self] purpose in
+                switch purpose {
+                case .none:
+                    self?.buttonPurposePortfolio.isSelected = false
+                    self?.buttonPurposeStartup.isSelected = false
+                case .portfolio:
+                    self?.buttonPurposePortfolio.isSelected = true
+                    self?.buttonPurposeStartup.isSelected = false
+                case .startup:
+                    self?.buttonPurposePortfolio.isSelected = false
+                    self?.buttonPurposeStartup.isSelected = true
+                }
+            })
+            .disposed(by: disposeBag)
+        
+        output.purposeCareerCanNextPage
+            .drive(buttonNext.rx.isEnabled)
+            .disposed(by: disposeBag)
+
     }
 
     override func viewDidLayoutSubviews() {
@@ -142,14 +309,15 @@ final class ProjectSetPurposeCareerViewController: ViewController {
         return UIStackView(arrangedSubviews: [
             labelCareerTitle,
             labelCareerContent,
-            buttonnoExperienceRequiredCheckBox
-            //            makeFirstButtonStackView()
+            buttonnoExperienceRequiredCheckBox,
+            setCareerStackView,
+            dropBoxCareer
         ]).then {
             $0.axis = .vertical
             $0.spacing = 4
             $0.setCustomSpacing(18, after: labelPurposeContent)
+            $0.setCustomSpacing(10, after: buttonnoExperienceRequiredCheckBox)
+            $0.setCustomSpacing(20, after: setCareerStackView)
         }
     }
-
 }
-

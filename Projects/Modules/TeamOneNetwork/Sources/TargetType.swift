@@ -48,6 +48,33 @@ public extension TargetType {
             return urlRequest
         }
     }
+    
+    func asMultipartRequest() throws -> URLRequest {
+        let url = try baseURL.asURL().appendingPathComponent(path)
+        var urlRequest = try URLRequest(url: url, method: method)
+        urlRequest.headers = header
+        
+        urlRequest.setValue("multipart/form-data", forHTTPHeaderField: "Content-Type")
+        
+        let formData = MultipartFormData()
+        
+        switch parameters {
+        case let .body(parameters):
+            if let parameters = parameters {
+                for (key, value) in parameters.toDictionary() {
+                    if let data = "\(value)".data(using: .utf8) {
+                        formData.append(data, withName: key)
+                    }
+                }
+            }
+        default:
+            break
+        }
+        
+        urlRequest.httpBody = try formData.encode()
+        
+        return urlRequest
+    }
 }
 
 public enum RequestParams {

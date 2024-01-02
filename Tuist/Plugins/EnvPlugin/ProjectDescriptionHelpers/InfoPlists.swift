@@ -24,6 +24,7 @@ public extension Project {
         ],
         "NSMicrophoneUsageDescription": "마이크 권한 설정",
         "NSCameraUsageDescription": "카메라 권한 설정",
+        "NSPhotoLibraryUsageDescription": "앨범에 접근하여 사진을 선택하고 관리합니다.",
         "UIApplicationSceneManifest": [
             "UIApplicationSupportsMultipleScenes": false,
             "UISceneConfigurations": [

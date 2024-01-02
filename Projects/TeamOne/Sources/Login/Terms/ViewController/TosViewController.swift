@@ -61,6 +61,10 @@ final class TosViewController: ViewController {
             backButtonTap: mainView.leftBackButton.rx.tap
                 .throttle(.seconds(1), scheduler: MainScheduler.instance),
             closeButtonTap: mainView.buttonClose.rx.tap
+                .throttle(.seconds(1), scheduler: MainScheduler.instance),
+            goToServiceTerms: mainView.buttonGoUserServiceTerms.rx.tap
+                .throttle(.seconds(1), scheduler: MainScheduler.instance),
+            gotoPersonalInfoPolicy: mainView.buttonGoUserPersonalInfoPolicy.rx.tap
                 .throttle(.seconds(1), scheduler: MainScheduler.instance)
         )
 

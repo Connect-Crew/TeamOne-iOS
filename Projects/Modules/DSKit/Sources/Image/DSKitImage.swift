@@ -68,6 +68,7 @@ public enum DSKitImage {
     // MARK: - logo
 
     case logo
+    case AppIcon
 
     // MARK: - 홈 셀
 
@@ -121,7 +122,37 @@ public enum DSKitImage {
     case write
     case CheckBoxChecked
     case CheckBoxNotChecked
+<<<<<<< HEAD
     case reset
+=======
+    case up
+    case down
+
+    // MARK: - ProjectCreate
+
+    case CreateIT
+    case createAi
+    case createApp
+    case createBabyPet
+    case createCommunity
+    case createEcommerce
+    case createEducation
+    case createFinance
+    case createFood
+    case createGame
+    case createHealthLife
+    case createHouse
+    case createLove
+    case createTravel
+
+    // MARK: - PhotoSelect
+
+    case photoSelect
+
+    // MARK: - Delete
+    case delete3
+    case delete2
+    case delete4
 
     var toName: String {
         switch self {
@@ -209,7 +240,9 @@ public enum DSKitImage {
             return "newTagbg"
 
         case .logo:
-            return "임시로고"
+            return "logo"
+        case .AppIcon:
+            return "AppIcon"
 
         case .count:
             return "countAvailable"
@@ -266,6 +299,36 @@ public enum DSKitImage {
         case .CheckBoxChecked: return "CheckBoxChecked"
         case .CheckBoxNotChecked: return "CheckBoxNotChecked"
         
+        case .up: return "up"
+        case .down: return "down"
+
+            // MARK: - ProjectCreate
+
+        case .CreateIT: return "projectCreate_IT"
+        case .createAi: return "projectCreate_Ai"
+        case .createApp: return "projectCreate_App"
+        case .createBabyPet: return "projectCreate_Baby_Pet"
+        case .createCommunity: return "projectCreate_Community"
+        case .createEcommerce: return "projectCreate_Ecommerce"
+        case .createEducation: return "projectCreate_Education"
+        case .createFinance: return "projectCreate_finanace"
+        case .createFood: return "projectCreate_Food"
+        case .createGame: return "projectCreate_Game"
+        case .createHealthLife: return "projectCreate_HealthLife"
+        case .createHouse: return "projectCreate_House"
+        case .createLove: return "projectCreate_Love"
+        case .createTravel: return "projectCreate_Travel"
+            
+            // MARK: - PhotoSelect
+
+        case .photoSelect: return "PhotoSelected"
+
+            // MARK: - Delete
+
+        case .delete2: return "Delete2"
+        case .delete3: return "Delete3"
+        case .delete4: return "Delete4"
+
         }
     }
 }
@@ -274,6 +337,7 @@ public extension UIImage {
     static func image(dsimage: DSKitImage) -> UIImage? {
         guard let image = UIImage(named: dsimage.toName, in: Bundle.module, compatibleWith: .none) else {
             print("DEBUG: image \(dsimage.toName) load 실패")
+            fatalError()
             return nil
         }
 

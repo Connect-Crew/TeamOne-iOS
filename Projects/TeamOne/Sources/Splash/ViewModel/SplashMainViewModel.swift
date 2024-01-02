@@ -42,19 +42,14 @@ final class SplashViewModel: ViewModel {
 
         input.viewDidAppear
             .withUnretained(self)
-            .flatMap { $0.0.autoLoginUseCase.autoLogin().asResult()}
             .delay(.seconds(2), scheduler: MainScheduler.instance)
+            .flatMap { $0.0.autoLoginUseCase.autoLogin() }
             .withUnretained(self)
-            .subscribe(onNext: { viewModel, result in
-                switch result {
-                case .success(let bool):
-                    if bool { viewModel.navigation.onNext(.autoLogin) }
-                    else { viewModel.navigation.onNext(.finish) }
-
-                case .failure(let error):
-                    print("DEBUG: SplashError \(error) ====> \(error.localizedDescription)")
-                    viewModel.navigation.onNext(.finish)
-                }
+            .subscribe(onNext: { this, _ in
+                this.navigation.onNext(.autoLogin)
+            },
+            onError: { [weak self] _ in
+                self?.navigation.onNext(.finish)
             })
             .disposed(by: disposeBag)
 

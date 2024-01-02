@@ -41,6 +41,7 @@ final class SplashMainView: UIView {
         logoImageView.snp.makeConstraints {
             $0.centerX.equalToSuperview()
             $0.centerY.equalToSuperview().offset(-50)
+            $0.width.height.equalTo(230)
         }
 
         addSubview(titleLabel)

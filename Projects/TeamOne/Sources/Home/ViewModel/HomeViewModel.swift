@@ -36,10 +36,8 @@ final class HomeViewModel: ViewModel {
         self.projectUseCase = projectUseCase
     }
 
-    // MARK: - Mocks
-
     struct Input {
-        let viewDidAppear: Observable<Void>
+        let viewDidLoad: Observable<Void>
         let parts: BehaviorRelay<String?>
         let writeButtonTap: Observable<Void>
         let participantsButtonTap: Observable<SideProjectListElement?>
@@ -51,7 +49,6 @@ final class HomeViewModel: ViewModel {
 
     struct Output {
         let projects: Driver<[SideProjectListElement]>
-        let isEmpty: Driver<Bool>
     }
 
     lazy var projects = BehaviorSubject<[SideProjectListElement]>(value: [])
@@ -62,20 +59,21 @@ final class HomeViewModel: ViewModel {
 
     let navigation = PublishSubject<HomeNavigation>()
     var disposeBag = DisposeBag()
+    
+    var refresh = PublishSubject<Void>()
 
     func transform(input: Input) -> Output {
 
         transformMyProfile(input: input)
         transformInputButton(input: input)
-        transformParts(input: input)
+        transformLoadProjects(input: input)
         transformParticipantsButton(input: input)
         transformLikeButton(input: input)
         transformDidSelectCell(input: input)
         tarsfromMoveToSearch(input: input)
 
         return Output(
-            projects: projects.asDriver(onErrorJustReturn: []),
-            isEmpty: isEmpty.asDriver(onErrorJustReturn: true)
+            projects: projects.asDriver(onErrorJustReturn: [])
         )
     }
     
@@ -87,7 +85,7 @@ final class HomeViewModel: ViewModel {
     }
 
     func transformMyProfile(input: Input) {
-        input.viewDidAppear
+        input.viewDidLoad
             .withUnretained(self)
             .flatMap { viewModel, _ in
                 viewModel.myProfileUseCase.myProfile().asResult()
@@ -97,7 +95,7 @@ final class HomeViewModel: ViewModel {
             .disposed(by: disposeBag)
     }
 
-    func transformParts(input: Input) {
+    func transformLoadProjects(input: Input) {
 
         input.parts
             .distinctUntilChanged()
@@ -125,7 +123,7 @@ final class HomeViewModel: ViewModel {
                             guard let first = $0.createdAt.toDate(),
                                   let second = $1.createdAt.toDate() else { return true }
 
-                            return first < second
+                            return first > second
                         }
                     }
             }
@@ -154,19 +152,24 @@ final class HomeViewModel: ViewModel {
             )
             .withUnretained(self)
             .flatMap { viewModel, params in
-                return viewModel.projectListUseCase.list(lastId: params.0, size: 30, goal: nil,
-                                                         career: nil, region: nil, online: nil,
-                                                         part: params.1, skills: nil, states: nil,
-                                                         category: nil, search: nil)
+                return viewModel.projectListUseCase.list(
+                    lastId: params.0,
+                    size: 30, goal: nil,
+                    career: nil, region: nil,
+                    online: nil, part: params.1,
+                    skills: nil, states: nil,
+                    category: nil, search: nil)
                     .withLatestFrom(viewModel.projects) { new, current in
+                        
                         if new.count < 30 {
                             viewModel.isEnd.onNext(true)
                         }
+                        
                         let sortedNew = new.sorted {
                             guard let first = $0.createdAt.toDate(),
                                   let second = $1.createdAt.toDate() else { return true }
 
-                            return first < second
+                            return first > second
                         }
 
                         return current + sortedNew
@@ -198,12 +201,16 @@ final class HomeViewModel: ViewModel {
 
                         var newProject = projects
 
-                        if let index = projects.firstIndex(where: { $0.id == like.project
+                        if let index = newProject.firstIndex(where: { $0.id == like.project
                         }) {
                             newProject[index].favorite = like.favorite
                             newProject[index].myFavorite = like.myFavorite
                         }
-
+                        
+                        print("!!!!!!!!!!!\(self)::::")
+                        dump(newProject.first?.HashTags)
+                        print("!!!!!!!!!!!!")
+                        
                         return newProject
                     }
             }
