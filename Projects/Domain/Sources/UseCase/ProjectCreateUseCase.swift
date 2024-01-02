@@ -23,29 +23,7 @@ public struct DefaultProjectCreateUseCase: ProjectCreateUseCase {
 
     public func create(props: ProjectCreateProps) -> Single<ProjectCreateResponse> {
         
-        var mappedKeyProps = props
-        
-        let region = props.region == "" ? "NONE" : props.region
-        let leaderParts = KM.shared.key(name: props.leaderParts)
-        var recruits = [Recurit]()
-        var categorys = [String]()
-        
-        props.recruits.forEach {
-            var mappedRecruits = $0
-            mappedRecruits.part = KM.shared.key(name: $0.part)
-            recruits.append(mappedRecruits)
-        }
-        
-        for category in props.category {
-            categorys.append(KM.shared.key(name: category))
-        }
-        
-        mappedKeyProps.region = region
-        mappedKeyProps.leaderParts = leaderParts
-        mappedKeyProps.recruits = recruits
-        mappedKeyProps.category = categorys
-        
-        return projectRepository.createProject(props: mappedKeyProps)
+        return projectRepository.createProject(props: props)
     }
 }
 

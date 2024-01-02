@@ -66,27 +66,54 @@ public struct ProjectRepository: ProjectRepositoryProtocol {
     
     public func createProject(props: ProjectCreateProps) -> Single<ProjectCreateResponse> {
         
-        let compactImages = props.banner.map { $0.jpegData(compressionQuality:  0.5)}
         
-        let request = ProjectCreateRequestDTO(
-            banner: compactImages,
-            title: props.title,
-            region: props.region,
-            online: props.online,
-            state: props.state,
-            careerMin: props.careerMin,
-            careerMax: props.careerMax,
-            leaderParts: props.leaderParts,
-            category: props.category,
-            goal: props.goal,
-            introduction: props.introducion,
-            recruits: props.recruits.map {
-                ProjectRecruitDTO(part: $0.part, comment: $0.comment, max: $0.max)
-            },
-            skills: props.skills
-        )
+        let request = propsToRequestDTO(props: props)
         
         return projectDataSource.create(request)
             .map { $0.toDomain() }
+    }
+    
+    func propsToRequestDTO(props: ProjectCreateProps) -> ProjectCreateRequestDTO {
+        var mappedKeyProps = props
+        
+        let region = props.region == "" ? "NONE" : props.region
+        let leaderParts = KM.shared.key(name: props.leaderParts)
+        var recruits = [Recurit]()
+        var categorys = [String]()
+        
+        props.recruits.forEach {
+            var mappedRecruits = $0
+            mappedRecruits.part = KM.shared.key(name: $0.part)
+            recruits.append(mappedRecruits)
+        }
+        
+        for category in props.category {
+            categorys.append(KM.shared.key(name: category))
+        }
+        
+        mappedKeyProps.region = region
+        mappedKeyProps.leaderParts = leaderParts
+        mappedKeyProps.recruits = recruits
+        mappedKeyProps.category = categorys
+        mappedKeyProps.region = KM.shared.key(name: props.region)
+        
+        let compactImagesData = props.banner.map { $0.jpegData(compressionQuality:  0.5)}
+        
+        return ProjectCreateRequestDTO(
+            banner: compactImagesData, 
+            title: mappedKeyProps.title,
+            region: mappedKeyProps.region,
+            online: mappedKeyProps.online.toBool(),
+            state: mappedKeyProps.state.toMultiPartValue(), 
+            careerMin: mappedKeyProps.careerMin.toMultiPartValue(),
+            careerMax: mappedKeyProps.careerMax.toMultiPartValue(),
+            leaderParts: mappedKeyProps.leaderParts,
+            category: mappedKeyProps.category,
+            goal: mappedKeyProps.goal.toMultiPartValue(),
+            introduction: mappedKeyProps.introducion,
+            recruits: mappedKeyProps.recruits.map {
+                ProjectRecruitDTO(part: $0.part, comment: $0.comment, max: $0.max)
+            },
+            skills: mappedKeyProps.skills)
     }
 }

@@ -161,6 +161,12 @@ final class ProjectCreateMainViewController: ViewController {
                 self?.presentResultAlertView_Image_Title_Content(source: self, alert: alert)
             })
             .disposed(by: disposeBag)
+        
+        output.createAlert
+            .subscribe(onNext: { [weak self] alert in
+                self?.presentResultAlertView_Image_Title_Content(source: self, alert: alert)
+            })
+            .disposed(by: disposeBag)
     }
 
     func bindStateRegionVC(output: ProjectCreateMainViewModel.Output) {

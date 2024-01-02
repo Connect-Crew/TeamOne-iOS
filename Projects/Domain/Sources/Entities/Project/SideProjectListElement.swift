@@ -60,7 +60,7 @@ public struct SideProjectListElement {
     
     mutating func setHashTags() {
         self.HashTags.append(HashTag(title: state, background: .pink, titleColor: .gray))
-        self.HashTags.append(HashTag(title: "\(self.careerMin.toString())", background: .pink, titleColor: .gray))
+        self.HashTags.append(HashTag(title: "\(self.careerMin.toCellString())", background: .pink, titleColor: .gray))
         self.HashTags.append(HashTag(title: "\(self.goal.toCellString())", background: .gray, titleColor: .gray))
         category.forEach {
             self.HashTags.append(HashTag(title: $0, background: .gray, titleColor: .gray))

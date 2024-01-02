@@ -65,6 +65,7 @@ final class ProjectCreateMainViewModel: ViewModel {
     struct Output {
         let currentPage: Driver<Int>
         let cancleAlert: PublishSubject<ResultAlertView_Image_Title_Content_Alert>
+        let createAlert: PublishSubject<ResultAlertView_Image_Title_Content_Alert>
         let selectedState: Signal<ProjectState?>
         let selectedIsOnline: Driver<isOnline>
         let locationList: Driver<[String]>
@@ -96,19 +97,34 @@ final class ProjectCreateMainViewModel: ViewModel {
         availableCancle: true,
         resultSubject: alertResultSubject
     )
+    
+    lazy var createAlert = ResultAlertView_Image_Title_Content_Alert(
+        image: .write,
+        title: "프로젝트를 생성하시겠습니까??",
+        content: "확인을 누르시면 프로젝트가 생성됩니다.",
+        availableCancle: true,
+        resultSubject: createAlertResultSubject
+    )
 
     var disposeBag: DisposeBag = .init()
     let navigation = PublishSubject<ProjectCreateMainNavigation>()
-
-    let alertResultSubject = PublishSubject<Bool>()
 
     let location = BehaviorSubject<String>(value: "")
     let isCareerSelected = BehaviorSubject<Bool>(value: false)
 
     // MARK: - Output
 
+    // MARK: - Page
     let currentPage = BehaviorSubject<Int>(value: 0)
+    
+    // MARK: - Alert
+    
     let cancleAlertSubject = PublishSubject<ResultAlertView_Image_Title_Content_Alert>()
+    let createAlertSubject = PublishSubject<ResultAlertView_Image_Title_Content_Alert>()
+    
+    let alertResultSubject = PublishSubject<Bool>()
+    let createAlertResultSubject = PublishSubject<Bool>()
+    
     let state = PublishSubject<ProjectState?>()
     let isOnlineSubject = BehaviorSubject<isOnline>(value: .none)
     lazy var regions = BehaviorSubject<[String]>(value: [])
@@ -146,6 +162,7 @@ final class ProjectCreateMainViewModel: ViewModel {
         return Output(
             currentPage: currentPage.asDriver(onErrorJustReturn: 0),
             cancleAlert: cancleAlertSubject,
+            createAlert: createAlertSubject,
             selectedState: state.asSignal(onErrorJustReturn: nil),
             selectedIsOnline: isOnlineSubject.asDriver(onErrorJustReturn: .none),
             locationList: regions.asDriver(onErrorJustReturn: []),
@@ -190,7 +207,8 @@ final class ProjectCreateMainViewModel: ViewModel {
         let combine1 = Observable.combineLatest(selectedImage, input.projectName, isOnlineSubject, location, state, minCareer, maxCareer)
         let combine2 = Observable.combineLatest(input.leaderPart, selectedCategory, purpose, input.introduce, selectedRecruits, selectedSkills)
         
-        input.createButtonTap
+        createAlertResultSubject
+            .filter { $0 == true }
             .withLatestFrom(Observable.combineLatest(combine1, combine2))
             .withUnretained(self)
             .flatMap { this, properties in
@@ -199,13 +217,13 @@ final class ProjectCreateMainViewModel: ViewModel {
                     banner: properties.0.0,
                     title: properties.0.1,
                     region: properties.0.3,
-                    online: properties.0.2.toBool(),
-                    state: (properties.0.4 ?? .before).toMultiPartValue(),
-                    careerMin: properties.0.5.toMultiPartValue(),
-                    careerMax: properties.0.6.toMultiPartValue(),
+                    online: properties.0.2,
+                    state: (properties.0.4 ?? .before),
+                    careerMin: properties.0.5,
+                    careerMax: properties.0.6,
                     leaderParts: properties.1.0,
                     category: properties.1.1,
-                    goal: properties.1.2.toMultiPartValue(),
+                    goal: properties.1.2,
                     introducion: properties.1.3,
                     recruits: properties.1.4,
                     skills: properties.1.5
@@ -216,6 +234,9 @@ final class ProjectCreateMainViewModel: ViewModel {
             .withUnretained(self)
             .subscribe(onNext: { this, _ in
                 this.navigation.onNext(.finish)
+            }, onError: { [weak self] error in
+                // TODO: - 에러처리
+                self?.navigation.onNext(.finish)
             })
             .disposed(by: disposeBag)
             
@@ -270,7 +291,7 @@ final class ProjectCreateMainViewModel: ViewModel {
                 var newCurrent = current
 
                 if newCurrent.contains(select),
-                   let index = newCurrent.firstIndex(where: { $0 == select}){
+                   let index = newCurrent.firstIndex(where: { $0 == select}) {
                     newCurrent.remove(at: index)
                 }
 
@@ -383,6 +404,14 @@ final class ProjectCreateMainViewModel: ViewModel {
                 return ProjectCreateMainNavigation.close
             }
             .bind(to: navigation)
+            .disposed(by: disposeBag)
+        
+        input.createButtonTap
+            .withUnretained(self)
+            .map { this, _ in
+                this.createAlert
+            }
+            .bind(to: createAlertSubject)
             .disposed(by: disposeBag)
     }
 
