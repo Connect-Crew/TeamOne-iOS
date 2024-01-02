@@ -187,7 +187,8 @@ extension AppDelegate {
         
         container.register(interface: RecentHistoryFacade.self) { _ in
             RecentHistory()
-            
+        }
+        
         container.register(interface: ProjectCreateUseCase.self) { res in
             return DefaultProjectCreateUseCase(
                 projectRepository: res.resolve(ProjectRepositoryProtocol.self)!

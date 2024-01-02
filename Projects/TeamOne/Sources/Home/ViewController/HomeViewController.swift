@@ -89,6 +89,7 @@ final class HomeViewController: ViewController {
                 
                 cell.prepareForReuse()
                 cell.initSetting(project: project)
+                cell.selectionStyle = .none
                 cell.buttonParticipantsTap
                     .subscribe(onNext: { [weak self]  in
                         self?.participantsButtonTap.onNext($0)
