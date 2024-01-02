@@ -122,9 +122,7 @@ public enum DSKitImage {
     case write
     case CheckBoxChecked
     case CheckBoxNotChecked
-<<<<<<< HEAD
     case reset
-=======
     case up
     case down
 
