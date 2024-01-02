@@ -13,6 +13,7 @@ import RxCocoa
 import Then
 import DSKit
 import SnapKit
+import Domain
 
 final class ProjectSetPurposeCareerViewController: ViewController {
 
@@ -106,11 +107,11 @@ final class ProjectSetPurposeCareerViewController: ViewController {
         $0.backgroundColor = .white
     }
 
-    private let careerDataSource: [String] = ["준비생", "신입", "1년", "2년", "3년", "4년", "5년", "6년", "7년", "8년", "9년", "10년 이상"]
+    private let careerDataSource = Career.allCareerStringValues()
     private var careerMaxDataSource: [String] = []
-
-    let minCareerSubject = PublishSubject<(String, Int)>()
-    let maxCareerSubject = PublishSubject<(String, Int)>()
+    
+    let minCareerSubject = PublishSubject<Career>()
+    let maxCareerSubject = PublishSubject<Career>()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -144,6 +145,9 @@ final class ProjectSetPurposeCareerViewController: ViewController {
     }
 
     override func bind() {
+        
+        let minCareerSubject = PublishSubject<(String, Int)>()
+        let maxCareerSubject = PublishSubject<(String, Int)>()
 
         buttonMinCareer.button.rx.tap
             .throttle(.seconds(1), latest: true, scheduler: MainScheduler.instance)
@@ -151,15 +155,13 @@ final class ProjectSetPurposeCareerViewController: ViewController {
             .bind(onNext: { careerVC, _ in
 
                 if careerVC.buttonMinCareer.isDropDownOpend == false {
-
+                    
                     careerVC.dropBoxCareer.openDropBox(
                         dataSource: careerVC.careerDataSource,
-                        onSelectSubject: careerVC.minCareerSubject
+                        onSelectSubject: minCareerSubject
                     )
-
+                    
                     careerVC.buttonMinCareer.isDropDownOpend = true
-
-                    careerVC.buttonMaxCareer.reset()
                 }
             })
             .disposed(by: disposeBag)
@@ -167,7 +169,10 @@ final class ProjectSetPurposeCareerViewController: ViewController {
         minCareerSubject
             .withUnretained(self)
             .subscribe(onNext: { careerVC, result in
-                careerVC.buttonMinCareer.selectedText = result.0
+                let selectedCareer = Career.findCareer(string: result.0)
+                
+                careerVC.minCareerSubject.onNext(selectedCareer)
+                
                 careerVC.buttonMinCareer.isDropDownOpend = false
                 careerVC.buttonMinCareer.isSelected = true
 
@@ -186,7 +191,7 @@ final class ProjectSetPurposeCareerViewController: ViewController {
 
                     careerVC.dropBoxCareer.openDropBox(
                         dataSource: careerVC.careerMaxDataSource,
-                        onSelectSubject: careerVC.maxCareerSubject
+                        onSelectSubject: maxCareerSubject
                     )
 
                     careerVC.buttonMaxCareer.isDropDownOpend = true
@@ -198,7 +203,10 @@ final class ProjectSetPurposeCareerViewController: ViewController {
         maxCareerSubject
             .withUnretained(self)
             .subscribe(onNext: { careerVC, result in
-                careerVC.buttonMaxCareer.selectedText = result.0
+                let selectedCareer = Career.findCareer(string: result.0)
+                
+                careerVC.maxCareerSubject.onNext(selectedCareer)
+            
                 careerVC.buttonMaxCareer.isDropDownOpend = false
                 careerVC.buttonMaxCareer.isSelected = true
             })
@@ -214,12 +222,6 @@ final class ProjectSetPurposeCareerViewController: ViewController {
         output.isNoRequiredExperience
             .drive(onNext: { [weak self] bool in
                 if bool == true {
-                    self?.minCareerSubject.onNext(("", 0))
-                    self?.maxCareerSubject.onNext(("", 0))
-
-                    self?.buttonMinCareer.reset()
-                    self?.buttonMaxCareer.reset()
-
                     self?.buttonMinCareer.isUserInteractionEnabled = false
                     self?.buttonMaxCareer.isUserInteractionEnabled = false
                 } else {
@@ -228,7 +230,29 @@ final class ProjectSetPurposeCareerViewController: ViewController {
                 }
             })
             .disposed(by: disposeBag)
-
+        
+        output.minCareer
+            .map { $0.toString() }
+            .drive(onNext: { [weak self] string in
+                self?.buttonMinCareer.selectedText = string
+            })
+            .disposed(by: disposeBag)
+        
+        output.minCareerSelected
+            .drive(buttonMinCareer.rx.isSelected)
+            .disposed(by: disposeBag)
+        
+        output.maxCareer
+            .map { $0.toString() }
+            .drive(onNext: { [weak self] string in
+                self?.buttonMaxCareer.selectedText = string
+            })
+            .disposed(by: disposeBag)
+        
+        output.maxCareerSelected
+            .drive(buttonMaxCareer.rx.isSelected)
+            .disposed(by: disposeBag)
+        
         output.purpose
             .drive(onNext: { [weak self] purpose in
                 switch purpose {

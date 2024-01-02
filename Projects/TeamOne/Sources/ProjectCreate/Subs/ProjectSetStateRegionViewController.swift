@@ -115,9 +115,9 @@ final class ProjectSetStateRegionViewController: ViewController {
             })
             .disposed(by: disposeBag)
 
-        output.selectedRegion
-            .drive(onNext: { [weak self] region in
-                switch region {
+        output.selectedIsOnline
+            .drive(onNext: { [weak self] isOnline in
+                switch isOnline {
                 case .none:
                     self?.buttonRegionOnline.isSelected = false
                     self?.buttonRegionOffline.isSelected = false

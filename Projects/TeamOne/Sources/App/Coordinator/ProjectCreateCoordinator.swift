@@ -14,6 +14,7 @@ import RxSwift
 
 enum ProjectCreateCoordinatorResult {
     case finish
+    case created
 }
 
 final class ProjectCreateCoordinator: BaseCoordinator<ProjectCreateCoordinatorResult> {
@@ -29,7 +30,8 @@ final class ProjectCreateCoordinator: BaseCoordinator<ProjectCreateCoordinatorRe
     }
 
     func showPorjectCreate() {
-        let viewModel = ProjectCreateMainViewModel()
+        
+        let viewModel = ProjectCreateMainViewModel(projectCreateUseCase: DIContainer.shared.resolve(ProjectCreateUseCase.self))
 
         viewModel.navigation
             .subscribe(onNext: { [weak self] in
@@ -37,7 +39,7 @@ final class ProjectCreateCoordinator: BaseCoordinator<ProjectCreateCoordinatorRe
                 case .close:
                     self?.finish.onNext(.finish)
                 case .finish:
-                    break
+                    self?.finish.onNext(.created)
                 }
             })
             .disposed(by: disposeBag)

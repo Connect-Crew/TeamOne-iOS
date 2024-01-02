@@ -12,11 +12,11 @@ public typealias Recurits = [Recurit]
 
 public struct Recurit {
     /// 직군
-    var part: String
+    public var part: String
 
-    var comment: String
+    public var comment: String
 
-    var max: Int
+    public var max: Int
 
     public init(part: String, comment: String, max: Int) {
         self.part = part

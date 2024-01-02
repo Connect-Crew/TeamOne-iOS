@@ -13,7 +13,7 @@ public enum APIError: Error, Equatable {
     case notToken
     case unknown
 
-    init(error: ErrorEntity) {
+    public init(error: ErrorEntity) {
         self = .network(statusCode: error.status, message: error.message)
     }
 }

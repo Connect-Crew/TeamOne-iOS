@@ -59,13 +59,14 @@ final class HomeViewController: ViewController {
             viewDidAppear: rx.viewDidAppear.map { _ in return }.asObservable(),
             parts: mainView.selected,
             writeButtonTap: mainView.buttonWrite.rx.tap
-                .throttle(.seconds(1), scheduler: MainScheduler.instance),
+                .throttle(.seconds(1), latest: true, scheduler: MainScheduler.instance),
             participantsButtonTap: participantsButtonTap,
-            likeButtonTap: likeButtonTap,
+            likeButtonTap: likeButtonTap
+                .throttle(.seconds(1), latest: true, scheduler: MainScheduler.instance),
             didScrolledEnd: mainView.tableView.rx.reachedBottom
-                .throttle(.seconds(1), scheduler: MainScheduler.instance),
+                .throttle(.seconds(1), latest: true, scheduler: MainScheduler.instance),
             didSelectedCell: mainView.tableView.rx.itemSelected
-                .throttle(.seconds(1), scheduler: MainScheduler.instance)
+                .throttle(.seconds(1), latest: true, scheduler: MainScheduler.instance)
         )
 
         let output = viewModel.transform(input: input)

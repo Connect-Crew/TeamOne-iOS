@@ -93,18 +93,19 @@ final class ProjectCreateMainViewController: ViewController {
             beforeButtonTap: Observable.merge(
                 stateRegionVC.buttonBefore.rx.tap.map { _ in return () },
                 purposeCareerVC.buttonBefore.rx.tap.map { _ in return () },
-                categoryVC.buttonBefore.rx.tap.map { _ in return () }
+                categoryVC.buttonBefore.rx.tap.map { _ in return () },
+                postVC.buttonBefore.rx.tap.map { _ in () }
             ).throttle(.seconds(1), latest: true, scheduler: MainScheduler.instance)
             ,
             stateBeforeTap: stateRegionVC.buttonStateBefore.rx.tap
                 .throttle(.seconds(1), scheduler: MainScheduler.instance),
             stateRunningTap: stateRegionVC.buttonStateRunning.rx.tap
                 .throttle(.seconds(1), scheduler: MainScheduler.instance),
-            regionONlineTap: stateRegionVC.buttonRegionOnline.rx.tap
+            onlineTap: stateRegionVC.buttonRegionOnline.rx.tap
                 .throttle(.seconds(1), scheduler: MainScheduler.instance),
-            regionOnOfflineTap: stateRegionVC.buttonRegionOnOffline.rx.tap
+            onOfflineTap: stateRegionVC.buttonRegionOnOffline.rx.tap
                 .throttle(.seconds(1), scheduler: MainScheduler.instance),
-            regionOfflineTap: stateRegionVC.buttonRegionOffline.rx.tap
+            offlineTap: stateRegionVC.buttonRegionOffline.rx.tap
                 .throttle(.seconds(1), scheduler: MainScheduler.instance),
             selectLocation: stateRegionVC.locaionListStackView.selectLocationSubject,
 
@@ -115,8 +116,8 @@ final class ProjectCreateMainViewController: ViewController {
             noRequiredExperienceTap: purposeCareerVC.buttonnoExperienceRequiredCheckBox.rx.tap
                 .throttle(.seconds(1), scheduler: MainScheduler.instance),
             selectedMinCareer:
-                purposeCareerVC.minCareerSubject.map { $0.0 },
-            selectedMaxCareer: purposeCareerVC.maxCareerSubject.map { $0.0 },
+                purposeCareerVC.minCareerSubject,
+            selectedMaxCareer: purposeCareerVC.maxCareerSubject,
             categoryTap: categoryVC.categoryTapSubject,
             
             selectedImage: postVC.selectedImage,

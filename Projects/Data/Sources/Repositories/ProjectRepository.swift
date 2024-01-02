@@ -63,4 +63,30 @@ public struct ProjectRepository: ProjectRepositoryProtocol {
         return projectDataSource.apply(request)
             .map { $0.toDomain() }
     }
+    
+    public func createProject(props: ProjectCreateProps) -> Single<ProjectCreateResponse> {
+        
+        let compactImages = props.banner.map { $0.jpegData(compressionQuality:  0.5)}
+        
+        let request = ProjectCreateRequestDTO(
+            banner: compactImages,
+            title: props.title,
+            region: props.region,
+            online: props.online,
+            state: props.state,
+            careerMin: props.careerMin,
+            careerMax: props.careerMax,
+            leaderParts: props.leaderParts,
+            category: props.category,
+            goal: props.goal,
+            introduction: props.introducion,
+            recruits: props.recruits.map {
+                ProjectRecruitDTO(part: $0.part, comment: $0.comment, max: $0.max)
+            },
+            skills: props.skills
+        )
+        
+        return projectDataSource.create(request)
+            .map { $0.toDomain() }
+    }
 }

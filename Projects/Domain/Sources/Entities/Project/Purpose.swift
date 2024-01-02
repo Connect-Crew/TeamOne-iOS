@@ -12,4 +12,15 @@ public enum Purpose {
     case none
     case startup
     case portfolio
+    
+    public func toMultiPartValue() -> String {
+        switch self {
+        case .none:
+            fatalError()
+        case .startup:
+            return "STARTUP"
+        case .portfolio:
+            return "PORTFOLIO"
+        }
+    }
 }

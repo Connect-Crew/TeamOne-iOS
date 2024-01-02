@@ -49,7 +49,6 @@ final class HomeViewModel: ViewModel {
 
     struct Output {
         let projects: Driver<[SideProjectListElement]>
-        let isEmpty: Driver<Bool>
     }
 
     lazy var projects = BehaviorSubject<[SideProjectListElement]>(value: [])
@@ -60,6 +59,8 @@ final class HomeViewModel: ViewModel {
 
     let navigation = PublishSubject<HomeNavigation>()
     var disposeBag = DisposeBag()
+    
+    var refresh = PublishSubject<Void>()
 
     func transform(input: Input) -> Output {
 
@@ -69,7 +70,6 @@ final class HomeViewModel: ViewModel {
         transformParticipantsButton(input: input)
         transformLikeButton(input: input)
         transformDidSelectCell(input: input)
-
 
         return Output(
             projects: projects.asDriver(onErrorJustReturn: []),
@@ -116,7 +116,7 @@ final class HomeViewModel: ViewModel {
                             guard let first = $0.createdAt.toDate(),
                                   let second = $1.createdAt.toDate() else { return true }
 
-                            return first < second
+                            return first > second
                         }
                     }
             }
@@ -145,10 +145,13 @@ final class HomeViewModel: ViewModel {
             )
             .withUnretained(self)
             .flatMap { viewModel, params in
-                return viewModel.projectListUseCase.list(lastId: params.0, size: 30, goal: nil,
-                                                         career: nil, region: nil, online: nil,
-                                                         part: params.1, skills: nil, states: nil,
-                                                         category: nil, search: nil)
+                return viewModel.projectListUseCase.list(
+                    lastId: params.0,
+                    size: 30, goal: nil,
+                    career: nil, region: nil,
+                    online: nil, part: params.1,
+                    skills: nil, states: nil,
+                    category: nil, search: nil)
                     .withLatestFrom(viewModel.projects) { new, current in
                         if new.count < 30 {
                             viewModel.isEnd.onNext(true)
@@ -157,7 +160,7 @@ final class HomeViewModel: ViewModel {
                             guard let first = $0.createdAt.toDate(),
                                   let second = $1.createdAt.toDate() else { return true }
 
-                            return first < second
+                            return first > second
                         }
 
                         return current + sortedNew
