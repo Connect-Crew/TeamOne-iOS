@@ -54,6 +54,37 @@ public enum Career: CaseIterable {
         }
     }
     
+    public func toCellString() -> String {
+        switch self {
+        case .none:
+            "경력무관"
+        case .seeker:
+            "준비생"
+        case .entry:
+            "신입"
+        case .one:
+            "1년 이상"
+        case .two:
+            "2년 이상"
+        case .three:
+            "3년 이상"
+        case .four:
+            "4년 이상"
+        case .five:
+            "5년 이상"
+        case .six:
+            "6년 이상"
+        case .seven:
+            "7년 이상"
+        case .eight:
+            "8년 이상"
+        case .nine:
+            "9년 이상"
+        case .tenPlus:
+            "10년 이상"
+        }
+    }
+    
     public func toMultiPartValue() -> String {
         switch self {
         case .none:

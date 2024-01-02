@@ -109,7 +109,7 @@ final class HomeTableViewCell: UITableViewCell, CellIdentifiable {
 
     override func prepareForReuse() {
         super.prepareForReuse()
-
+        
         self.disposeBag = DisposeBag()
     }
 
@@ -141,6 +141,8 @@ final class HomeTableViewCell: UITableViewCell, CellIdentifiable {
         buttonLike.likedCount = project.favorite
 
         buttonLike.isLiked = project.myFavorite
+        
+        hashtagListCollectionView.reloadData()
     }
 
     // MARK: - Methods
@@ -275,13 +277,16 @@ extension HomeTableViewCell: UICollectionViewDataSource {
         cell.titleLabel.text = hashTag.title
 
         switch hashTag.titleColor {
+            
         case .gray:
             cell.titleLabel.textColor = .teamOne.grayscaleSeven
         }
 
         switch hashTag.background {
+            
         case .gray:
             cell.backgroundImageView.image = .image(dsimage: .tagGray)
+            
         case .pink:
             cell.backgroundImageView.image = .image(dsimage: .tagRed)
         }
@@ -297,7 +302,8 @@ extension HomeTableViewCell: UICollectionViewDelegateFlowLayout {
 
         guard let hashTags = project?.HashTags[indexPath.row] else {
             print("@@@@@ HomeTableViewCell: UICollectionViewDelegateFlowLayout ")
-            return  CGSize(width: 0, height: 0) }
+            return  CGSize(width: 0, height: 0)
+        }
 
         let titleLabel = UILabel().then {
             $0.textAlignment = .center

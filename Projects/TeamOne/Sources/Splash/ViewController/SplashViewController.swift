@@ -38,10 +38,10 @@ final class SplashViewController: ViewController {
 
     override func bind() {
         let input = SplashViewModel.Input(
-            viewDidAppear: rx.viewDidAppear.map { _ in }.asObservable()
+            viewDidAppear: rx.viewWillAppear.map { _ in }.asObservable()
         )
 
-        let _ = viewModel.transform(input: input)
+        let output = viewModel.transform(input: input)
     }
 
 }

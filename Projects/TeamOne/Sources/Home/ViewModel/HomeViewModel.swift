@@ -35,10 +35,8 @@ final class HomeViewModel: ViewModel {
         self.projectUseCase = projectUseCase
     }
 
-    // MARK: - Mocks
-
     struct Input {
-        let viewDidAppear: Observable<Void>
+        let viewDidLoad: Observable<Void>
         let parts: BehaviorRelay<String?>
         let writeButtonTap: Observable<Void>
         let participantsButtonTap: Observable<SideProjectListElement?>
@@ -66,19 +64,18 @@ final class HomeViewModel: ViewModel {
 
         transformMyProfile(input: input)
         transformInputButton(input: input)
-        transformParts(input: input)
+        transformLoadProjects(input: input)
         transformParticipantsButton(input: input)
         transformLikeButton(input: input)
         transformDidSelectCell(input: input)
 
         return Output(
-            projects: projects.asDriver(onErrorJustReturn: []),
-            isEmpty: isEmpty.asDriver(onErrorJustReturn: true)
+            projects: projects.asDriver(onErrorJustReturn: [])
         )
     }
 
     func transformMyProfile(input: Input) {
-        input.viewDidAppear
+        input.viewDidLoad
             .withUnretained(self)
             .flatMap { viewModel, _ in
                 viewModel.myProfileUseCase.myProfile().asResult()
@@ -88,7 +85,7 @@ final class HomeViewModel: ViewModel {
             .disposed(by: disposeBag)
     }
 
-    func transformParts(input: Input) {
+    func transformLoadProjects(input: Input) {
 
         input.parts
             .distinctUntilChanged()
@@ -153,9 +150,11 @@ final class HomeViewModel: ViewModel {
                     skills: nil, states: nil,
                     category: nil, search: nil)
                     .withLatestFrom(viewModel.projects) { new, current in
+                        
                         if new.count < 30 {
                             viewModel.isEnd.onNext(true)
                         }
+                        
                         let sortedNew = new.sorted {
                             guard let first = $0.createdAt.toDate(),
                                   let second = $1.createdAt.toDate() else { return true }
@@ -192,12 +191,16 @@ final class HomeViewModel: ViewModel {
 
                         var newProject = projects
 
-                        if let index = projects.firstIndex(where: { $0.id == like.project
+                        if let index = newProject.firstIndex(where: { $0.id == like.project
                         }) {
                             newProject[index].favorite = like.favorite
                             newProject[index].myFavorite = like.myFavorite
                         }
-
+                        
+                        print("!!!!!!!!!!!\(self)::::")
+                        dump(newProject.first?.HashTags)
+                        print("!!!!!!!!!!!!")
+                        
                         return newProject
                     }
             }

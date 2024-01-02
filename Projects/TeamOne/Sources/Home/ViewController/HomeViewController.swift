@@ -56,7 +56,7 @@ final class HomeViewController: ViewController {
 
     override func bind() {
         let input = HomeViewModel.Input(
-            viewDidAppear: rx.viewDidAppear.map { _ in return }.asObservable(),
+            viewDidLoad: rx.viewWillAppear.take(1).map { _ in return }.asObservable(),
             parts: mainView.selected,
             writeButtonTap: mainView.buttonWrite.rx.tap
                 .throttle(.seconds(1), latest: true, scheduler: MainScheduler.instance),
@@ -104,12 +104,12 @@ final class HomeViewController: ViewController {
             }
             .disposed(by: disposeBag)
 
-        output.isEmpty
-            .drive(onNext: { [weak self] bool in
-                self?.tableView.rx.isHidden.onNext(bool)
-                self?.mainView.viewEmpty.rx.isHidden.onNext(!bool)
-            })
-            .disposed(by: disposeBag)
+//        output.isEmpty
+//            .drive(onNext: { [weak self] bool in
+//                self?.tableView.rx.isHidden.onNext(bool)
+//                self?.mainView.viewEmpty.rx.isHidden.onNext(!bool)
+//            })
+//            .disposed(by: disposeBag)
     }
 }
 
