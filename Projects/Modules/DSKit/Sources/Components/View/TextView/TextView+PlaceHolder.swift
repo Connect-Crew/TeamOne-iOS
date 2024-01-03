@@ -27,6 +27,16 @@ open class TextView_PlaceHolder: UITextView {
     }
 
     public var maxTextCount: Int = .max
+    
+    public lazy var rxText = self.rx.text
+        .withUnretained(self)
+        .map { this, text in
+            if text == this.placeholder {
+                return ""
+            } else {
+                return text ?? ""
+            }
+        }
 
     public override init(frame: CGRect, textContainer: NSTextContainer?) {
         super.init(frame: frame, textContainer: textContainer)
