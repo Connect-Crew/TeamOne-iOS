@@ -10,7 +10,7 @@ import Foundation
 import RxSwift
 
 public protocol ProjectApplyUseCaseProtocol {
-    func apply(projectId: Int, part: String, message: String) -> Observable<Bool>
+    func apply(projectId: Int, part: String, message: String) -> Single<Bool>
 }
 
 public struct ProjectApplyUseCase: ProjectApplyUseCaseProtocol {
@@ -21,7 +21,7 @@ public struct ProjectApplyUseCase: ProjectApplyUseCaseProtocol {
         self.projectRepository = projectRepository
     }
 
-    public func apply(projectId: Int, part: String, message: String) -> Observable<Bool> {
+    public func apply(projectId: Int, part: String, message: String) -> Single<Bool> {
         return projectRepository.apply(projectId: projectId, part: part, message: message)
     }
 }

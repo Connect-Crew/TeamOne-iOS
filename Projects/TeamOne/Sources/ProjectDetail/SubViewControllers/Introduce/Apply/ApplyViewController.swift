@@ -11,6 +11,7 @@ import Core
 import RxSwift
 import RxCocoa
 import Then
+import DSKit
 
 final class ApplyViewController: ViewController {
 
@@ -88,6 +89,25 @@ final class ApplyViewController: ViewController {
             .emit(onNext: { viewController, result in
                 viewController.mainView.hideWriteApplicationView()
                 viewController.mainView.showResult()
+            })
+            .disposed(by: disposeBag)
+        
+        output
+            .showError
+            .withUnretained(self)
+            .subscribe(on: MainScheduler.instance)
+            .subscribe(onNext: { this, alert in
+                
+                this.mainView.hideWriteApplicationView()
+                this.presentResultAlertView_Image_Title_Content(
+                    source: self,
+                    alert: alert
+                )
+                
+                alert.resultSubject?
+                    .map { _ in () }
+                    .bind(to: this.mainView.closeSubject)
+                    .disposed(by: this.disposeBag)
             })
             .disposed(by: disposeBag)
 

@@ -62,6 +62,8 @@ final class ProjectDetailCoordinator: BaseCoordinator<ProjectDetailCoordinatorRe
                 switch $0 {
                 case .apply(let project):
                     self?.showApply(project: project, isReload: reload)
+                case .manageProject(let project):
+                    self?.showManage(project: project, needRefreshSubject: reload)
                 }
             })
             .disposed(by: disposeBag)
@@ -101,5 +103,18 @@ final class ProjectDetailCoordinator: BaseCoordinator<ProjectDetailCoordinatorRe
 
         viewController.modalPresentationStyle = .overFullScreen
         present(viewController, animated: false)
+    }
+    
+    func showManage(project: Project, needRefreshSubject: PublishSubject<Void>) {
+        let manage = ManageProjectCoordinator(navigationController, project: project, needRefreshSubject: needRefreshSubject)
+        
+        coordinate(to: manage)
+            .subscribe(onNext: {
+                switch $0 {
+                case .finish:
+                    break
+                }
+            })
+            .disposed(by: disposeBag)
     }
 }

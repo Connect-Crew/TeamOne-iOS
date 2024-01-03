@@ -125,6 +125,7 @@ public enum DSKitImage {
     case reset
     case up
     case down
+    case compleProject
 
     // MARK: - ProjectCreate
 
@@ -292,6 +293,7 @@ public enum DSKitImage {
         case .clock: return "Clock"
         case .emptyLogo: return "EmptyLogo"
         case .reset: return "reset"
+        case .compleProject: return "CompleProject"
             
             // MARK: - CheckBox
         case .CheckBoxChecked: return "CheckBoxChecked"

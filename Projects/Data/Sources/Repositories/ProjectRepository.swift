@@ -52,7 +52,7 @@ public struct ProjectRepository: ProjectRepositoryProtocol {
             .map { $0.toDomain() }
     }
 
-    public func apply(projectId: Int, part: String, message: String) -> Observable<Bool> {
+    public func apply(projectId: Int, part: String, message: String) -> Single<Bool> {
 
         let request = ProjectApplyRequestDTO(
             projectId: projectId,

@@ -32,10 +32,30 @@ final class ManageProjectCoordinator: BaseCoordinator<ManageProjectCoordinatorRe
     override func start() -> Observable<ManageProjectCoordinatorResult> {
         showManage()
         return finish
+            .do(onNext: { [weak self] _ in
+                self?.dismiss(animated: false)
+            })
     }
 
     func showManage() {
         
+        let viewModel = ManageProjectMainViewModel()
         
+        viewModel.navigation
+            .subscribe(onNext: { [weak self] in
+                switch $0 {
+                case .finish:
+                    self?.finish.onNext(.finish)
+                case .manageApplicants:
+                    break
+                }
+            })
+            .disposed(by: disposeBag)
+        
+        let viewController = Inject.ViewControllerHost(ManageProjectMainVC(viewModel: viewModel))
+        
+        viewController.modalPresentationStyle = .overFullScreen
+        
+        present(viewController, animated: false)
     }
 }

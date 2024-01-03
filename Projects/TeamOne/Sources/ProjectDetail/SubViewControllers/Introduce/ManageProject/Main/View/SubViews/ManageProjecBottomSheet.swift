@@ -22,7 +22,7 @@ final class ManageProjecBottomSheet: View {
         $0.backgroundColor = .init(r: 234, g: 234, b: 234, a: 1)
     }
     
-    let labelApply = UILabel().then {
+    let labelManageProject = UILabel().then {
         $0.setLabel(text: "프로젝트 관리", typo: .title1, color: .teamOne.grayscaleEight)
         $0.textAlignment = .center
     }
@@ -86,7 +86,7 @@ final class ManageProjecBottomSheet: View {
     
     private lazy var contentView = UIStackView(arrangedSubviews: [
         topIndicatorStackView,
-        labelApply,
+        labelManageProject,
         buttonManageApplicants,
         buttonModified,
         buttonDelete,
@@ -102,9 +102,10 @@ final class ManageProjecBottomSheet: View {
         $0.roundCorners(corners: [.topLeft, .topRight], radius: 8)
         $0.backgroundColor = .white
         $0.setCustomSpacing(25, after: topIndicatorStackView)
+        $0.setCustomSpacing(28, after: labelManageProject)
         $0.setCustomSpacing(15, after: divider)
     }
-    // TODO: - 첫 화면인 바텀 시트 완성
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         
@@ -114,6 +115,7 @@ final class ManageProjecBottomSheet: View {
     func layout() {
         layoutSize()
         layoutContentView()
+        layoutCloseButton()
     }
     
     func layoutSize() {
@@ -144,15 +146,11 @@ final class ManageProjecBottomSheet: View {
     
     func layoutCloseButton() {
         addSubview(buttonClose)
+        
         buttonClose.snp.makeConstraints {
-            $0.centerY.equalTo(labelApply)
+            $0.centerY.equalTo(labelManageProject.snp.centerY)
             $0.trailing.equalToSuperview().inset(24)
         }
-    }
-    
-    override func layoutSubviews() {
-        super.layoutSubviews()
-//        layoutCloseButton()
     }
     
     required init?(coder: NSCoder) {

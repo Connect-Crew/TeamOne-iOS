@@ -13,6 +13,7 @@ import Core
 
 enum ProjectDetailPageSubIntroduceNavigation {
     case apply(Project)
+    case manageProject(Project)
 }
 
 final class ProjectDetailPageSubIntroduceViewModel: ViewModel {
@@ -28,21 +29,23 @@ final class ProjectDetailPageSubIntroduceViewModel: ViewModel {
     struct Input {
         let likeButtonTap: Observable<Void>
         let applyButtonTap: Observable<Void>
+        let manageButtonTap: Observable<Void>
     }
 
     struct Output {
         let project: Driver<Project?>
+        let isMyproject: Driver<Bool>
     }
 
     let reload = PublishSubject<Void>()
     let navigation = PublishSubject<ProjectDetailPageSubIntroduceNavigation>()
 
     let project = BehaviorSubject<Project?>(value: nil)
+    let isMyproject = BehaviorSubject<Bool>(value: false)
 
     var disposeBag: DisposeBag = .init()
 
     func transform(input: Input) -> Output {
-
         reload
             .withLatestFrom(project.compactMap { $0 })
             .withUnretained(self)
@@ -51,14 +54,23 @@ final class ProjectDetailPageSubIntroduceViewModel: ViewModel {
             }
             .bind(to: project)
             .disposed(by: disposeBag)
-
-        input.applyButtonTap
-            .withLatestFrom(project)
+        
+        project
+            .map { $0?.isMine }
             .compactMap { $0 }
-            .map { .apply($0) }
-            .bind(to: navigation)
+            .bind(to: isMyproject)
             .disposed(by: disposeBag)
+        
+        transformNavigation(input: input)
+        transformLike(input: input)
 
+        return Output(
+            project: project.asDriver(onErrorJustReturn: nil),
+            isMyproject: isMyproject.asDriver(onErrorJustReturn: false)
+        )
+    }
+    
+    func transformLike(input: Input) {
         input.likeButtonTap
             .withLatestFrom(project)
             .compactMap { $0 }
@@ -78,10 +90,22 @@ final class ProjectDetailPageSubIntroduceViewModel: ViewModel {
             }
             .bind(to: project)
             .disposed(by: disposeBag)
-
-        return Output(
-            project: project.asDriver(onErrorJustReturn: nil)
-        )
+    }
+    
+    func transformNavigation(input: Input) {
+        input.manageButtonTap
+            .withLatestFrom(project)
+            .compactMap { $0 }
+            .map{ ProjectDetailPageSubIntroduceNavigation.manageProject($0) }
+            .bind(to: navigation)
+            .disposed(by: disposeBag)
+        
+        input.applyButtonTap
+            .withLatestFrom(project)
+            .compactMap { $0 }
+            .map { .apply($0) }
+            .bind(to: navigation)
+            .disposed(by: disposeBag)
     }
 }
 

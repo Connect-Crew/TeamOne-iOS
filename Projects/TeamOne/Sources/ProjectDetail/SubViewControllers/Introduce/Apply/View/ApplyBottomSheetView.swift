@@ -34,7 +34,6 @@ final class ApplyBottomSheetView: UIView {
             $0.width.equalTo(36)
             $0.height.equalTo(5)
         }
-
     }
 
     let viewApply = UIView().then {
@@ -47,8 +46,6 @@ final class ApplyBottomSheetView: UIView {
     }
 
     let buttonClose = UIButton().then {
-        $0.isUserInteractionEnabled = true
-        $0.isEnabled = true
         $0.setButton(text: "닫기", typo: .body3, color: .teamOne.grayscaleSeven)
     }
 

@@ -397,8 +397,7 @@ final class ProjectCreateMainViewModel: ViewModel {
             .bind(to: cancleAlertSubject)
             .disposed(by: disposeBag)
 
-        cancleAlert
-            .resultSubject
+        alertResultSubject
             .filter { $0 == true }
             .map { _ in
                 return ProjectCreateMainNavigation.close

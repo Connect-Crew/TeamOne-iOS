@@ -23,7 +23,7 @@ public protocol ProjectsDataSouceProtocol {
     
     func project(_ projectId: Int) -> Observable<ProjectResponseDTO>
     
-    func apply(_ request: ProjectApplyRequestDTO) -> Observable<ProjectApplyResponseDTO>
+    func apply(_ request: ProjectApplyRequestDTO) -> Single<ProjectApplyResponseDTO>
     
     func create(_ request: ProjectCreateRequestDTO) -> Single<ProjectCreateResponseDTO>
 }
@@ -56,7 +56,7 @@ public struct ProjectsDataSource: ProjectsDataSouceProtocol {
             }
     }
     
-    public func apply(_ request: ProjectApplyRequestDTO) -> Observable<ProjectApplyResponseDTO> {
+    public func apply(_ request: ProjectApplyRequestDTO) -> Single<ProjectApplyResponseDTO> {
         return provider.request(ProjectsTarget.apply(request: request))
     }
     
@@ -177,10 +177,12 @@ extension ProjectsTarget: TargetType {
     
     var header: HTTPHeaders {
         switch self {
-        case .list, .like, .project, .apply, .baseInformation:
+        case .list, .like, .project, .baseInformation:
             return ["Authorization": "Bearer \(UserDefaultKeyList.Auth.appAccessToken ?? "")"]
         case .createProject:
             return ["Contents-Type": "multipart/form-data"]
+        case .apply:
+            return []
         }
     }
     
