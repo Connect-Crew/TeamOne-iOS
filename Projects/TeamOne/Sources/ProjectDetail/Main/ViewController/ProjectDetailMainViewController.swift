@@ -140,7 +140,7 @@ final class ProjectDetailMainViewController: ViewController {
         let input = ProjectDetailMainViewModel.Input(
             viewWillAppear: rx.viewWillAppear.map { _ in return }.asObservable(),
             backButtonTap: viewNavigation.buttonNavigationLeft.rx.tap
-                .throttle(.seconds(1), scheduler: MainScheduler.instance)
+                .throttle(.seconds(1), scheduler: MainScheduler.instance), reportContent: reportedContentSubject
         )
 
         let output = viewModel.transform(input: input)

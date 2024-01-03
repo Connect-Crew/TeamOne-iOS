@@ -95,7 +95,12 @@ public struct ProjectRepository: ProjectRepositoryProtocol {
         mappedKeyProps.leaderParts = leaderParts
         mappedKeyProps.recruits = recruits
         mappedKeyProps.category = categorys
-        mappedKeyProps.region = KM.shared.key(name: props.region)
+        
+        if region == "NONE" {
+            mappedKeyProps.region = region
+        } else {
+            mappedKeyProps.region = KM.shared.key(name: props.region)
+        }
         
         let compactImagesData = props.banner.map { $0.jpegData(compressionQuality:  0.5)}
         
