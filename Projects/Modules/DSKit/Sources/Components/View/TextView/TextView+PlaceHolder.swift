@@ -28,7 +28,9 @@ open class TextView_PlaceHolder: UITextView {
 
     public var maxTextCount: Int = .max
     
-    public lazy var rxText = self.rx.text
+    public var rxText: String = ""
+    
+    private lazy var rxTextObservable = self.rx.text
         .withUnretained(self)
         .map { this, text in
             if text == this.placeholder {
@@ -85,6 +87,13 @@ open class TextView_PlaceHolder: UITextView {
                 return String($0.prefix(self?.maxTextCount ?? Int.max)) }
             .subscribe(onNext: { [weak self] text in
                 self?.text = text
+            })
+            .disposed(by: disposeBag)
+        
+        self.rxTextObservable
+            .withUnretained(self)
+            .subscribe(onNext: { this, text in
+                this.rxText = text
             })
             .disposed(by: disposeBag)
     }

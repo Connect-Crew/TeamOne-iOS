@@ -11,28 +11,34 @@ import RxSwift
 import RxCocoa
 import Core
 
-final class AlertView_Title_TextView: UIView {
+public final class AlertView_Title_TextView: UIViewController {
+    
+    var placeHolder: String
+    
+    var okButtonTitle: String
+    
+    var callBack: ((Bool, String) -> ())?
 
-    let labelTitle = UILabel().then {
+    public let labelTitle = UILabel().then {
         $0.textAlignment = .center
         $0.setLabel(text: "", typo: .body2, color: .teamOne.grayscaleSeven)
     }
 
-    let textView = TextView_PlaceHolder(frame: .zero, textContainer: nil).then {
-        $0.maxTextCount = 1000
+    public let textView = TextView_PlaceHolder(frame: .zero, textContainer: nil).then {
+        $0.maxTextCount = 100
         $0.contentInset = UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16)
-        $0.placeholder = "지원 이유 및 강점 (최대 1,000자 입력 가능합니다.)"
+        $0.placeholder = ""
         $0.setRound(radius: 8)
         $0.setFont(typo: .caption1)
         $0.setLayer(width: 1, color: .teamOne.grayscaleFive)
     }
 
-    let cancleButton = UIButton().then {
+    public let cancleButton = UIButton().then {
         $0.backgroundColor = .teamOne.grayscaleTwo
         $0.setButton(text: "취소", typo: .button2, color: .teamOne.grayscaleSeven)
     }
 
-    let applyButton = UIButton().then {
+    public let okButton = UIButton().then {
         $0.backgroundColor = .teamOne.mainColor
         $0.setButton(text: "지원하기", typo: .button2, color: .teamOne.white)
     }
@@ -45,29 +51,53 @@ final class AlertView_Title_TextView: UIView {
         $0.backgroundColor = .white
     }
 
-    override init(frame: CGRect) {
-        super.init(frame: frame)
+    public init(
+        placeHolder: String,
+        okButtonTitle: String,
+        callBack: ((Bool, String) -> ())?
+    ) {
+        self.placeHolder = placeHolder
+        self.okButtonTitle = okButtonTitle
+        self.callBack = callBack
+        
+        super.init(nibName: nil, bundle: nil)
 
         initSetting()
     }
 
     func initSetting() {
         layout()
+        addtarget()
     }
 
     func layout() {
-        addSubview(contentView)
+        
+        self.view.backgroundColor = .clear
+        
+        self.view.addSubview(contentView)
 
         contentView.snp.makeConstraints {
             $0.leading.top.trailing.bottom.equalToSuperview()
         }
 
-        self.setRound(radius: 8)
-        self.clipsToBounds = true
+        self.contentView.setRound(radius: 8)
+        self.contentView.clipsToBounds = true
+            
+        self.textView.placeholder = placeHolder
+        self.okButton.setTitle(okButtonTitle, for: .normal)
     }
-
-    func setContent(status: RecruitStatus) {
-        self.labelPart.text = "[ \(status.part) ]에 지원합니다."
+    
+    func addtarget() {
+        self.okButton.addTarget(self, action: okAction, for: .touchUpInside)
+        self.cancleButton.addTarget(self, action: cancleAction, for: .touchUpInside)
+    }
+    
+    @objc func okAction() {
+        callBack?(true, textView.rxText.)
+    }
+    
+    @objc func cancleAction() {
+        
     }
 
     func makeContentStackView() -> UIStackView {
@@ -77,7 +107,7 @@ final class AlertView_Title_TextView: UIView {
         }
 
         return UIStackView(arrangedSubviews: [
-            labelPart,
+            labelTitle,
             textView
         ]).then {
             $0.layoutMargins = UIEdgeInsets(top: 20, left: 24, bottom: 24, right: 20)
@@ -89,7 +119,7 @@ final class AlertView_Title_TextView: UIView {
 
     func makeButtonStackView() -> UIStackView {
 
-        [cancleButton, applyButton].forEach { button in
+        [cancleButton, okButton].forEach { button in
             button.snp.makeConstraints {
                 $0.height.equalTo(48)
             }
@@ -97,7 +127,7 @@ final class AlertView_Title_TextView: UIView {
 
         return UIStackView(arrangedSubviews: [
             cancleButton,
-            applyButton
+            okButton
         ]).then {
             $0.axis = .horizontal
             $0.spacing = 0
