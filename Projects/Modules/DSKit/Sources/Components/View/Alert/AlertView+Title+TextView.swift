@@ -11,13 +11,45 @@ import RxSwift
 import RxCocoa
 import Core
 
-public final class AlertView_Title_TextView: UIViewController {
+public struct AlertView_Title_TextView_Item {
+    let placeHolder: String
+    let okButtonTitle: String
+    let darkBackground: Bool = true
+    let callBack: ((Bool, String) -> ())
+}
+
+public extension UIViewController {
+    func presentAlert_Title_TextView(
+        source: UIViewController,
+        alert: AlertView_Title_TextView_Item,
+        darkBackground: Bool = true
+    ) {
+        let viewController = AlertView_Title_TextView(
+            placeHolder: alert.placeHolder,
+            okButtonTitle: alert.okButtonTitle,
+            darkBackground: alert.darkBackground,
+            callBack: alert.callBack
+        )
+        
+        viewController.modalPresentationStyle = .overFullScreen
+        
+        source.present(viewController, animated: false)
+    }
+}
+
+public final class AlertView_Title_TextView: ViewController {
+    
+    private let buttonBackground = UIButton().then {
+        $0.backgroundColor = UIColor.init(r: 0, g: 0, b: 0, a: 0.7)
+    }
     
     var placeHolder: String
     
     var okButtonTitle: String
     
     var callBack: ((Bool, String) -> ())?
+    
+    var darkBackground: Bool
 
     public let labelTitle = UILabel().then {
         $0.textAlignment = .center
@@ -54,10 +86,12 @@ public final class AlertView_Title_TextView: UIViewController {
     public init(
         placeHolder: String,
         okButtonTitle: String,
+        darkBackground: Bool,
         callBack: ((Bool, String) -> ())?
     ) {
         self.placeHolder = placeHolder
         self.okButtonTitle = okButtonTitle
+        self.darkBackground = darkBackground
         self.callBack = callBack
         
         super.init(nibName: nil, bundle: nil)
@@ -70,14 +104,26 @@ public final class AlertView_Title_TextView: UIViewController {
         addtarget()
     }
 
-    func layout() {
+    public override func layout() {
+        
+        if darkBackground == false {
+            self.buttonBackground.backgroundColor = .clear
+        }
         
         self.view.backgroundColor = .clear
+        
+        self.view.addSubview(buttonBackground)
+        
+        buttonBackground.snp.makeConstraints {
+            $0.edges.equalToSuperview()
+        }
         
         self.view.addSubview(contentView)
 
         contentView.snp.makeConstraints {
-            $0.leading.top.trailing.bottom.equalToSuperview()
+            $0.leading.equalToSuperview().offset(45)
+            $0.trailing.equalToSuperview().inset(45)
+            $0.center.equalToSuperview()
         }
 
         self.contentView.setRound(radius: 8)
@@ -88,16 +134,18 @@ public final class AlertView_Title_TextView: UIViewController {
     }
     
     func addtarget() {
-        self.okButton.addTarget(self, action: okAction, for: .touchUpInside)
-        self.cancleButton.addTarget(self, action: cancleAction, for: .touchUpInside)
+        self.okButton.addTarget(self, action: #selector(okAction), for: .touchUpInside)
+        self.cancleButton.addTarget(self, action: #selector(cancleAction), for: .touchUpInside)
     }
     
     @objc func okAction() {
-        callBack?(true, textView.rxText.)
+        callBack?(true, textView.rxText)
+        self.dismiss(animated: false)
     }
     
     @objc func cancleAction() {
-        
+        callBack?(false, textView.rxText)
+        self.dismiss(animated: false)
     }
 
     func makeContentStackView() -> UIStackView {

@@ -25,6 +25,7 @@ final class ProjectDetailMainViewModel: ViewModel {
     struct Input {
         let viewWillAppear: Observable<Void>
         let backButtonTap: Observable<Void>
+//        let reportButtonTap: Observable<Void
     }
 
     struct Output {
