@@ -12,10 +12,20 @@ import RxCocoa
 import Core
 
 public struct AlertView_Title_TextView_Item {
+    let title: String
     let placeHolder: String
     let okButtonTitle: String
+    let maxTextCount: Int
     let darkBackground: Bool = true
     let callBack: ((Bool, String) -> ())
+    
+    public init(title: String, placeHolder: String, okButtonTitle: String, maxTextCount: Int, callBack: @escaping (Bool, String) -> Void) {
+        self.title = title
+        self.placeHolder = placeHolder
+        self.okButtonTitle = okButtonTitle
+        self.maxTextCount = maxTextCount
+        self.callBack = callBack
+    }
 }
 
 public extension UIViewController {
@@ -25,8 +35,10 @@ public extension UIViewController {
         darkBackground: Bool = true
     ) {
         let viewController = AlertView_Title_TextView(
+            title: alert.title,
             placeHolder: alert.placeHolder,
             okButtonTitle: alert.okButtonTitle,
+            maxTextCount: alert.maxTextCount,
             darkBackground: alert.darkBackground,
             callBack: alert.callBack
         )
@@ -43,9 +55,13 @@ public final class AlertView_Title_TextView: ViewController {
         $0.backgroundColor = UIColor.init(r: 0, g: 0, b: 0, a: 0.7)
     }
     
+    var titleLabelString: String
+    
     var placeHolder: String
     
     var okButtonTitle: String
+    
+    var maxTextCount: Int
     
     var callBack: ((Bool, String) -> ())?
     
@@ -57,7 +73,7 @@ public final class AlertView_Title_TextView: ViewController {
     }
 
     public let textView = TextView_PlaceHolder(frame: .zero, textContainer: nil).then {
-        $0.maxTextCount = 100
+        $0.maxTextCount = Int.max
         $0.contentInset = UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16)
         $0.placeholder = ""
         $0.setRound(radius: 8)
@@ -84,13 +100,17 @@ public final class AlertView_Title_TextView: ViewController {
     }
 
     public init(
+        title: String,
         placeHolder: String,
         okButtonTitle: String,
+        maxTextCount: Int,
         darkBackground: Bool,
         callBack: ((Bool, String) -> ())?
     ) {
+        self.titleLabelString = title
         self.placeHolder = placeHolder
         self.okButtonTitle = okButtonTitle
+        self.maxTextCount = maxTextCount
         self.darkBackground = darkBackground
         self.callBack = callBack
         
@@ -100,6 +120,9 @@ public final class AlertView_Title_TextView: ViewController {
     }
 
     func initSetting() {
+        
+        textView.maxTextCount = maxTextCount
+        
         layout()
         addtarget()
     }
@@ -129,6 +152,7 @@ public final class AlertView_Title_TextView: ViewController {
         self.contentView.setRound(radius: 8)
         self.contentView.clipsToBounds = true
             
+        self.labelTitle.text = titleLabelString
         self.textView.placeholder = placeHolder
         self.okButton.setTitle(okButtonTitle, for: .normal)
     }

@@ -127,8 +127,12 @@ final class ProjectDetailMainViewController: ViewController {
     }
     
     // MARK: - Subjects
-
+    
     let dropDownResultSubject = PublishSubject<String>()
+    let reportButtonTabSubject = PublishSubject<Void>()
+    
+    // 신고하기를 누르면 해당 서브젝트로 전달
+    let reportedContentSubject = PublishSubject<String>()
     
     // MARK: - Bind
     
@@ -144,6 +148,7 @@ final class ProjectDetailMainViewController: ViewController {
         bindPage()
         bindRightBarButton(output: output)
         bindDropDown()
+        bindReport()
     }
     
     func bindPage() {
@@ -171,9 +176,46 @@ final class ProjectDetailMainViewController: ViewController {
         dropDownResultSubject
             .filter { $0 == "신고하기" }
             .subscribe(on: MainScheduler.instance)
-            .subscribe(onNext: { _ in
-                
+            .withUnretained(self)
+            .subscribe(onNext: { this, _ in
+                this.reportButtonTabSubject.onNext(())
             })
             .disposed(by: disposeBag)
+    }
+    
+    func bindReport() {
+        reportButtonTabSubject
+            .map { _ in
+                let alert = AlertView_Title_TextView_Item(
+                    title: "이 프로젝트를 신고하시겠습니까?", 
+                    placeHolder: "신고 사유를 최대 100자 까지 작성해주세요",
+                    okButtonTitle: "신고하기",
+                    maxTextCount: 100,
+                    callBack: { [weak self] bool, content in
+                        if bool == true {
+                            self?.reportedContentSubject.onNext(content)
+                        }
+                    }
+                )
+                
+                return alert
+            }
+            .withUnretained(self)
+            .subscribe(onNext: { this, alert in
+                self.presentAlert_Title_TextView(
+                    source: this,
+                    alert: alert
+                )
+            })
+            .disposed(by: disposeBag)
+        
+        // TODO: - 여기부터 신고기능 이어하기.
+        
+        reportedContentSubject
+            .subscribe(onNext: {
+                print("!!!!!!!!!!!\(self)::::")
+                print($0)
+                print("!!!!!!!!!!!!")
+            })
     }
 }
