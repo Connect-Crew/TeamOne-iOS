@@ -27,7 +27,8 @@ let project = Project.makeModule(
         .SPM.FirebaseDynamicLinks,
         .SPM.FirebaseMessaging,
         .SPM.GoogleSignIn,
-        .SPM.Alamofire
+        .SPM.Alamofire,
+//        .Carthage.DropDown
     ]
 )
 

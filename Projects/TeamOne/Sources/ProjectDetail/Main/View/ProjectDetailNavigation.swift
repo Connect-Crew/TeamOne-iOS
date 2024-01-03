@@ -14,20 +14,23 @@ import UIKit
 final class ProjectDetailNavigation: UIView {
 
     let buttonNavigationLeft = UIButton().then {
-        $0.contentHorizontalAlignment = .leading
         $0.setImage(.image(dsimage: .backButtonImage), for: .normal)
         $0.contentEdgeInsets = UIEdgeInsets(top: 10, left: 24, bottom: 10, right: 10)
     }
 
     let buttonNavigationRight = UIButton().then {
-        $0.contentHorizontalAlignment = .trailing
-        $0.setImage(.image(dsimage: .threedot), for: .normal)
+        $0.setButton(image: .threedot)
         $0.contentEdgeInsets = UIEdgeInsets(top: 10, left: 24, bottom: 10, right: 24)
     }
 
-    private lazy var navigationStackView = UIStackView(arrangedSubviews: [buttonNavigationLeft, buttonNavigationRight]).then {
+    private lazy var navigationStackView = UIStackView(
+        arrangedSubviews: [
+            buttonNavigationLeft,
+            UIView(),
+            buttonNavigationRight
+        ]).then {
         $0.axis = .horizontal
-        $0.distribution = .fillEqually
+        $0.distribution = .fill
     }
 
     override init(frame: CGRect) {

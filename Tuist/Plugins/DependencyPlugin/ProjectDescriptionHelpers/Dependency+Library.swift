@@ -29,10 +29,8 @@ public extension TargetDependency.SPM {
     static let FirebaseAnalytics = TargetDependency.external(name: "FirebaseAnalytics")
     static let FirebaseDynamicLinks = TargetDependency.external(name: "FirebaseDynamicLinks")
     static let GoogleSignIn = TargetDependency.external(name: "GoogleSignIn")
-
-
 }
 
 public extension TargetDependency.Carthage {
-    
+//    static let DropDown = TargetDependency.external(name: "dropdown")
 }

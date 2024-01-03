@@ -30,6 +30,5 @@ open class ViewController: UIViewController {
     
     deinit {
         print("Deinit \(type(of: self))")
-
     }
 }

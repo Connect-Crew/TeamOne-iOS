@@ -25,6 +25,7 @@ let spm = SwiftPackageManagerDependencies([
 ))
 
 let carthage = CarthageDependencies([
+//    .github(path: "https://github.com/AssistoLab/DropDown", requirement: .exact("2.3.12"))
 //    .github(path: "layoutBox/FlexLayout", requirement: .exact("1.3.33")),
 //    .github(path: "layoutBox/PinLayout", requirement: .exact("1.10.4")),
 ])
