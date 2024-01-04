@@ -28,6 +28,8 @@ public protocol ProjectsDataSouceProtocol {
     func create(_ request: ProjectCreateRequestDTO) -> Single<ProjectCreateResponseDTO>
     
     func report(request: ProjectReportRequestDTO) -> Single<BaseValueResponseDTO>
+    
+    func members(projectId: Int) -> Single<[ProjectMemberResponseDTO]>
 }
 
 public struct ProjectsDataSource: ProjectsDataSouceProtocol {
@@ -152,6 +154,10 @@ public struct ProjectsDataSource: ProjectsDataSouceProtocol {
     public func report(request: ProjectReportRequestDTO) -> Single<BaseValueResponseDTO> {
         return provider.request(ProjectsTarget.report(request: request))
     }
+    
+    public func members(projectId: Int) -> Single<[ProjectMemberResponseDTO]> {
+        return provider.request(ProjectsTarget.members(projectId: projectId))
+    }
 }
 extension NetworkConstant {
     static let projectBasedURLString: String = "http://teamone.kro.kr:9080"
@@ -165,6 +171,7 @@ enum ProjectsTarget {
     case apply(request: ProjectApplyRequestDTO)
     case createProject(request: ProjectCreateRequestDTO)
     case report(request: ProjectReportRequestDTO)
+    case members(projectId: Int)
 }
 
 extension ProjectsTarget: TargetType {
@@ -175,7 +182,7 @@ extension ProjectsTarget: TargetType {
     
     var method: HTTPMethod {
         switch self {
-        case .list, .project, .baseInformation:
+        case .list, .project, .baseInformation, .members:
             return .get
         case .like, .apply, .createProject, .report:
             return .post
@@ -186,7 +193,7 @@ extension ProjectsTarget: TargetType {
         switch self {
         case .createProject:
             return ["Contents-Type": "multipart/form-data"]
-        case .apply, .report, .list, .like, .project, .baseInformation:
+        case .apply, .report, .list, .like, .project, .baseInformation, .members:
             return []
         }
     }
@@ -207,12 +214,14 @@ extension ProjectsTarget: TargetType {
             return .body(request)
         case let .report(request: request):
             return .body(request)
+        case .members:
+            return .none
         }
     }
     
     var encoding: ParameterEncoding {
         switch self {
-        case .list, .project, .baseInformation:
+        case .list, .project, .baseInformation, .members:
             return  URLEncoding.default
         case .like, .apply, .report:
             return JSONEncoding.default
@@ -230,6 +239,7 @@ extension ProjectsTarget: TargetType {
         case .apply: return "/project/apply"
         case .createProject: return "/project/"
         case .report: return "/project/report"
+        case .members(projectId: let id): return "/project/members/\(id)"
         }
     }
 }

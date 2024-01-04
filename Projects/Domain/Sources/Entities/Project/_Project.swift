@@ -92,4 +92,6 @@ public struct Project {
             self.hashTags.append(HashTag(title: $0, background: .gray, titleColor: .gray))
         }
     }
+    
+    public static let noneInfoProject = Project(id: Int.max, title: "", banners: [], region: "", online: true, createdAt: "", state: "", careerMin: "", careerMax: "", category: [], goal: "", leader: Leader(id: Int.max, nickname: "", profile: "", introduction: "", temperature: 0.0, responseRate: 0, parts: [], representProjects: []), introduction: "", favorite: 0, myFavorite: false, recruitStatus: [], skills: [])
 }

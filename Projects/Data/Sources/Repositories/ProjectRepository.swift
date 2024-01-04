@@ -132,4 +132,9 @@ public struct ProjectRepository: ProjectRepositoryProtocol {
         return projectDataSource.report(request: request)
             .map { $0.toDomain() }
     }
+    
+    public func member(projectId: Int) -> Single<[ProjectMember]> {
+        return projectDataSource.members(projectId: projectId)
+            .map { $0.map { $0.toDomain()} }
+    }
 }

@@ -48,6 +48,7 @@ final class ManageProjectMainVC: ViewController {
     
     override func bind() {
         let input = ManageProjectMainViewModel.Input(
+            viewDidLoad: rx.viewWillAppear.take(1).map { _ in () },
             viewWillAppear: rx.viewWillAppear.map { _ in () },
             closeManageProjectButtonTap: mainView.bottomSheet.buttonClose.rx.tap
                 .throttle(.seconds(1), latest: true, scheduler: MainScheduler.instance),
@@ -62,6 +63,9 @@ final class ManageProjectMainVC: ViewController {
         
         bindBottomSheet(output: output)
         bindAlert(output: output)
+        
+        
+        mainView.bottomSheet.bind(output: output)
     }
     
     func bindBottomSheet(output: ManageProjectMainViewModel.Output) {

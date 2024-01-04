@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct MyProfile {
+public struct Profile {
 
     public let id: Int
     public let nickname, profile, introduction: String
@@ -27,15 +27,4 @@ public struct MyProfile {
         self.parts = parts
         self.representProjects = representProjects
     }
-
-    public struct RepresentProject {
-        let id: Int
-        let thumbnail: String
-
-        public init(id: Int, thumbnail: String) {
-            self.id = id
-            self.thumbnail = thumbnail
-        }
-    }
-
 }

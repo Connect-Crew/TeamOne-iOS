@@ -66,10 +66,10 @@ final class ManageProjecBottomSheet: View {
     }
     
     let buttonComplete = UIButton().then {
-        $0.setButton(text: "프로젝트 완수", typo: .button1, color: .teamOne.grayscaleFive)
+        $0.setButton(text: "프로젝트 완수", typo: .button1, color: .teamOne.point)
         $0.backgroundColor = .teamOne.white
         $0.setRound(radius: 8)
-        $0.setLayer(width: 1, color: .teamOne.grayscaleFive)
+        $0.setLayer(width: 1, color: .teamOne.point)
     }
     
     private lazy var topIndicatorStackView = UIStackView(arrangedSubviews: [viewTopGrayIndicator]).then {
@@ -151,6 +151,23 @@ final class ManageProjecBottomSheet: View {
             $0.centerY.equalTo(labelManageProject.snp.centerY)
             $0.trailing.equalToSuperview().inset(24)
         }
+    }
+    
+    // MARK: - Bind
+    
+    func bind(output: ManageProjectMainViewModel.Output) {
+        
+        // 팀원이 2명 이상이라 삭제가 불가능 한 경우 삭제버튼 비활성화 처리
+        output.isDeletable
+            .filter { $0 == false }
+            .drive(onNext: { [weak self] _ in
+                guard let self = self else { return }
+                
+                self.buttonDelete.isEnabled = false
+                self.buttonDelete.setLayer(width: 1, color: .teamOne.grayscaleFive)
+                self.buttonDelete.setTitleColor(.teamOne.grayscaleFive, for: .normal)
+            })
+            .disposed(by: disposeBag)
     }
     
     required init?(coder: NSCoder) {

@@ -11,7 +11,7 @@ import Core
 import RxSwift
 
 public protocol MyProfileUseCaseProtocol {
-    func myProfile() -> Observable<MyProfile>
+    func myProfile() -> Observable<Profile>
 }
 
 public struct MyProfileUseCase: MyProfileUseCaseProtocol {
@@ -23,7 +23,7 @@ public struct MyProfileUseCase: MyProfileUseCaseProtocol {
     }
 
     @discardableResult
-    public func myProfile() -> Observable<MyProfile> {
+    public func myProfile() -> Observable<Profile> {
         return self.userRepository.myProfile()
             .do(onNext: { myProfile in
                 UserDefaultKeyList.User.id = myProfile.id

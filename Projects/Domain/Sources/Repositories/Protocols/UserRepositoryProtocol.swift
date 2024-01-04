@@ -10,5 +10,5 @@ import Foundation
 import RxSwift
 
 public protocol UserRepositoryProtocol {
-    func myProfile() -> Observable<MyProfile>
+    func myProfile() -> Observable<Profile>
 }

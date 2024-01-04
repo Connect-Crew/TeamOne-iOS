@@ -39,7 +39,7 @@ final class ManageProjectCoordinator: BaseCoordinator<ManageProjectCoordinatorRe
 
     func showManage() {
         
-        let viewModel = ManageProjectMainViewModel()
+        let viewModel = ManageProjectMainViewModel(project: project)
         
         viewModel.navigation
             .subscribe(onNext: { [weak self] in

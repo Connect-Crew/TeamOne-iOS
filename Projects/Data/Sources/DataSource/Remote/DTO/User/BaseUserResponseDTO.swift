@@ -1,5 +1,5 @@
 //
-//  MyProfileResponseDTO.swift
+//  BaseUserResponseDTO.swift
 //  Data
 //
 //  Created by 강현준 on 2023/11/26.
@@ -9,7 +9,7 @@
 import Foundation
 import Domain
 
-public struct MyProfileResponseDTO: Codable {
+public struct BaseUserResponseDTO: Codable {
     let id: Int
     let nickname: String
     let profile: String?
@@ -17,10 +17,10 @@ public struct MyProfileResponseDTO: Codable {
     let temperature: Double
     let responseRate: Int
     let parts: [String]
-    let representProjects: [RepresentProject]
+    let representProjects: [RepresentProjectResponseDTO]
 
-    public func toDomain() -> MyProfile {
-        return MyProfile(id: self.id,
+    public func toDomain() -> Profile {
+        return Profile(id: self.id,
                          nickname: self.nickname,
                          profile: self.profile ?? "",
                          introduction: self.introduction,
@@ -28,18 +28,6 @@ public struct MyProfileResponseDTO: Codable {
                          responseRate: self.responseRate,
                          parts: self.parts,
                          representProjects: self.representProjects.map { $0.toDomain() })
-    }
-
-    struct RepresentProject: Codable {
-        let id: Int
-        let thumbnail: String
-
-        func toDomain() -> MyProfile.RepresentProject {
-            return MyProfile.RepresentProject(
-                id: self.id,
-                thumbnail: self.thumbnail
-            )
-        }
     }
 }
 
