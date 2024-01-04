@@ -55,10 +55,17 @@ public extension UIViewController {
                 
             case .unknown:
                 alert.content = "알 수 없는 에러\n고객센터로 문의해주세요"
-                
+                self.presentResultAlertView_Image_Title_Content(
+                    source: self,
+                    alert: alert
+                )
             }
         } else {
             alert.content = "알 수 없는 에러\n고객센터로 문의해주세요"
+            self.presentResultAlertView_Image_Title_Content(
+                source: self,
+                alert: alert
+            )
         }
     }
     
