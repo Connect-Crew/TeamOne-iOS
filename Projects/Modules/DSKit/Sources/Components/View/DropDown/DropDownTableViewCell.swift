@@ -17,7 +17,8 @@ public class DropDownTableViewCell: UITableViewCell, CellIdentifiable {
     
     public var disposeBag: RxSwift.DisposeBag = .init()
     
-    public let label = UILabel().then {
+    public let label = PaddingLabel().then {
+        $0.textInsets = UIEdgeInsets(top: 0, left: 20, bottom: 0, right: 20)
         $0.setLabel(text: "dd", typo: .button2, color: .teamOne.point)
     }
     
@@ -38,10 +39,7 @@ public class DropDownTableViewCell: UITableViewCell, CellIdentifiable {
         self.backgroundColor = .clear
         
         label.snp.makeConstraints {
-            $0.leading.equalToSuperview().offset(20)
-            $0.trailing.equalToSuperview().inset(20)
-            $0.top.equalToSuperview().offset(8)
-            $0.bottom.equalToSuperview().inset(8)
+            $0.edges.equalToSuperview()
         }
     }
     
