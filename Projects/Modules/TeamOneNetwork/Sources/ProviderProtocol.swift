@@ -13,5 +13,7 @@ public protocol ProviderProtocol: AnyObject {
     func request<T: Decodable>(_ urlConvertible: URLRequestConvertible) -> Observable<T>
 
     func request<T: Decodable>(_ urlConvertible: URLRequestConvertible) -> Single<T> 
+    
+    func requestNoInterceptor<T: Decodable>(_ urlConvertible: URLRequestConvertible) -> Single<T>
 }
 

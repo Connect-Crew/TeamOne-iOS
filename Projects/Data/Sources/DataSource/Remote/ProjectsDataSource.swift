@@ -23,9 +23,13 @@ public protocol ProjectsDataSouceProtocol {
     
     func project(_ projectId: Int) -> Observable<ProjectResponseDTO>
     
-    func apply(_ request: ProjectApplyRequestDTO) -> Observable<ProjectApplyResponseDTO>
+    func apply(_ request: ProjectApplyRequestDTO) -> Single<ProjectApplyResponseDTO>
     
     func create(_ request: ProjectCreateRequestDTO) -> Single<ProjectCreateResponseDTO>
+    
+    func report(request: ProjectReportRequestDTO) -> Single<BaseValueResponseDTO>
+    
+    func members(projectId: Int) -> Single<[ProjectMemberResponseDTO]>
 }
 
 public struct ProjectsDataSource: ProjectsDataSouceProtocol {
@@ -56,7 +60,7 @@ public struct ProjectsDataSource: ProjectsDataSouceProtocol {
             }
     }
     
-    public func apply(_ request: ProjectApplyRequestDTO) -> Observable<ProjectApplyResponseDTO> {
+    public func apply(_ request: ProjectApplyRequestDTO) -> Single<ProjectApplyResponseDTO> {
         return provider.request(ProjectsTarget.apply(request: request))
     }
     
@@ -129,7 +133,7 @@ public struct ProjectsDataSource: ProjectsDataSouceProtocol {
                 switch response.result {
                 case .success(let value):
                     single(.success(value))
-                case .failure(let error):
+                case .failure(_):
                     if let errorData = response.data {
                         do {
                             let networkError = try JSONDecoder().decode(ErrorEntity.self, from: errorData)
@@ -146,6 +150,14 @@ public struct ProjectsDataSource: ProjectsDataSouceProtocol {
             return Disposables.create()
         }
     }
+    
+    public func report(request: ProjectReportRequestDTO) -> Single<BaseValueResponseDTO> {
+        return provider.request(ProjectsTarget.report(request: request))
+    }
+    
+    public func members(projectId: Int) -> Single<[ProjectMemberResponseDTO]> {
+        return provider.request(ProjectsTarget.members(projectId: projectId))
+    }
 }
 extension NetworkConstant {
     static let projectBasedURLString: String = "http://teamone.kro.kr:9080"
@@ -158,6 +170,8 @@ enum ProjectsTarget {
     case project(projectId: Int)
     case apply(request: ProjectApplyRequestDTO)
     case createProject(request: ProjectCreateRequestDTO)
+    case report(request: ProjectReportRequestDTO)
+    case members(projectId: Int)
 }
 
 extension ProjectsTarget: TargetType {
@@ -168,19 +182,19 @@ extension ProjectsTarget: TargetType {
     
     var method: HTTPMethod {
         switch self {
-        case .list, .project, .baseInformation:
+        case .list, .project, .baseInformation, .members:
             return .get
-        case .like, .apply, .createProject:
+        case .like, .apply, .createProject, .report:
             return .post
         }
     }
     
     var header: HTTPHeaders {
         switch self {
-        case .list, .like, .project, .apply, .baseInformation:
-            return ["Authorization": "Bearer \(UserDefaultKeyList.Auth.appAccessToken ?? "")"]
         case .createProject:
             return ["Contents-Type": "multipart/form-data"]
+        case .apply, .report, .list, .like, .project, .baseInformation, .members:
+            return []
         }
     }
     
@@ -198,14 +212,18 @@ extension ProjectsTarget: TargetType {
             return .body(request)
         case let .createProject(request: request):
             return .body(request)
+        case let .report(request: request):
+            return .body(request)
+        case .members:
+            return .none
         }
     }
     
     var encoding: ParameterEncoding {
         switch self {
-        case .list, .project, .baseInformation:
+        case .list, .project, .baseInformation, .members:
             return  URLEncoding.default
-        case .like, .apply:
+        case .like, .apply, .report:
             return JSONEncoding.default
         case .createProject:
             return JSONEncoding.default
@@ -220,6 +238,8 @@ extension ProjectsTarget: TargetType {
         case .project(projectId: let id): return "/project/\(id)"
         case .apply: return "/project/apply"
         case .createProject: return "/project/"
+        case .report: return "/project/report"
+        case .members(projectId: let id): return "/project/members/\(id)"
         }
     }
 }

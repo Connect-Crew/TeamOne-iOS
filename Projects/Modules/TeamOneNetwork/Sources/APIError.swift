@@ -14,6 +14,6 @@ public enum APIError: Error, Equatable {
     case unknown
 
     public init(error: ErrorEntity) {
-        self = .network(statusCode: error.status, message: error.message)
+        self = .network(statusCode: error.status, message: error.error)
     }
 }

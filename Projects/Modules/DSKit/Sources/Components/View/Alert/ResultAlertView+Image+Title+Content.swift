@@ -15,9 +15,16 @@ import SnapKit
 import Then
 
 public extension UIViewController {
-    func presentResultAlertView_Image_Title_Content(source: UIViewController?, alert: ResultAlertView_Image_Title_Content_Alert) {
+    func presentResultAlertView_Image_Title_Content(
+        source: UIViewController?,
+        alert: ResultAlertView_Image_Title_Content_Alert,
+        darkbackground: Bool = true
+        ) {
 
-        let viewController = ResultAlertView_Image_Title_ContentVC(alert: alert)
+        let viewController = ResultAlertView_Image_Title_ContentVC(
+            alert: alert,
+            darkbackground: darkbackground
+        )
 
         viewController.modalPresentationStyle = .overFullScreen
 
@@ -26,13 +33,13 @@ public extension UIViewController {
 }
 
 public struct ResultAlertView_Image_Title_Content_Alert {
-    public let image: ResultAlertView_Image
-    public let title: String
-    public let content: String
-    public let availableCancle: Bool
-    public let resultSubject: PublishSubject<Bool>
+    public var image: ResultAlertView_Image
+    public var title: String
+    public var content: String
+    public var availableCancle: Bool
+    public var resultSubject: PublishSubject<Bool>?
 
-    public init(image: ResultAlertView_Image, title: String, content: String, availableCancle: Bool, resultSubject: PublishSubject<Bool>) {
+    public init(image: ResultAlertView_Image, title: String, content: String, availableCancle: Bool, resultSubject: PublishSubject<Bool>? = nil) {
         self.image = image
         self.title = title
         self.content = content
@@ -44,6 +51,8 @@ public struct ResultAlertView_Image_Title_Content_Alert {
 public enum ResultAlertView_Image {
     case warnning
     case write
+    case completeProject
+    case complete
 }
 
 open class ResultAlertView_Image_Title_ContentVC: ViewController {
@@ -85,6 +94,8 @@ open class ResultAlertView_Image_Title_ContentVC: ViewController {
             $0.height.equalTo(48)
         }
     }
+    
+    private let darkBackground: Bool
 
     private lazy var contentView = UIStackView(arrangedSubviews: [
         makeContentStackView(),
@@ -94,7 +105,12 @@ open class ResultAlertView_Image_Title_ContentVC: ViewController {
         $0.backgroundColor = .white
     }
 
-    public init(alert: ResultAlertView_Image_Title_Content_Alert) {
+    public init(
+        alert: ResultAlertView_Image_Title_Content_Alert,
+        darkbackground: Bool
+    ) {
+        self.darkBackground = darkbackground
+        
         super.init(nibName: nil, bundle: nil)
 
         initSetting()
@@ -108,6 +124,10 @@ open class ResultAlertView_Image_Title_ContentVC: ViewController {
             self.imageViewResult.image = .image(dsimage: .warinning)
         case .write:
             self.imageViewResult.image = .image(dsimage: .write)
+        case .completeProject:
+            self.imageViewResult.image = .image(dsimage: .compleProject)
+        case .complete:
+            self.imageViewResult.image = .image(dsimage: .complete)
         }
         self.labelTitle.text = alert.title
         self.labelContent.text = alert.content
@@ -116,7 +136,7 @@ open class ResultAlertView_Image_Title_ContentVC: ViewController {
         self.cancleButton.rx.tap
             .subscribe(onNext: { _ in
                 self.dismiss(animated: false) {
-                    alert.resultSubject.onNext(false)
+                    alert.resultSubject?.onNext(false)
                 }
             })
             .disposed(by: disposeBag)
@@ -124,7 +144,7 @@ open class ResultAlertView_Image_Title_ContentVC: ViewController {
         self.okButton.rx.tap
             .subscribe(onNext: { _ in
                 self.dismiss(animated: false) {
-                    alert.resultSubject.onNext(true)
+                    alert.resultSubject?.onNext(true)
                 }
             })
             .disposed(by: disposeBag)
@@ -135,6 +155,10 @@ open class ResultAlertView_Image_Title_ContentVC: ViewController {
     }
 
     open override func layout() {
+        
+        if darkBackground == false {
+            self.buttonBackground.backgroundColor = .clear
+        }
         
         self.view.backgroundColor = .clear
 

@@ -45,19 +45,16 @@ final class ProjectDetailPageSubIntroduceViewController: ViewController {
             likeButtonTap: mainView.viewBottom.buttonLike.rx.tap
                 .throttle(.seconds(1), scheduler: MainScheduler.instance),
             applyButtonTap: mainView.viewBottom.buttonApply.rx.tap
-                .throttle(.seconds(1), scheduler: MainScheduler.instance)
+                .throttle(.seconds(1), scheduler: MainScheduler.instance),
+            manageButtonTap: mainView.viewBottom.buttonProjectManagement.rx.tap
+                .throttle(.seconds(1), latest: true, scheduler: MainScheduler.instance)
         )
 
         let output = viewModel.transform(input: input)
 
         bindProject(output: output)
-
-        mainView.viewBottom.buttonApply.rx.tap
-            .throttle(.seconds(1), scheduler: MainScheduler.asyncInstance)
-            .subscribe(onNext: { [weak self] in
-                self?.showBottomSheet()
-            })
-            .disposed(by: disposeBag)
+        
+        mainView.viewBottom.bind(output: output)
     }
 
     func bindProject(output: ProjectDetailPageSubIntroduceViewModel.Output) {
@@ -121,10 +118,6 @@ final class ProjectDetailPageSubIntroduceViewController: ViewController {
             .map { $0.favorite }
             .drive(mainView.viewBottom.buttonLike.rx.likedCount)
             .disposed(by: disposeBag)
-    }
-
-    func showBottomSheet() {
-        
     }
 }
 

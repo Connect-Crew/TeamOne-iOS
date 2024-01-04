@@ -11,6 +11,8 @@ import RxSwift
 import RxCocoa
 import Domain
 import Core
+import TeamOneNetwork
+import DSKit
 
 enum ApplyNavigation {
     case close
@@ -37,15 +39,31 @@ final class ApplyViewModel: ViewModel {
         let project: Driver<Project?>
         let showWriteApplication: PublishSubject<RecruitStatus>
         let showResult: Signal<Bool>
+        let showError: PublishSubject<ResultAlertView_Image_Title_Content_Alert>
     }
 
     let navigation = PublishSubject<ApplyNavigation>()
+    
+    // MARK: - Alert
+    
+    lazy var errorAlert = ResultAlertView_Image_Title_Content_Alert(
+        image: .warnning,
+        title: "에러",
+        content: "",
+        availableCancle: false,
+        resultSubject: errorResultSubject
+    )
+    
+    // MARK: - Subject
 
     let project = BehaviorSubject<Project?>(value: nil)
     let selectPart = PublishSubject<RecruitStatus>()
     let refresh = PublishSubject<Void>()
     let showResult = PublishSubject<Bool>()
-
+    let showError = PublishSubject<ResultAlertView_Image_Title_Content_Alert>()
+    
+    let errorResultSubject = PublishSubject<Bool>()
+    
     var disposeBag: DisposeBag = .init()
 
     func transform(input: Input) -> Output {
@@ -76,13 +94,34 @@ final class ApplyViewModel: ViewModel {
             .flatMap { viewModel, apply in
                 viewModel.applyUseCase.apply(projectId: apply.projectid, part: KM.shared.key(name: apply.part), message: apply.message)
             }
-            .bind(to: showResult)
+            .withUnretained(self)
+            .subscribe(onNext: { this, _ in
+                this.showResult.onNext(true)
+            }, onError: { [weak self] error in
+                
+                guard let self = self else { return }
+                
+                let error = error as? APIError
+                switch error {
+                case .network(_, let message):
+                    self.errorAlert.title = message
+                case .notToken:
+                    break
+                case .unknown:
+                    self.errorAlert.title = "알수없는 에러"
+                case .none:
+                    break
+                }
+                
+                self.showError.onNext(self.errorAlert)
+            })
             .disposed(by: disposeBag)
 
         return Output(
             project: project.asDriver(onErrorJustReturn: nil),
             showWriteApplication: selectPart,
-            showResult: showResult.asSignal(onErrorJustReturn: false)
+            showResult: showResult.asSignal(onErrorJustReturn: false),
+            showError: showError
         )
     }
 }

@@ -195,6 +195,23 @@ extension AppDelegate {
             )
 
         }
+        
+        container.register(interface: ProjectReportUseCase.self, implement: {res in
+            return BaseProjectReportUseCase(
+                projectRepository: res.resolve(ProjectRepositoryProtocol.self)!
+            )
+        })
+        
+        container.register(interface: GetProjectMemberUseCase.self, implement: { res in
+            return GetProjectMember(projectRepository: res.resolve(ProjectRepositoryProtocol.self)!
+            )
+        })
+        
+        container.register(interface: MemberFacade.self, implement: { res in
+            return BaseMemberFacade(
+                getProjectMemberUseCase: res.resolve(GetProjectMemberUseCase.self)!
+            )
+        })
 
         // MARK: - ViewModel
 

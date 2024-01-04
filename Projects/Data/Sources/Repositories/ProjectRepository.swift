@@ -52,7 +52,7 @@ public struct ProjectRepository: ProjectRepositoryProtocol {
             .map { $0.toDomain() }
     }
 
-    public func apply(projectId: Int, part: String, message: String) -> Observable<Bool> {
+    public func apply(projectId: Int, part: String, message: String) -> Single<Bool> {
 
         let request = ProjectApplyRequestDTO(
             projectId: projectId,
@@ -95,7 +95,12 @@ public struct ProjectRepository: ProjectRepositoryProtocol {
         mappedKeyProps.leaderParts = leaderParts
         mappedKeyProps.recruits = recruits
         mappedKeyProps.category = categorys
-        mappedKeyProps.region = KM.shared.key(name: props.region)
+        
+        if region == "NONE" {
+            mappedKeyProps.region = region
+        } else {
+            mappedKeyProps.region = KM.shared.key(name: props.region)
+        }
         
         let compactImagesData = props.banner.map { $0.jpegData(compressionQuality:  0.5)}
         
@@ -115,5 +120,21 @@ public struct ProjectRepository: ProjectRepositoryProtocol {
                 ProjectRecruitDTO(part: $0.part, comment: $0.comment, max: $0.max)
             },
             skills: mappedKeyProps.skills)
+    }
+    
+    public func report(projectId: Int, reason: String) -> Single<Bool> {
+        
+        let request = ProjectReportRequestDTO(
+            projectId: projectId,
+            reason: reason
+        )
+        
+        return projectDataSource.report(request: request)
+            .map { $0.toDomain() }
+    }
+    
+    public func member(projectId: Int) -> Single<[ProjectMember]> {
+        return projectDataSource.members(projectId: projectId)
+            .map { $0.map { $0.toDomain()} }
     }
 }

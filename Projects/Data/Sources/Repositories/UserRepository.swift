@@ -19,7 +19,7 @@ public struct UserRepository: UserRepositoryProtocol {
         self.userDataSource = userDataSource
     }
 
-    public func myProfile() -> Observable<MyProfile> {
+    public func myProfile() -> Observable<Profile> {
         return self.userDataSource.myProfile()
             .map { $0.toDomain() }
             .catch({ _ in

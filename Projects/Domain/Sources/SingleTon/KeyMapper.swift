@@ -86,7 +86,7 @@ public class KM {
         } else {
 
             print("!!!!!!!!!!!\(self)::::")
-            print("KEY ERROR")
+            print("KEY ERROR=== \(name)")
             print("!!!!!!!!!!!!")
 
             return name

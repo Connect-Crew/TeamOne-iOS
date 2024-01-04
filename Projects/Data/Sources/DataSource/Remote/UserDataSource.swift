@@ -13,7 +13,7 @@ import Core
 import Alamofire
 
 public protocol UserDataSourceProtocol {
-    func myProfile() -> Observable<MyProfileResponseDTO>
+    func myProfile() -> Observable<BaseUserResponseDTO>
 }
 
 public struct UserDataSource: UserDataSourceProtocol {
@@ -24,7 +24,7 @@ public struct UserDataSource: UserDataSourceProtocol {
         self.provider = Provider.default
     }
 
-    public func myProfile() -> Observable<MyProfileResponseDTO> {
+    public func myProfile() -> Observable<BaseUserResponseDTO> {
         return provider.request(UserTarget.myProfile)
     }
 }

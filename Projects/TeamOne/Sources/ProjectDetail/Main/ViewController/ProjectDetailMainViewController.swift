@@ -11,6 +11,7 @@ import Core
 import RxSwift
 import RxCocoa
 import Then
+import DSKit
 
 final class ProjectDetailMainViewController: ViewController {
 
@@ -19,6 +20,21 @@ final class ProjectDetailMainViewController: ViewController {
     let viewNavigation = ProjectDetailNavigation()
 
     lazy var categoryView = DetailMainCategoryView()
+    
+    // MARK: - DropDown
+    
+    let dropDownMenus: [DropDownMenu] = [
+        DropDownMenu(title: "신고하기", titleColor: .teamOne.point, titleFont: .button1)
+    ]
+    
+    lazy var dropDown = DropDown(
+        menus: dropDownMenus,
+        maxShowCount: 1, 
+        cellHeight: 35,
+        textAlignment: .left
+    )
+    
+    // MARK: - PageViewControllers
 
     let introduceVC: ProjectDetailPageSubIntroduceViewController
 
@@ -47,6 +63,7 @@ final class ProjectDetailMainViewController: ViewController {
         self.viewModel = viewModel
         self.introduceVC = introduceVC
         super.init(nibName: nil, bundle: nil)
+        setupDropDown()
     }
 
     required init?(coder: NSCoder) {
@@ -78,18 +95,65 @@ final class ProjectDetailMainViewController: ViewController {
             $0.bottom.equalToSuperview()
         }
     }
+    
+    func setupDropDown() {
+        
+        self.view.addSubview(dropDown)
+        
+        dropDown.snp.makeConstraints {
+            $0.top.equalTo(viewNavigation.buttonNavigationRight.snp.bottom)
+            $0.trailing.equalTo(viewNavigation.buttonNavigationRight)
+        }
+        
+        viewNavigation.buttonNavigationRight.addTarget(
+            self,
+            action: #selector(buttonTapped),
+            for: .touchUpInside
+        )
+        
+        dropDown.completion = { [weak self] result in
+            guard let self = self else { return }
+            
+            self.dropDownResultSubject.onNext(result)
+        }
+    }
+    
+    @objc private func buttonTapped() {
+        dropDown.tableView.isHidden.toggle()
+    }
 
     func initPage() {
         pageViewController.addVC(addList: [introduceVC, vc2, vc3])
     }
-
+    
+    // MARK: - Subjects
+    
+    let dropDownResultSubject = PublishSubject<String>()
+    let reportButtonTabSubject = PublishSubject<Void>()
+    
+    // 신고하기를 누르면 해당 서브젝트로 전달
+    let reportedContentSubject = PublishSubject<String>()
+    
+    // MARK: - Bind
+    
     override func bind() {
         let input = ProjectDetailMainViewModel.Input(
             viewWillAppear: rx.viewWillAppear.map { _ in return }.asObservable(),
             backButtonTap: viewNavigation.buttonNavigationLeft.rx.tap
-                .throttle(.seconds(1), scheduler: MainScheduler.instance)
+                .throttle(.seconds(1), scheduler: MainScheduler.instance), 
+            reportContent: reportedContentSubject
         )
 
+        let output = viewModel.transform(input: input)
+        
+        bindPage()
+        bindRightBarButton(output: output)
+        bindDropDown()
+        bindReport()
+        bindAlert(output: output)
+    }
+    
+    func bindPage() {
         categoryView.categorySelectedSubject
             .bind(to: pageViewController.rx.goToPage)
             .disposed(by: disposeBag)
@@ -100,13 +164,76 @@ final class ProjectDetailMainViewController: ViewController {
                 self?.categoryView.selectCategory(index: $0)
             })
             .disposed(by: disposeBag)
-
-        let output = viewModel.transform(input: input)
     }
-
-    deinit {
-        print("!!!!!!!!!!!\(self)::::")
-        print("Deinit")
-        print("!!!!!!!!!!!!")
+    
+    func bindRightBarButton(output: ProjectDetailMainViewModel.Output) {
+        output.isMyProject
+            .drive(onNext: { [weak self] isMine in
+                self?.viewNavigation.buttonNavigationRight.isHidden = isMine
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    func bindDropDown() {
+        dropDownResultSubject
+            .filter { $0 == "신고하기" }
+            .subscribe(on: MainScheduler.instance)
+            .withUnretained(self)
+            .subscribe(onNext: { this, _ in
+                this.reportButtonTabSubject.onNext(())
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    func bindReport() {
+        reportButtonTabSubject
+            .map { _ in
+                let alert = AlertView_Title_TextView_Item(
+                    title: "이 프로젝트를 신고하시겠습니까?", 
+                    placeHolder: "신고 사유를 최대 100자 까지 작성해주세요",
+                    okButtonTitle: "신고하기",
+                    maxTextCount: 100,
+                    callBack: { [weak self] bool, content in
+                        if bool == true {
+                            self?.reportedContentSubject.onNext(content)
+                        }
+                    }
+                )
+                
+                return alert
+            }
+            .withUnretained(self)
+            .subscribe(onNext: { this, alert in
+                self.presentAlert_Title_TextView(
+                    source: this,
+                    alert: alert
+                )
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    func bindAlert(output: ProjectDetailMainViewModel.Output) {
+        // 에러 알럿 바인딩
+        output.error
+            .bind(to: rx.presentErrorAlert)
+            .disposed(by: disposeBag)
+        
+        output.reportResult
+            .map { _ in
+                return ResultAlertView_Image_Title_Content_Alert(
+                    image: .complete,
+                    title: "신고가 완료되었습니다.",
+                    content: "소중한 의견 감사합니다.",
+                    availableCancle: false
+                )
+            }
+            .withUnretained(self)
+            .emit(onNext: { this, alert in
+                self.presentResultAlertView_Image_Title_Content(
+                    source: this,
+                    alert: alert
+                )
+            })
+            .disposed(by: disposeBag)
     }
 }
