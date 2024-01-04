@@ -110,5 +110,36 @@ public class Provider: ProviderProtocol {
             }
         }
     }
+    
+    public func requestNoInterceptor<T: Decodable>(_ urlConvertible: URLRequestConvertible) -> Single<T> {
+        return Single.create { single in
+            let request = self.session
+                .request(urlConvertible)
+                .validate(statusCode: 200 ..< 300)
+                .responseDecodable(of: T.self) { response in
+                    switch response.result {
+                    case let .success(data):
+                        single(.success(data))
+                    case let .failure(error):
+                        if let errorData = response.data {
+                            do {
+                                let networkError = try JSONDecoder().decode(ErrorEntity.self, from: errorData)
+
+                                let apiError = APIError(error: networkError)
+
+                                single(.failure(apiError))
+                            } catch {
+                                single(.failure(APIError.unknown))
+                            }
+                        } else {
+                            single(.failure(error))
+                        }
+                    }
+                }
+            return Disposables.create {
+                request.cancel()
+            }
+        }
+    }
 }
 

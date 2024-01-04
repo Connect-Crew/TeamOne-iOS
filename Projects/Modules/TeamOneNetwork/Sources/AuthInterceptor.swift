@@ -37,10 +37,6 @@ class AuthInterceptor: RequestInterceptor {
         
         let expiredCode: Int? = 401
         
-        let response = request.task?.response as? HTTPURLResponse
-        let statusCode = response?.statusCode
-        let bool = statusCode == expiredCode
-        
         print("DEBUG: RETRY")
 
         guard let response = request.task?.response as? HTTPURLResponse, response.statusCode == expiredCode else {
@@ -56,12 +52,13 @@ class AuthInterceptor: RequestInterceptor {
         authRepository.reissuance()
             .subscribe(
                 onSuccess: { refresh in
+                    print("DEBUG: REFRESH 성공")
                     UserDefaultKeyList.Auth.appAccessToken = refresh.token
                     UserDefaultKeyList.Auth.appRefreshToken = refresh.refresh
                     completion(.retry)
                 },
                 onFailure:  { error in
-                    
+                    print("DEBUG: REFRESH 실패")
                     // TODO: - 갱신실패 -> 로그인 화면으로 전환 필요
                     completion(.doNotRetryWithError(error))
                 }

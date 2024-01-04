@@ -45,7 +45,7 @@ public struct AuthDataSource: AuthDataSourceProtocol {
             refreshToken: UserDefaultKeyList.Auth.appRefreshToken ?? ""
         )
 
-        return provider.request(AuthTarget.reissuance(request:request))
+        return provider.requestNoInterceptor(AuthTarget.reissuance(request:request))
     }
 }
 
