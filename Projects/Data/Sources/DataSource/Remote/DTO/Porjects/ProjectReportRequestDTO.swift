@@ -7,3 +7,8 @@
 //
 
 import Foundation
+
+public struct ProjectReportRequestDTO: Codable {
+    let projectId: Int
+    let reason: String
+}

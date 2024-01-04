@@ -121,4 +121,15 @@ public struct ProjectRepository: ProjectRepositoryProtocol {
             },
             skills: mappedKeyProps.skills)
     }
+    
+    public func report(projectId: Int, reason: String) -> Single<Bool> {
+        
+        let request = ProjectReportRequestDTO(
+            projectId: projectId,
+            reason: reason
+        )
+        
+        return projectDataSource.report(request: request)
+            .map { $0.toDomain() }
+    }
 }

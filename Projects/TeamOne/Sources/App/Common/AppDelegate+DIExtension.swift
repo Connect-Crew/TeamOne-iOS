@@ -195,6 +195,12 @@ extension AppDelegate {
             )
 
         }
+        
+        container.register(interface: ProjectReportUseCase.self, implement: {res in
+            return BaseProjectReportUseCase(
+                projectRepository: res.resolve(ProjectRepositoryProtocol.self)!
+            )
+        })
 
         // MARK: - ViewModel
 

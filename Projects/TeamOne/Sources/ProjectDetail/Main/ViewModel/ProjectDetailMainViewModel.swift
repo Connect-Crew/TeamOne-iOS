@@ -10,6 +10,7 @@ import Core
 import Domain
 import RxSwift
 import RxCocoa
+import DSKit
 
 enum ProjectDetailMainNavigation {
     case back
@@ -21,6 +22,10 @@ enum ProjectIsMine {
 }
 
 final class ProjectDetailMainViewModel: ViewModel {
+    
+    let projectReportUseCase: ProjectReportUseCase = DIContainer.shared.resolve(ProjectReportUseCase.self)
+    
+    let projectUseCase: ProjectUseCaseProtocol
 
     struct Input {
         let viewWillAppear: Observable<Void>
@@ -30,11 +35,11 @@ final class ProjectDetailMainViewModel: ViewModel {
 
     struct Output {
         let isMyProject: Driver<Bool>
+        let reportResult: Signal<Bool>
+        let error: PublishSubject<Error>
     }
 
     var project: Project!
-
-    let projectUseCase: ProjectUseCaseProtocol
 
     public init(projectUseCase: ProjectUseCaseProtocol) {
         self.projectUseCase = projectUseCase
@@ -45,6 +50,9 @@ final class ProjectDetailMainViewModel: ViewModel {
     let navigation = PublishSubject<ProjectDetailMainNavigation>()
 
     var disposeBag: DisposeBag = .init()
+    
+    let reportResult = PublishSubject<Bool>()
+    let error = PublishSubject<Error>()
 
     func transform(input: Input) -> Output {
 
@@ -53,7 +61,13 @@ final class ProjectDetailMainViewModel: ViewModel {
         transformReport(input: input)
         
         return Output(
-            isMyProject: type.map { $0 == .mine }.asDriver(onErrorJustReturn: false)
+            isMyProject: type.map { $0 == .mine }.asDriver(
+                onErrorJustReturn: false
+            ),
+            reportResult: reportResult.asSignal(
+                onErrorJustReturn: true
+            ),
+            error: error
         )
     }
     
@@ -83,7 +97,28 @@ final class ProjectDetailMainViewModel: ViewModel {
     }
     
     func transformReport(input: Input) {
-        
+        input.reportContent
+            .withUnretained(self)
+            .map { this, reportContent in
+                return (
+                    reportContent: reportContent,
+                    projectId: this.project.id
+                )
+            }
+            .withUnretained(self)
+            .flatMap { this, report in
+                return this.projectReportUseCase.projectReport(
+                    projectId: report.projectId,
+                    reason: report.reportContent
+                )
+            }
+            .withUnretained(self)
+            .subscribe(onNext: { this, result in
+                this.reportResult.onNext(result)
+            }, onError: { [weak self] error in
+                self?.error.onNext(error)
+            })
+            .disposed(by: disposeBag)
     }
 }
 

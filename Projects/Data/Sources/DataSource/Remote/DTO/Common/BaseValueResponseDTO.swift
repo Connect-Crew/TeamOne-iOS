@@ -7,3 +7,11 @@
 //
 
 import Foundation
+
+public struct BaseValueResponseDTO: Codable {
+    let value: Bool
+
+    func toDomain() -> Bool {
+        return value
+    }
+}

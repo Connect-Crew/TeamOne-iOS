@@ -140,7 +140,8 @@ final class ProjectDetailMainViewController: ViewController {
         let input = ProjectDetailMainViewModel.Input(
             viewWillAppear: rx.viewWillAppear.map { _ in return }.asObservable(),
             backButtonTap: viewNavigation.buttonNavigationLeft.rx.tap
-                .throttle(.seconds(1), scheduler: MainScheduler.instance), reportContent: reportedContentSubject
+                .throttle(.seconds(1), scheduler: MainScheduler.instance), 
+            reportContent: reportedContentSubject
         )
 
         let output = viewModel.transform(input: input)
@@ -149,6 +150,7 @@ final class ProjectDetailMainViewController: ViewController {
         bindRightBarButton(output: output)
         bindDropDown()
         bindReport()
+        bindAlert(output: output)
     }
     
     func bindPage() {
@@ -208,14 +210,30 @@ final class ProjectDetailMainViewController: ViewController {
                 )
             })
             .disposed(by: disposeBag)
+    }
+    
+    func bindAlert(output: ProjectDetailMainViewModel.Output) {
+        // 에러 알럿 바인딩
+        output.error
+            .bind(to: rx.presentErrorAlert)
+            .disposed(by: disposeBag)
         
-        // TODO: - 여기부터 신고기능 이어하기.
-        
-        reportedContentSubject
-            .subscribe(onNext: {
-                print("!!!!!!!!!!!\(self)::::")
-                print($0)
-                print("!!!!!!!!!!!!")
+        output.reportResult
+            .map { _ in
+                return ResultAlertView_Image_Title_Content_Alert(
+                    image: .complete,
+                    title: "신고가 완료되었습니다.",
+                    content: "소중한 의견 감사합니다.",
+                    availableCancle: false
+                )
+            }
+            .withUnretained(self)
+            .emit(onNext: { this, alert in
+                self.presentResultAlertView_Image_Title_Content(
+                    source: this,
+                    alert: alert
+                )
             })
+            .disposed(by: disposeBag)
     }
 }
