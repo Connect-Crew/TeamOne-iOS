@@ -18,6 +18,8 @@ class AuthInterceptor: RequestInterceptor {
 
     func adapt(_ urlRequest: URLRequest, for session: Session, completion: @escaping (Result<URLRequest, Error>) -> Void) {
         
+        print("DEBUG: Intercept")
+        
         guard let accessToken: String = UserDefaultKeyList.Auth.appAccessToken,
         let _: String = UserDefaultKeyList.Auth.appRefreshToken
         else {
@@ -34,11 +36,20 @@ class AuthInterceptor: RequestInterceptor {
     func retry(_ request: Request, for session: Session, dueTo error: Error, completion: @escaping (RetryResult) -> Void) {
         
         let expiredCode: Int? = 401
+        
+        let response = request.task?.response as? HTTPURLResponse
+        let statusCode = response?.statusCode
+        let bool = statusCode == expiredCode
+        
+        print("DEBUG: RETRY")
 
         guard let response = request.task?.response as? HTTPURLResponse, response.statusCode == expiredCode else {
+            print("DEBUG: RETRY Pass")
             completion(.doNotRetryWithError(error))
             return
         }
+        
+        print("DEBUG: RETRY 실행")
         
         let authRepository = DIContainer.shared.resolve(AuthRepositoryProtocol.self)
 

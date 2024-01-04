@@ -39,7 +39,8 @@ public class Provider: ProviderProtocol {
 
         return Observable.create { emitter in
             let request = self.session
-                .request(urlConvertible)
+                .request(urlConvertible,
+                         interceptor: self.authInterceptor)
                 .validate(statusCode: 200 ..< 300)
                 .responseDecodable(of: T.self) { response in
                     print("@@@@@@@@ REST API \(urlConvertible.urlRequest?.url?.absoluteString ?? "") @@@@@@@@")
