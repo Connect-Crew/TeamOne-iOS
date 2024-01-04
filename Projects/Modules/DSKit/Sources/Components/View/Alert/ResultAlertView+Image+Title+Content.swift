@@ -52,6 +52,7 @@ public enum ResultAlertView_Image {
     case warnning
     case write
     case completeProject
+    case complete
 }
 
 open class ResultAlertView_Image_Title_ContentVC: ViewController {
@@ -125,6 +126,8 @@ open class ResultAlertView_Image_Title_ContentVC: ViewController {
             self.imageViewResult.image = .image(dsimage: .write)
         case .completeProject:
             self.imageViewResult.image = .image(dsimage: .compleProject)
+        case .complete:
+            self.imageViewResult.image = .image(dsimage: .complete)
         }
         self.labelTitle.text = alert.title
         self.labelContent.text = alert.content

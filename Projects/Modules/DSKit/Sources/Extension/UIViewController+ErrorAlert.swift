@@ -15,11 +15,21 @@ import SnapKit
 import Then
 import TeamOneNetwork
 
-extension UIViewController {
+public extension Reactive where Base: UIViewController {
+    var presentErrorAlert: Binder<Error> {
+        return Binder(self.base) { base, error in
+            base.presentErrorAlert(
+                error: error, finishSubject: nil
+            )
+        }
+    }
+}
+
+public extension UIViewController {
     
-    func showErrorAlert(
-        error: Error,
-        finishSubject: PublishSubject<Void>
+    func presentErrorAlert(
+        error: Error?,
+        finishSubject: PublishSubject<Void>? = nil
     ) {
         
         var alert = ResultAlertView_Image_Title_Content_Alert(
