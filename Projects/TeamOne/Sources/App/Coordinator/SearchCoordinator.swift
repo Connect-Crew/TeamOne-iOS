@@ -35,6 +35,10 @@ final class SearchCoordinator: BaseCoordinator<SearchCoordinatorResult> {
                 case .finish:
                     // 뒤로가기 버튼
                     self?.finish.onNext(.finish)
+                case .toProject(let data):
+                    self?.toProject(data)
+                case .participants(let data):
+                    self?.toParticipants(data)
                 }
             })
             .disposed(by: disposeBag)
@@ -42,5 +46,31 @@ final class SearchCoordinator: BaseCoordinator<SearchCoordinatorResult> {
         let viewController = Inject.ViewControllerHost(SearchViewController(viewModel: viewModel))
         
         pushTabbar(viewController, animated: true)
+    }
+    
+    func toProject(_ project: Project) {
+        let projectDetail = ProjectDetailCoordinator(navigationController, project: project)
+        
+        coordinate(to: projectDetail)
+            .subscribe(onNext: { _ in
+                self.popTabbar(animated: true)
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    func toParticipants(_ participants: SideProjectListElement?) {
+        let viewController = Inject.ViewControllerHost(RecruitmentStatusDetailViewController(element: participants))
+
+        viewController.navigation
+            .subscribe(onNext: { [weak self] in
+                switch $0 {
+                case let .detail(element: participants):
+                    break
+                }
+            })
+            .disposed(by: disposeBag)
+
+        viewController.modalPresentationStyle = .overFullScreen
+        present(viewController, animated: false)
     }
 }
