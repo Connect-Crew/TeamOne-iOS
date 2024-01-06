@@ -115,16 +115,7 @@ final class HomeViewModel: ViewModel {
                                                          part: params.1, skills: nil, states: nil,
                                                          category: nil, search: nil)
                     .withLatestFrom(viewModel.projects) { newProjects, currentProjects in
-                        return newProjects
-                    }
-                    .map { newData in
-                        return newData.sorted {
-
-                            guard let first = $0.createdAt.toDate(),
-                                  let second = $1.createdAt.toDate() else { return true }
-
-                            return first > second
-                        }
+                        return [] + newProjects
                     }
             }
             .subscribe(onNext: { [weak self] updateProjects in
@@ -164,15 +155,8 @@ final class HomeViewModel: ViewModel {
                         if new.count < 30 {
                             viewModel.isEnd.onNext(true)
                         }
-                        
-                        let sortedNew = new.sorted {
-                            guard let first = $0.createdAt.toDate(),
-                                  let second = $1.createdAt.toDate() else { return true }
 
-                            return first > second
-                        }
-
-                        return current + sortedNew
+                        return current + new
                     }
             }
             .subscribe(onNext: { [weak self] updatedProjects in
