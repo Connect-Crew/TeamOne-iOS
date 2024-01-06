@@ -39,7 +39,10 @@ final class SearchViewController: ViewController {
     private let mainView = SearchMainView()
     
     private let deleteHistory = PublishSubject<String>()
-    private let modelSelected = PublishSubject<String>()
+    private let historySelected = PublishSubject<String>()
+    private let projectSeleted = PublishSubject<SideProjectListElement>()
+    private let likeButtonTap = PublishSubject<SideProjectListElement?>()
+    private let participantsButtonTap = PublishSubject<SideProjectListElement?>()
     
     // MARK: - LifeCycle
     
@@ -91,6 +94,7 @@ final class SearchViewController: ViewController {
         dataSource = UICollectionViewDiffableDataSource<Section, Item>(collectionView: self.collectionView, 
                                                                        cellProvider: { [weak self] collectionView, indexPath, item in
             guard let this = self else { return nil }
+            
             return this.createCell(for: item, indexPath: indexPath, collectionView: collectionView)
         })
     }
@@ -109,7 +113,17 @@ final class SearchViewController: ViewController {
             return cell
         case .result(let project):
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: HomeCell.defaultReuseIdentifier, for: indexPath) as! HomeCell
+            
             cell.initSetting(project: project)
+            
+            cell.buttonLikeTap
+                .bind(to: likeButtonTap)
+                .disposed(by: cell.disposeBag)
+            
+            cell.buttonParticipantsTap
+                .bind(to: participantsButtonTap)
+                .disposed(by: disposeBag)
+            
             return cell
         }
     }
@@ -171,7 +185,9 @@ final class SearchViewController: ViewController {
         case .result:
             snapshot.appendItems(resultItems.map { Item.result($0) }, toSection: .result)
         }
-        self.dataSource.apply(snapshot)
+        
+        self.dataSource.apply(snapshot, animatingDifferences: true)
+//        self.collectionView.reloadData()
     }
     
     override func bind() {
@@ -183,7 +199,10 @@ final class SearchViewController: ViewController {
             tapDeleteHistory: deleteHistory,
             tapClearAllHistory: mainView.recentSearchClearView.tapRecentHistoryClear,
             tapBack: mainView.searchHeader.tapBack,
-            tapKeyword: modelSelected
+            tapKeyword: historySelected,
+            tapProject: projectSeleted,
+            participantsButtonTap: participantsButtonTap,
+            likeButtonTap: likeButtonTap
         )
         
         let output = viewModel.transform(input: input)
@@ -206,8 +225,10 @@ final class SearchViewController: ViewController {
             .disposed(by: disposeBag)
         
         output.searchResult
+            .observe(on: MainScheduler.instance)
             .withUnretained(self)
             .subscribe(onNext: { this, result in
+                
                 this.mainView.applaySyle(.after)
                 
                 this.resultItems = result
@@ -215,16 +236,6 @@ final class SearchViewController: ViewController {
             })
             .disposed(by: disposeBag)
         
-//        output.searchResult
-//            .bind(to: mainView.searchResultTableView.rx.items(
-//                cellIdentifier: HomeTableViewCell.defaultReuseIdentifier,
-//                cellType: HomeTableViewCell.self)) { [weak self] (_, element, cell) in
-//                    cell.selectionStyle = .none
-//                    cell.prepareForReuse()
-//                    cell.backgroundColor = .teamOne.background
-//                    cell.initSetting(project: element)
-//                }
-//            .disposed(by: disposeBag)
     }
 }
 extension SearchViewController: UICollectionViewDelegate {
@@ -232,9 +243,9 @@ extension SearchViewController: UICollectionViewDelegate {
         guard let item = self.dataSource.itemIdentifier(for: indexPath) else { return }
         switch item {
         case .history(let data):
-            modelSelected.onNext(data)
+            historySelected.onNext(data)
         case .result(let data):
-            print("data : \(data)")
+            projectSeleted.onNext(data)
         }
         
     }

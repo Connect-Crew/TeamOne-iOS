@@ -14,13 +14,17 @@ import Core
 
 enum SearchNavigation {
     case finish
+    case toProject(Project)
+    case participants(SideProjectListElement?)
 }
 
 final class SearchViewModel: ViewModel {
     
     private let recentHistoryFacade = DIContainer.shared.resolve(RecentHistoryFacade.self)
     
-    private let projectUseCase = DIContainer.shared.resolve(ProjectListUseCaseProtocol.self)
+    private let projectListUseCase = DIContainer.shared.resolve(ProjectListUseCaseProtocol.self)
+    private let projectUseCase = DIContainer.shared.resolve(ProjectUseCaseProtocol.self)
+    private let projectLikeUseCase = DIContainer.shared.resolve(ProjectLikeUseCaseProtocol.self)
     
     struct Input {
         let viewWillAppear: Observable<Void>
@@ -30,6 +34,9 @@ final class SearchViewModel: ViewModel {
         let tapClearAllHistory: Observable<Void>
         let tapBack: Observable<Void>
         let tapKeyword: Observable<String>
+        let tapProject: Observable<SideProjectListElement>
+        let participantsButtonTap: Observable<SideProjectListElement?>
+        let likeButtonTap: Observable<SideProjectListElement?>
     }
     
     struct Output {
@@ -46,6 +53,11 @@ final class SearchViewModel: ViewModel {
         let searchHistoryList = PublishRelay<[String]>()
         let searchIsEmpty = PublishRelay<Bool>()
         let searchResult = PublishRelay<[SideProjectListElement]>()
+        
+        searchResult
+            .debug()
+            .subscribe()
+            .disposed(by: disposeBag)
         
         input.viewWillAppear
             .withUnretained(self)
@@ -124,6 +136,42 @@ final class SearchViewModel: ViewModel {
         }
         .bind(to: searchResult)
         .disposed(by: disposeBag)
+        
+        // MARK: 프로젝트 선택
+        input.tapProject
+            .withUnretained(self)
+            .flatMap { this, project -> Observable<Project> in
+                this.projectUseCase.project(projectId: project.id)
+            }
+            .map { SearchNavigation.toProject($0) }
+            .bind(to: navigation)
+            .disposed(by: disposeBag)
+        
+        input.likeButtonTap
+            .compactMap { $0 }
+            .withUnretained(self)
+            .flatMap { this, project in
+                return this.projectLikeUseCase.like(projectId: project.id)
+            }
+            .withLatestFrom(searchResult) { like, projects -> [SideProjectListElement] in
+
+                var newProject = projects
+
+                if let index = newProject.firstIndex(where: { $0.id == like.project
+                }) {
+                    newProject[index].favorite = like.favorite
+                    newProject[index].myFavorite = like.myFavorite
+                }
+                
+                return newProject
+            }
+            .bind(to: searchResult)
+            .disposed(by: disposeBag)
+        
+        input.participantsButtonTap
+            .map { .participants($0) }
+            .bind(to: navigation)
+            .disposed(by: disposeBag)
         
         return Output(
             searchHistoryList: searchHistoryList,
