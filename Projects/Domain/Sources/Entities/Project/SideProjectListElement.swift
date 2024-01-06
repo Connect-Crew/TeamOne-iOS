@@ -10,14 +10,15 @@ import UIKit
 
 public struct SideProjectListElement: Hashable {
     public static func == (lhs: SideProjectListElement, rhs: SideProjectListElement) -> Bool {
-        return lhs.id == rhs.id
+        return lhs.identifier == rhs.identifier
     }
     
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(0)
+        hasher.combine(identifier)
+        hasher.combine(favorite)
     }
     
-
+    public let identifier = UUID()
     public let id: Int
     public let title: String
     public let thumbnail: String?
