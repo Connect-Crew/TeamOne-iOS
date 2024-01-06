@@ -106,19 +106,54 @@ final class ProjectDetailMainViewModel: ViewModel {
                 )
             }
             .withUnretained(self)
-            .flatMap { this, report in
+            .flatMap { this, report -> Observable<Bool> in
                 return this.projectReportUseCase.projectReport(
                     projectId: report.projectId,
                     reason: report.reportContent
                 )
+                .asObservable()
+                .catch { [weak self] error in
+                    self?.error.onNext(error)
+                    return .empty()
+                }
             }
             .withUnretained(self)
             .subscribe(onNext: { this, result in
                 this.reportResult.onNext(result)
-            }, onError: { [weak self] error in
-                self?.error.onNext(error)
             })
             .disposed(by: disposeBag)
+        
+//        let result = input.reportContent
+//            .withUnretained(self)
+//            .map { this, reportContent in
+//                return (
+//                    reportContent: reportContent,
+//                    projectId: this.project.id
+//                )
+//            }
+//            .withUnretained(self)
+//            .flatMap { this, report -> Observable<Result<Bool, Error>> in
+//                return this.projectReportUseCase.projectReport(
+//                    projectId: report.projectId,
+//                    reason: report.reportContent
+//                )
+//                .asObservable()
+//                .asResult()
+//            }
+//        
+//        let getSuccess = result
+//            .compactMap { result -> Bool? in
+//                guard case .success(let data) = result else { return  nil }
+//                
+//                return data
+//            }
+//        
+//        let getFailure = result
+//            .compactMap { result -> Error? in
+//                guard case .failure(let error) = result else { return  nil }
+//                
+//                return error
+//            }
     }
 }
 

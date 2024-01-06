@@ -28,7 +28,7 @@ let project = Project.makeModule(
         .SPM.FirebaseMessaging,
         .SPM.GoogleSignIn,
         .SPM.Alamofire,
-//        .Carthage.DropDown
+        .SPM.SDWebImage
     ]
 )
 

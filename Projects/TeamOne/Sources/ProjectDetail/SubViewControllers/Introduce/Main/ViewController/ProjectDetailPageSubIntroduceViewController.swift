@@ -11,6 +11,7 @@ import Core
 import RxSwift
 import RxCocoa
 import Then
+import SDWebImage
 
 final class ProjectDetailPageSubIntroduceViewController: ViewController {
 
@@ -118,6 +119,15 @@ final class ProjectDetailPageSubIntroduceViewController: ViewController {
             .map { $0.favorite }
             .drive(mainView.viewBottom.buttonLike.rx.likedCount)
             .disposed(by: disposeBag)
+        
+        project
+            .map { $0.banners }
+            .filter { !$0.isEmpty }
+            .drive(onNext: { [weak self] array in
+                UIImageView.pathToImage(path: array) { images in
+                    self?.mainView.imageSlider.configure(with: images)
+                }
+            })
+            .disposed(by: disposeBag)
     }
 }
-

@@ -14,6 +14,7 @@ import DSKit
 
 import RxSwift
 import RxCocoa
+import SDWebImage
 
 final class HomeTableViewCell: UITableViewCell, CellIdentifiable {
 
@@ -109,6 +110,7 @@ final class HomeTableViewCell: UITableViewCell, CellIdentifiable {
 
     override func prepareForReuse() {
         super.prepareForReuse()
+        self.imageViewMain.image = .image(dsimage: .logo)
         
         self.disposeBag = DisposeBag()
     }
@@ -143,6 +145,8 @@ final class HomeTableViewCell: UITableViewCell, CellIdentifiable {
         buttonLike.isLiked = project.myFavorite
         
         hashtagListCollectionView.reloadData()
+        
+        imageViewMain.setTeamOneImage(path: project.thumbnail)
     }
 
     // MARK: - Methods
