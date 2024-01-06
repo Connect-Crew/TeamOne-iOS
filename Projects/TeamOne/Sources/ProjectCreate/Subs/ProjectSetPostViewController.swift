@@ -15,7 +15,7 @@ import Then
 import Domain
 import RxKeyboard
 
-final class ProjectSetPostViewController: ViewController {
+final class ProjectSetPostViewController: ViewController, UINavigationControllerDelegate {
 
     let scrollView = BaseScrollView(frame: .zero)
 
@@ -157,6 +157,8 @@ final class ProjectSetPostViewController: ViewController {
     lazy var seledtedLeaderMajorSubClass = PublishSubject<(String, Int)>()
     lazy var seledtedRecruitMajorPart = PublishSubject<(String, Int)>()
     lazy var seledtedRecruitSubClass = PublishSubject<(String, Int)>()
+    
+    var imagePickerController = UIImagePickerController()
 
     // MARK: - LifeCycle
 
@@ -173,7 +175,7 @@ final class ProjectSetPostViewController: ViewController {
             .withUnretained(self)
             .subscribe(onNext: { this, selectedImage in
 
-                ActionSheet.baseActionSheet(source: this, title: "TeamOne", content: ["갤러리", "카메라"], onSelect: { select in
+                ActionSheet.baseActionSheet(source: this, title: "TeamOne", content: ["갤러리", "카메라"], onSelect: { [self] select in
 
                     if select == "갤러리" {
                         self.presentImagePicker(
@@ -189,7 +191,9 @@ final class ProjectSetPostViewController: ViewController {
 
                         }, completion: nil)
                     } else if select == "카메라" {
-
+                        this.imagePickerController.delegate = this
+                        this.imagePickerController.sourceType = .camera
+                        this.present(this.imagePickerController, animated: true)
                     }
                 })
             })
@@ -604,5 +608,18 @@ final class ProjectSetPostViewController: ViewController {
                 }
             })
             .disposed(by: disposeBag)
+    }
+}
+
+extension ProjectSetPostViewController: UIImagePickerControllerDelegate {
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        self.imagePickerController.dismiss(animated: true)
+        
+        // 10. 선택된 이미지(소스)가 없을수도 있으니 옵셔널 바인딩해주고, 이미지가 선택된게 없다면 오류를 발생시킵니다.
+        guard let userPickedImage = info[.originalImage] as? UIImage else {
+            fatalError("선택된 이미지를 불러오지 못했습니다 : userPickedImage의 값이 nil입니다. ")
+        }
+        
+        self.selectedImage.onNext([userPickedImage])
     }
 }
