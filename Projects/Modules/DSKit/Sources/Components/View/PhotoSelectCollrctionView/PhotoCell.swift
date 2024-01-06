@@ -44,6 +44,9 @@ public final class PhotoCell: UICollectionViewCell, CellIdentifiable {
             $0.top.trailing.equalTo(imageView)
         }
         
+        self.contentView.setRound(radius: 8)
+        self.contentView.clipsToBounds = true
+        
         bind()
     }
 
