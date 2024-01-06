@@ -120,7 +120,7 @@ final class SearchViewModel: ViewModel {
         ])
         .withUnretained(self)
         .flatMap({ this, keyword in
-            return this.projectUseCase.projectList(request: ProjectFilterRequest(size: 30, search: keyword))
+            return this.projectListUseCase.projectList(request: ProjectFilterRequest(size: 30, search: keyword))
                 .catch { _ in
                     return .empty()
                 }
