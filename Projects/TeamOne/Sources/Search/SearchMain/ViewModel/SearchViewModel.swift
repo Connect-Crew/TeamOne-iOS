@@ -30,6 +30,7 @@ final class SearchViewModel: ViewModel {
         let tapClearAllHistory: Observable<Void>
         let tapBack: Observable<Void>
         let tapKeyword: Observable<String>
+        let tapProject: Observable<SideProjectListElement>
     }
     
     struct Output {
@@ -121,6 +122,10 @@ final class SearchViewModel: ViewModel {
         }
         .bind(to: searchResult)
         .disposed(by: disposeBag)
+        
+        // MARK: 프로젝트 선택
+        tapProject
+        
         
         return Output(
             searchHistoryList: searchHistoryList,

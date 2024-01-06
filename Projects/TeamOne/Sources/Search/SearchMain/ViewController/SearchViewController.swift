@@ -39,7 +39,8 @@ final class SearchViewController: ViewController {
     private let mainView = SearchMainView()
     
     private let deleteHistory = PublishSubject<String>()
-    private let modelSelected = PublishSubject<String>()
+    private let historySelected = PublishSubject<String>()
+    private let projectSeleted = PublishSubject<SideProjectListElement>()
     
     // MARK: - LifeCycle
     
@@ -183,7 +184,8 @@ final class SearchViewController: ViewController {
             tapDeleteHistory: deleteHistory,
             tapClearAllHistory: mainView.recentSearchClearView.tapRecentHistoryClear,
             tapBack: mainView.searchHeader.tapBack,
-            tapKeyword: modelSelected
+            tapKeyword: historySelected,
+            tapProject: projectSeleted
         )
         
         let output = viewModel.transform(input: input)
@@ -232,9 +234,9 @@ extension SearchViewController: UICollectionViewDelegate {
         guard let item = self.dataSource.itemIdentifier(for: indexPath) else { return }
         switch item {
         case .history(let data):
-            modelSelected.onNext(data)
+            historySelected.onNext(data)
         case .result(let data):
-            print("data : \(data)")
+            projectSeleted.onNext(data)
         }
         
     }
