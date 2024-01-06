@@ -102,7 +102,7 @@ public struct ProjectRepository: ProjectRepositoryProtocol {
             mappedKeyProps.region = KM.shared.key(name: props.region)
         }
         
-        let compactImagesData = props.banner.map { $0.jpegData(compressionQuality:  0.5)}
+        let compactImagesData = props.banner.map { $0.jpegData(compressionQuality:  1) }
         
         return ProjectCreateRequestDTO(
             banner: compactImagesData, 
