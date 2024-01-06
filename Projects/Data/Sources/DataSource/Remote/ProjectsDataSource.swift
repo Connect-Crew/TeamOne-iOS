@@ -121,9 +121,9 @@ public struct ProjectsDataSource: ProjectsDataSouceProtocol {
                 }
             
             
-                let skills = try! JSONSerialization.data(withJSONObject: request.skills, options: .prettyPrinted)
-                
-                multipartFormData.append(skills, withName: "skills")
+                for skill in request.skills {
+                    multipartFormData.append("\(skill)".data(using: .utf8)!, withName: "skills")
+                }
                 
             }, to: url, method: .post, headers: header)
             .responseDecodable(of: ProjectCreateResponseDTO.self) { response in
