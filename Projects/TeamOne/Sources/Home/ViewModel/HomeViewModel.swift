@@ -207,10 +207,6 @@ final class HomeViewModel: ViewModel {
                             newProject[index].myFavorite = like.myFavorite
                         }
                         
-                        print("!!!!!!!!!!!\(self)::::")
-                        dump(newProject.first?.HashTags)
-                        print("!!!!!!!!!!!!")
-                        
                         return newProject
                     }
             }

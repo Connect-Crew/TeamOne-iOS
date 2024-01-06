@@ -11,9 +11,9 @@ import Then
 import SnapKit
 
 open class ImageSlideView: UIView {
-
+    
     public let scrollView = UIScrollView()
-
+    
     public let pageControl = UIPageControl().then {
         $0.isUserInteractionEnabled = false
         $0.currentPage = 0
@@ -26,37 +26,37 @@ open class ImageSlideView: UIView {
             setupImagesInScrollView()
         }
     }
-
+    
     public override init(frame: CGRect) {
         super.init(frame: frame)
-
+        
         setupScrollView()
         setPageControl()
     }
-
+    
     private func setupScrollView() {
         scrollView.isPagingEnabled = true
         scrollView.showsHorizontalScrollIndicator = false
         scrollView.delegate = self
-
+        
         addSubview(scrollView)
-
+        
         scrollView.snp.makeConstraints {
             $0.top.trailing.leading.equalToSuperview()
             $0.height.equalTo(150)
         }
     }
-
+    
     private func setPageControl() {
         addSubview(pageControl)
-
+        
         pageControl.snp.makeConstraints {
             $0.top.equalTo(scrollView.snp.bottom).offset(8)
             $0.leading.trailing.equalToSuperview()
             $0.bottom.equalToSuperview()
         }
     }
-
+    
     public func configure(with images: [UIImage?]) {
         self.images = images
     }
@@ -67,8 +67,13 @@ open class ImageSlideView: UIView {
 
         for (index, image) in images.enumerated() {
             let imageView = UIImageView(image: image)
-            imageView.contentMode = .scaleToFill
-            imageView.frame = CGRect(x: CGFloat(index) * scrollView.frame.width, y: 0, width: scrollView.frame.width, height: scrollView.frame.height)
+            imageView.contentMode = .scaleAspectFill
+            imageView.frame = CGRect(
+                x: CGFloat(index) * scrollView.frame.width,
+                y: 0,
+                width: scrollView.frame.width,
+                height: scrollView.frame.height
+            )
             scrollView.addSubview(imageView)
         }
 

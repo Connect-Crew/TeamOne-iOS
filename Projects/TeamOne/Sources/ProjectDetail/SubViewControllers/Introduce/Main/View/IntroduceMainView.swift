@@ -136,10 +136,7 @@ final class IntroduceMainView: View {
             $0.height.equalTo(172)
         }
 
-        imageSlider.configure(with: [.image(dsimage: .defaultIntroduceImage),
-                                     .image(dsimage: .defaultIntroduceImage),
-                                     .image(dsimage: .defaultIntroduceImage),
-                                     .image(dsimage: .defaultIntroduceImage)])
+        imageSlider.configure(with: [.image(dsimage: .defaultIntroduceImage)])
 
         scrollViewContentView.addSubview(contentView)
 
