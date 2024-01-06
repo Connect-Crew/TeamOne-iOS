@@ -115,7 +115,7 @@ final class ProjectCreateMainViewModel: ViewModel {
     // MARK: - Output
 
     // MARK: - Page
-    let currentPage = BehaviorSubject<Int>(value: 4)
+    let currentPage = BehaviorSubject<Int>(value: 0)
     
     // MARK: - Alert
     
