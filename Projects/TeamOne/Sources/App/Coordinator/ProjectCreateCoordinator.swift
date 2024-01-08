@@ -31,7 +31,10 @@ final class ProjectCreateCoordinator: BaseCoordinator<ProjectCreateCoordinatorRe
 
     func showPorjectCreate() {
         
-        let viewModel = ProjectCreateMainViewModel(projectCreateUseCase: DIContainer.shared.resolve(ProjectCreateUseCase.self))
+        let viewModel = ProjectCreateMainViewModel(
+            projectCreateUseCase: DIContainer.shared.resolve(ProjectCreateUseCase.self),
+            projectInfoUseCase: DIContainer.shared.resolve(ProjectInfoUseCase.self)
+        )
 
         viewModel.navigation
             .subscribe(onNext: { [weak self] in

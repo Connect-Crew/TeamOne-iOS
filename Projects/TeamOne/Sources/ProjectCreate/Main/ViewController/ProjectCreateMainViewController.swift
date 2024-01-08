@@ -29,7 +29,7 @@ final class ProjectCreateMainViewController: ViewController {
 
     let stateRegionVC = ProjectSetStateRegionViewController()
 
-    let purposeCareerVC = ProjectSetPurposeCareerViewController()
+    let goalCareerVC = ProjectSetGoalCareerViewController()
 
     let categoryVC = ProjectSetCategoryViewController()
 
@@ -75,27 +75,26 @@ final class ProjectCreateMainViewController: ViewController {
     }
 
     private func initPages() {
-        pageViewController.addVC(addList: [nameVC, stateRegionVC, purposeCareerVC, categoryVC, postVC])
+        pageViewController.addVC(addList: [nameVC, stateRegionVC, goalCareerVC, categoryVC, postVC])
     }
 
     override func bind() {
         let input = ProjectCreateMainViewModel.Input(
             viewWillAppear: rx.viewWillAppear.map { _ in return ()}.asObservable(),
-            closeButtonTap: mainView.buttonClose.rx.tap
-                .throttle(.seconds(1), latest: true, scheduler: MainScheduler.instance),
+            closeButtonTap: closeSubject.filter { $0 == true }.map { _ in return () },
             nextButtonTap: Observable.merge(
                 nameVC.buttonNext.rx.tap.map { _ in return ()},
                 stateRegionVC.buttonNext.rx.tap.map { _ in return ()},
-                purposeCareerVC.buttonNext.rx.tap.map { _ in return ()},
+                goalCareerVC.buttonNext.rx.tap.map { _ in return ()},
                 categoryVC.buttonNext.rx.tap.map { _ in return () }
             ).throttle(.seconds(1), latest: true, scheduler: MainScheduler.asyncInstance),
-            projectName: nameVC.textFieldName.rx.text.orEmpty.asObservable(),
             beforeButtonTap: Observable.merge(
                 stateRegionVC.buttonBefore.rx.tap.map { _ in return () },
-                purposeCareerVC.buttonBefore.rx.tap.map { _ in return () },
+                goalCareerVC.buttonBefore.rx.tap.map { _ in return () },
                 categoryVC.buttonBefore.rx.tap.map { _ in return () },
                 postVC.buttonBefore.rx.tap.map { _ in () }
-            ).throttle(.seconds(1), latest: true, scheduler: MainScheduler.instance)
+            ).throttle(.seconds(1), latest: true, scheduler: MainScheduler.instance), 
+            title: nameVC.textFieldName.rx.text.orEmpty.asObservable()
             ,
             stateBeforeTap: stateRegionVC.buttonStateBefore.rx.tap
                 .throttle(.seconds(1), scheduler: MainScheduler.instance),
@@ -107,22 +106,22 @@ final class ProjectCreateMainViewController: ViewController {
                 .throttle(.seconds(1), scheduler: MainScheduler.instance),
             offlineTap: stateRegionVC.buttonRegionOffline.rx.tap
                 .throttle(.seconds(1), scheduler: MainScheduler.instance),
-            selectLocation: stateRegionVC.locaionListStackView.selectLocationSubject,
+            selectedRegion: stateRegionVC.locaionListStackView.selectLocationSubject,
 
-            purposeStartUpTap: purposeCareerVC.buttonPurposeStartup.rx.tap
+            goalStartUpTap: goalCareerVC.buttonPurposeStartup.rx.tap
                 .throttle(.seconds(1), scheduler: MainScheduler.instance),
-            purposePortfolioTap: purposeCareerVC.buttonPurposePortfolio.rx.tap
+            goalPortfolioTap: goalCareerVC.buttonPurposePortfolio.rx.tap
                 .throttle(.seconds(1), scheduler: MainScheduler.instance),
-            noRequiredExperienceTap: purposeCareerVC.buttonnoExperienceRequiredCheckBox.rx.tap
+            noRequiredExperienceTap: goalCareerVC.buttonnoExperienceRequiredCheckBox.rx.tap
                 .throttle(.seconds(1), scheduler: MainScheduler.instance),
             selectedMinCareer:
-                purposeCareerVC.minCareerSubject,
-            selectedMaxCareer: purposeCareerVC.maxCareerSubject,
+                goalCareerVC.minCareerSubject,
+            selectedMaxCareer: goalCareerVC.maxCareerSubject,
             categoryTap: categoryVC.categoryTapSubject,
             
             selectedImage: postVC.selectedImage,
             deleteImageTap: postVC.deleteImage,
-            recruitTeamOne: postVC.viewSetPart.rxRecruits.map { $0.map { Recurit(part: $0.partSub, comment: $0.comment, max: $0.max)} },
+            recruitTeamOne: postVC.viewSetPart.rxRecruits.map { $0.map { Recruit(part: $0.partSub, comment: $0.comment, max: $0.max)} },
 
             introduce: postVC.textViewIntroduce.rx.text.orEmpty.asObservable(),
 
@@ -130,18 +129,16 @@ final class ProjectCreateMainViewController: ViewController {
 
             selectedSkillTap: postVC.viewSelectSkill.selectedSkillSubject,
             deleteSkillTap: postVC.viewSelectedStack.deleteButtonTapSubject,
-            createButtonTap: postVC.buttonCreateProject.rx.tap
-                .throttle(.seconds(1), latest: true, scheduler: MainScheduler.instance)
+            createButtonTap: createSubject.filter { $0 == true }.map { _ in return () }
         )
 
         let output = viewModel.transform(input: input)
 
         bindPage(output: output)
         bindNavigation(output: output)
-        bindStateRegionVC(output: output)
 
         stateRegionVC.bind(output: output)
-        purposeCareerVC.bind(output: output)
+        goalCareerVC.bind(output: output)
         categoryVC.bind(output: output)
         postVC.bind(output: output)
     }
@@ -154,29 +151,64 @@ final class ProjectCreateMainViewController: ViewController {
             })
             .disposed(by: disposeBag)
     }
+    
+    let closeSubject = PublishSubject<Bool>()
+    let createSubject = PublishSubject<Bool>()
 
     func bindNavigation(output: ProjectCreateMainViewModel.Output) {
-        output.cancleAlert
+        
+        var alert = ResultAlertView_Image_Title_Content_Alert(
+            image: .warnning,
+            title: "",
+            content: "",
+            availableCancle: true,
+            resultSubject: nil
+        )
+        
+        mainView.buttonClose.rx.tap
+            .withUnretained(self)
+            .map { this, _ in
+                
+                alert.image = .warnning
+                alert.title = "생성을 중단하시겠습니까?"
+                alert.content = "확인을 누르시면 모든 내용이 삭제됩니다."
+                alert.resultSubject = this.closeSubject
+                return alert
+            }
+            .subscribe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] alert in
-                self?.presentResultAlertView_Image_Title_Content(source: self, alert: alert)
+                guard let self = self else { return }
+                
+                self.presentResultAlertView_Image_Title_Content(
+                    source: self,
+                    alert: alert
+                )
             })
             .disposed(by: disposeBag)
         
-        output.createAlert
+        postVC.buttonCreateProject.rx.tap
+            .withUnretained(self)
+            .map { this, _ in
+                alert.image = .write
+                alert.title = "프로젝트를 생성하시겠습니까?"
+                alert.content = "확인을 누르시면 프로젝트가 생성됩니다."
+                alert.resultSubject = this.createSubject
+                
+                return alert
+            }
+            .subscribe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] alert in
-                self?.presentResultAlertView_Image_Title_Content(source: self, alert: alert)
+                guard let self = self else { return }
+                
+                self.presentResultAlertView_Image_Title_Content(
+                    source: self,
+                    alert: alert
+                )
             })
             .disposed(by: disposeBag)
-    }
-
-    func bindStateRegionVC(output: ProjectCreateMainViewModel.Output) {
-        output.locationList .drive(stateRegionVC.locaionListStackView.rx.regions)
+        
+        output.error
+            .bind(to: self.rx.presentErrorAlert)
             .disposed(by: disposeBag)
-    }
-
-    deinit {
-        print("!!!!!!!!!!!\(self)::::")
-        print("Deinit")
-        print("!!!!!!!!!!!!")
     }
 }

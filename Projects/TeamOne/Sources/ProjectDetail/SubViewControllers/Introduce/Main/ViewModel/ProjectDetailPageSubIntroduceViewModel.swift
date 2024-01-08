@@ -19,9 +19,9 @@ enum ProjectDetailPageSubIntroduceNavigation {
 final class ProjectDetailPageSubIntroduceViewModel: ViewModel {
 
     let projectLikeUseCase: ProjectLikeUseCaseProtocol
-    let projectUseCase: ProjectUseCaseProtocol
+    let projectUseCase: ProjectInfoUseCase
 
-    public init(projectLikeUseCase: ProjectLikeUseCaseProtocol, projectUseCase: ProjectUseCaseProtocol) {
+    public init(projectLikeUseCase: ProjectLikeUseCaseProtocol, projectUseCase: ProjectInfoUseCase) {
         self.projectLikeUseCase = projectLikeUseCase
         self.projectUseCase = projectUseCase
     }

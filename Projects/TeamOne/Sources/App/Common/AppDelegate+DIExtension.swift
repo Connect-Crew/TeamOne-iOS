@@ -151,8 +151,8 @@ extension AppDelegate {
             return MyProfileUseCase(userRepository: userRepository)
         }
 
-        container.register(interface: ProjectUseCaseProtocol.self) { res in
-            return ProjectUseCase(
+        container.register(interface: ProjectInfoUseCase.self) { res in
+            return BaseProjectInfoUseCase(
                 projectRepository: res.resolve(ProjectRepositoryProtocol.self)!
             )
         }
@@ -239,7 +239,7 @@ extension AppDelegate {
                 projectListUseCase: res.resolve(ProjectListUseCaseProtocol.self)!,
                 projectLikeUseCase: res.resolve(ProjectLikeUseCaseProtocol.self)!,
                 myProfileUseCase: res.resolve(MyProfileUseCaseProtocol.self)!,
-                projectUseCase: res.resolve(ProjectUseCaseProtocol.self)!
+                projectUseCase: res.resolve(ProjectInfoUseCase.self)!
             )
 
             return viewModel

@@ -25,7 +25,7 @@ final class ProjectDetailMainViewModel: ViewModel {
     
     let projectReportUseCase: ProjectReportUseCase = DIContainer.shared.resolve(ProjectReportUseCase.self)
     
-    let projectUseCase: ProjectUseCaseProtocol
+    let projectUseCase: ProjectInfoUseCase
 
     struct Input {
         let viewWillAppear: Observable<Void>
@@ -41,7 +41,7 @@ final class ProjectDetailMainViewModel: ViewModel {
 
     var project: Project!
 
-    public init(projectUseCase: ProjectUseCaseProtocol) {
+    public init(projectUseCase: ProjectInfoUseCase) {
         self.projectUseCase = projectUseCase
     }
 

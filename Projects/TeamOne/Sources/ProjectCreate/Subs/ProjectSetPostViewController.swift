@@ -183,7 +183,8 @@ final class ProjectSetPostViewController: ViewController, UINavigationController
 
     public func bind(output: ProjectCreateMainViewModel.Output) {
         collectionViewSelectPhoto.onClickAddPhoto
-            .withLatestFrom(output.selectedImage)
+            .withLatestFrom(output.projectCreateProps)
+            .map { $0.banner }
             .withUnretained(self)
             .subscribe(onNext: { this, selectedImage in
 
@@ -211,7 +212,8 @@ final class ProjectSetPostViewController: ViewController, UINavigationController
             })
             .disposed(by: disposeBag)
 
-        output.selectedImage
+        output.projectCreateProps
+            .map { $0.banner }
             .drive(onNext: { [weak self] images in
                 self?.collectionViewSelectPhoto.setImage(images: images)
             })
@@ -221,11 +223,12 @@ final class ProjectSetPostViewController: ViewController, UINavigationController
             .bind(to: deleteImage)
             .disposed(by: disposeBag)
 
-        output.selectedSkill
+        output.projectCreateProps
+            .map { $0.skills }
             .drive(viewSelectedStack.rx.list)
             .disposed(by: disposeBag)
 
-        output.projectCanCreate
+        output.canCreate
             .drive(buttonCreateProject.rx.isEnabled)
             .disposed(by: disposeBag)
     }

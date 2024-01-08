@@ -34,7 +34,7 @@ final class ProjectDetailCoordinator: BaseCoordinator<ProjectDetailCoordinatorRe
 
     func showDetail() {
         let viewModel = ProjectDetailMainViewModel(
-            projectUseCase: DIContainer.shared.resolve(ProjectUseCaseProtocol.self)
+            projectUseCase: DIContainer.shared.resolve(ProjectInfoUseCase.self)
         )
 
         viewModel.project = project
@@ -50,7 +50,7 @@ final class ProjectDetailCoordinator: BaseCoordinator<ProjectDetailCoordinatorRe
 
         let introduceVM = ProjectDetailPageSubIntroduceViewModel(
             projectLikeUseCase: DIContainer.shared.resolve(ProjectLikeUseCaseProtocol.self),
-            projectUseCase: DIContainer.shared.resolve(ProjectUseCaseProtocol.self)
+            projectUseCase: DIContainer.shared.resolve(ProjectInfoUseCase.self)
         )
 
         introduceVM.project.onNext(project)
@@ -85,7 +85,7 @@ final class ProjectDetailCoordinator: BaseCoordinator<ProjectDetailCoordinatorRe
     func showApply(project: Project, isReload: PublishSubject<Void>) {
         let viewModel = ApplyViewModel(
             applyUseCase: DIContainer.shared.resolve(ProjectApplyUseCaseProtocol.self),
-            projectUseCase: DIContainer.shared.resolve(ProjectUseCaseProtocol.self))
+            projectUseCase: DIContainer.shared.resolve(ProjectInfoUseCase.self))
 
         viewModel.project.onNext(project)
 

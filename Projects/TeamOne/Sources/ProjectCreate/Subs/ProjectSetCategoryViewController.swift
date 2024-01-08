@@ -94,7 +94,8 @@ final class ProjectSetCategoryViewController: ViewController {
 
     func bind(output: ProjectCreateMainViewModel.Output) {
         output
-            .selectedCategory
+            .projectCreateProps
+            .map { $0.category }
             .drive(onNext: { [weak self] selected in
                 guard let self = self else { return }
 
@@ -109,8 +110,7 @@ final class ProjectSetCategoryViewController: ViewController {
             })
             .disposed(by: disposeBag)
 
-        output.selectedCategory
-            .map { !$0.isEmpty }
+        output.categoryCanNextpage
             .drive(buttonNext.rx.isEnabled)
             .disposed(by: disposeBag)
     }

@@ -20,169 +20,416 @@ enum ProjectCreateMainNavigation {
     case close
 }
 
+enum ProjectCreateType {
+    case create
+    case modify
+}
+
 final class ProjectCreateMainViewModel: ViewModel {
     
     private let projectCreateUseCase: ProjectCreateUseCase
+    private let projectInfoUseCase: ProjectInfoUseCase
     
-    init(projectCreateUseCase: ProjectCreateUseCase) {
+    init(
+        projectCreateUseCase: ProjectCreateUseCase,
+        projectInfoUseCase: ProjectInfoUseCase,
+        type: ProjectCreateType = .create,
+        projectId: Int = 0
+    ) {
         self.projectCreateUseCase = projectCreateUseCase
+        self.projectInfoUseCase = projectInfoUseCase
+        self.type.onNext(type)
+        self.modifyTarget = projectId
     }
-
+    
     struct Input {
         let viewWillAppear: Observable<Void>
         let closeButtonTap: Observable<Void>
         let nextButtonTap: Observable<Void>
-        let projectName: Observable<String>
         let beforeButtonTap: Observable<Void>
+        
+        let title: Observable<String>
+        
         let stateBeforeTap: Observable<Void>
         let stateRunningTap: Observable<Void>
         let onlineTap: Observable<Void>
         let onOfflineTap: Observable<Void>
         let offlineTap: Observable<Void>
-        let selectLocation: Observable<String>
-
-        let purposeStartUpTap: Observable<Void>
-        let purposePortfolioTap: Observable<Void>
+        let selectedRegion: Observable<String>
+        
+        let goalStartUpTap: Observable<Void>
+        let goalPortfolioTap: Observable<Void>
         let noRequiredExperienceTap: Observable<Void>
         let selectedMinCareer: Observable<Career>
         let selectedMaxCareer: Observable<Career>
-
+        
         let categoryTap: Observable<String>
         let selectedImage: Observable<[UIImage]>
         let deleteImageTap: Observable<UIImage>
-        let recruitTeamOne: Observable<[Recurit]>
-
+        let recruitTeamOne: Observable<[Recruit]>
+        
         let introduce: Observable<String>
-
         let leaderPart: Observable<String>
-
+        
         let selectedSkillTap: Observable<String>
         let deleteSkillTap: Observable<String>
-
+        
         let createButtonTap: Observable<Void>
     }
-
+    
     struct Output {
         let currentPage: Driver<Int>
-        let cancleAlert: PublishSubject<ResultAlertView_Image_Title_Content_Alert>
-        let createAlert: PublishSubject<ResultAlertView_Image_Title_Content_Alert>
-        let selectedState: Signal<ProjectState?>
-        let selectedIsOnline: Driver<isOnline>
-        let locationList: Driver<[String]>
+        let titleCanNextPage: Driver<Bool>
         let stateRegionCanNextPage: Driver<Bool>
-        
-        // MARK: - 3번째 화면
-        let purpose: Driver<Purpose>
-        let purposeCareerCanNextPage: Driver<Bool>
-        let isNoRequiredExperience: Driver<Bool>
-        let minCareer: Driver<Career>
-        let minCareerSelected: Driver<Bool>
-        let maxCareer: Driver<Career>
-        let maxCareerSelected: Driver<Bool>
-
-        // MARK: - 4번째 화면
-        let selectedCategory: Driver<[String]>
-
-        // MARK: - 5번째 화면
-        let selectedImage: Driver<[UIImage]>
-        let selectedRecruits: Driver<Recurits>
-        let selectedSkill: Driver<[String]>
-        let projectCanCreate: Driver<Bool>
+        let goalCareerCanNextPage: Driver<Bool>
+        let categoryCanNextpage: Driver<Bool>
+        let canCreate: Driver<Bool>
+        // 지역 리스트
+        let regionList: Driver<[String]>
+        // 생성 정보
+        let projectCreateProps: Driver<ProjectCreateProps>
+        // 에러
+        let error: PublishSubject<Error>
     }
-
-    lazy var cancleAlert = ResultAlertView_Image_Title_Content_Alert(
-        image: .warnning,
-        title: "생성을 중단하시겠습니까?",
-        content: "확인을 누르시면 모든 내용이 삭제됩니다.",
-        availableCancle: true,
-        resultSubject: alertResultSubject
-    )
     
-    lazy var createAlert = ResultAlertView_Image_Title_Content_Alert(
-        image: .write,
-        title: "프로젝트를 생성하시겠습니까??",
-        content: "확인을 누르시면 프로젝트가 생성됩니다.",
-        availableCancle: true,
-        resultSubject: createAlertResultSubject
-    )
-
     var disposeBag: DisposeBag = .init()
     let navigation = PublishSubject<ProjectCreateMainNavigation>()
-
-    let location = BehaviorSubject<String>(value: "")
-    let isCareerSelected = BehaviorSubject<Bool>(value: false)
-
-    // MARK: - Output
-
+    
+    
     // MARK: - Page
-    let currentPage = BehaviorSubject<Int>(value: 4)
+    let currentPage = BehaviorRelay<Int>(value: 1)
+    let titleCanNextPage = BehaviorRelay<Bool>(value: false)
+    let stateRegionCanNextPage = BehaviorRelay<Bool>(value: false)
+    let goalCareerCanNextPage = BehaviorRelay<Bool>(value: false)
+    let categoryCanNextpage = BehaviorRelay<Bool>(value: false)
+    let canCreate = BehaviorRelay<Bool>(value: false)
     
-    // MARK: - Alert
+    // MARK: - 지역정보
     
-    let cancleAlertSubject = PublishSubject<ResultAlertView_Image_Title_Content_Alert>()
-    let createAlertSubject = PublishSubject<ResultAlertView_Image_Title_Content_Alert>()
+    let regionList = PublishRelay<[String]>()
     
-    let alertResultSubject = PublishSubject<Bool>()
-    let createAlertResultSubject = PublishSubject<Bool>()
+    // MARK: - 프로젝트 생성 정보
+    lazy var props = BehaviorRelay<ProjectCreateProps>(value: ProjectCreateProps())
     
-    let state = PublishSubject<ProjectState?>()
-    let isOnlineSubject = BehaviorSubject<isOnline>(value: .none)
-    lazy var regions = BehaviorSubject<[String]>(value: [])
-
-    // MARK: - 3번째 화면
-    let isNoRequiredExperience = BehaviorSubject<Bool>(value: false)
-    let purpose = BehaviorSubject<Purpose>(value: .none)
-    let minCareer = BehaviorSubject<Career>(value: .none)
-    let minCareerSelected = BehaviorSubject<Bool>(value: false)
-    let maxCareer = BehaviorSubject<Career>(value: .none)
-    let maxCareerSelected = BehaviorSubject<Bool>(value: false)
-    let purposeCareerCanNextPage = BehaviorSubject<Bool>(value: false)
+    // MARK: - type(수정하기인 경우 필요)
     
-    // MARK: - 4번째 화면
-
-    let selectedCategory = BehaviorSubject<[String]>(value: [])
-    let selectedImage = BehaviorSubject<[UIImage]>(value: [])
-    let selectedRecruits = BehaviorSubject<Recurits>(value: [])
-    let selectedSkills = BehaviorSubject<[String]>(value: [])
-    let projectCanCreate = BehaviorSubject<Bool>(value: false)
+    let type = BehaviorSubject<ProjectCreateType>(value: .create)
+    let modifyTarget: Int
     
-    // MARK: - canNextPage
-    let stateRegionCanNextPage = BehaviorSubject<Bool>(value: false)
-
+    // MARK: - Error
+    
+    let error = PublishSubject<Error>()
+    
     func transform(input: Input) -> Output {
-
+        
         transformNavigation(input: input)
         transformPages(input: input)
-        transformStateisOnline(input: input)
-        transformPurposeCareer(input: input)
+        transformTitle(input: input)
+        transformstateRegion(input: input)
+        transformGoalCareer(input: input)
         transformCategory(input: input)
         transformPost(input: input)
         transformCreatePost(input: input)
         
+        input.viewWillAppear
+            .map { KM.shared.getRegion() }
+            .bind(to: regionList)
+            .disposed(by: disposeBag)
+        
         return Output(
-            currentPage: currentPage.asDriver(onErrorJustReturn: 0),
-            cancleAlert: cancleAlertSubject,
-            createAlert: createAlertSubject,
-            selectedState: state.asSignal(onErrorJustReturn: nil),
-            selectedIsOnline: isOnlineSubject.asDriver(onErrorJustReturn: .none),
-            locationList: regions.asDriver(onErrorJustReturn: []),
-            stateRegionCanNextPage: stateRegionCanNextPage.asDriver(onErrorJustReturn: false),
-            purpose: purpose.asDriver(onErrorJustReturn: .none),
-            purposeCareerCanNextPage: purposeCareerCanNextPage.asDriver(onErrorJustReturn: false),
-            isNoRequiredExperience: isNoRequiredExperience.asDriver(onErrorJustReturn: false),
-            minCareer: minCareer.asDriver(onErrorJustReturn: .none),
-            minCareerSelected: minCareerSelected.asDriver(onErrorJustReturn: false),
-            maxCareer: maxCareer.asDriver(onErrorJustReturn: .none),
-            maxCareerSelected: maxCareerSelected.asDriver(onErrorJustReturn: false),
-            selectedCategory: selectedCategory.asDriver(onErrorJustReturn: []),
-            selectedImage: selectedImage.asDriver(onErrorJustReturn: []),
-            selectedRecruits: selectedRecruits.asDriver(onErrorJustReturn: []),
-            selectedSkill: selectedSkills.asDriver(onErrorJustReturn: []),
-            projectCanCreate: projectCanCreate.asDriver(onErrorJustReturn: false)
+            currentPage: currentPage.asDriver(),
+            titleCanNextPage: titleCanNextPage.asDriver(),
+            stateRegionCanNextPage: stateRegionCanNextPage.asDriver(),
+            goalCareerCanNextPage: goalCareerCanNextPage.asDriver(),
+            categoryCanNextpage: categoryCanNextpage.asDriver(),
+            canCreate: canCreate.asDriver(),
+            regionList: regionList.asDriver(onErrorJustReturn: []),
+            projectCreateProps: props.asDriver(),
+            error: error
         )
     }
-
-    func transformCreatePost(input: Input) {
+    
+    func transformNavigation(input: Input) {
+        
+        input.closeButtonTap
+            .map { .close }
+            .bind(to: navigation)
+            .disposed(by: disposeBag)
+    }
+    
+    
+    func transformPages(input: Input) {
+        
+        // 수정하기인 경우 마지막 화면부터 시작
+        type
+            .filter { $0 == .modify }
+            .distinctUntilChanged()
+            .map { _ in return 4 }
+            .bind(to: currentPage)
+            .disposed(by: disposeBag)
+        
+        input.nextButtonTap
+            .withLatestFrom(currentPage)
+            .map { $0 + 1 }
+            .bind(to: currentPage)
+            .disposed(by: disposeBag)
+        
+        input.beforeButtonTap
+            .withLatestFrom(currentPage)
+            .map { $0 - 1 }
+            .bind(to: currentPage)
+            .disposed(by: disposeBag)
+    }
+    
+    func transformTitle(input: Input) {
+        input.title
+            .withLatestFrom(props) { title, before -> ProjectCreateProps in
+                var props = before
+                props.title = title
+                
+                return props
+            }
+            .bind(to: props)
+            .disposed(by: disposeBag)
+        
+        props
+            .map { $0.title }
+            .compactMap { $0 }
+            .map { $0.count >= 2 }
+            .bind(to: titleCanNextPage)
+            .disposed(by: disposeBag)
+    }
+    
+    func transformstateRegion(input: Input) {
+        Observable.merge(
+            input.stateBeforeTap.map { ProjectState.before },
+            input.stateRunningTap.map { ProjectState.running }
+        ).withLatestFrom(props) { state, before -> ProjectCreateProps in
+            var props = before
+            props.state = state
+            
+            return props
+        }
+        .bind(to: props)
+        .disposed(by: disposeBag)
+        
+        Observable.merge(
+            input.onlineTap.map { isOnline.online },
+            input.onOfflineTap.map { isOnline.onOffline },
+            input.offlineTap.map { isOnline.offline }
+        ).withLatestFrom(props) { isOnline, before -> ProjectCreateProps in
+            var props = before
+            props.isOnline = isOnline
+            
+            if isOnline == .online {
+                props.region = nil
+            }
+            
+            return props
+        }
+        .bind(to: props)
+        .disposed(by: disposeBag)
+        
+        input.selectedRegion
+            .withLatestFrom(props) { region, before -> ProjectCreateProps in
+                var props = before
+                props.region = region
+                
+                return props
+            }
+            .bind(to: props)
+            .disposed(by: disposeBag)
+        
+        props
+            .map {
+                return ($0.state, $0.isOnline, $0.region)
+            }
+            .map { value in
+                let state = value.0
+                let isOnline = value.1
+                let region = value.2
+                
+                if state != nil && isOnline == .online {
+                    return true
+                } else if state != nil && (isOnline == .onOffline || isOnline == .offline) && region != nil {
+                    return true
+                } else {
+                    return false
+                }
+            }
+            .bind(to: stateRegionCanNextPage)
+            .disposed(by: disposeBag)
+    }
+    
+    func transformGoalCareer(input: Input) {
+        Observable.merge (
+            input.goalPortfolioTap.map { Goal.portfolio },
+            input.goalStartUpTap.map { Goal.startup }
+        ).withLatestFrom(props) { goal, before -> ProjectCreateProps in
+            var props = before
+            props.goal = goal
+            
+            return props
+        }
+        .bind(to: props)
+        .disposed(by: disposeBag)
+        
+        input.selectedMinCareer
+            .withLatestFrom(props) { career, before -> ProjectCreateProps in
+                var props = before
+                props.careerMin = career
+                
+                return props
+            }
+            .bind(to: props)
+            .disposed(by: disposeBag)
+        
+        input.selectedMaxCareer
+            .withLatestFrom(props) { career, before -> ProjectCreateProps in
+                var props = before
+                props.careerMax = career
+                
+                return props
+            }
+            .bind(to: props)
+            .disposed(by: disposeBag)
+        
+        input.noRequiredExperienceTap
+            .withLatestFrom(props) { _, before -> ProjectCreateProps in
+                var props = before
+                
+                props.careerMin = Career.none
+                props.careerMax = Career.none
+                
+                return props
+            }
+            .bind(to: props)
+            .disposed(by: disposeBag)
+        
+        props
+            .map {
+                return ($0.goal, $0.careerMin, $0.careerMax)
+            }
+            .map { value in
+                guard let goal = value.0,
+                      let min = value.1,
+                      let max = value.2 else { return false }
+                
+                return true
+            }
+            .bind(to: goalCareerCanNextPage)
+            .disposed(by: disposeBag)
+    }
+    
+    func transformCategory(input: Input) {
+        input.categoryTap
+            .withLatestFrom(props) { category, before -> ProjectCreateProps in
+                var props = before
+                
+                if props.category.contains(where: { $0 == category}),
+                   let index = props.category.firstIndex(of: category) {
+                    props.category.remove(at: index)
+                } else if props.category.count < 3{
+                    props.category.append(category)
+                }
+                
+                return props
+            }
+            .bind(to: props)
+            .disposed(by: disposeBag)
+        
+        props
+            .map { $0.category }
+            .map { return !$0.isEmpty ? true : false }
+            .bind(to: categoryCanNextpage)
+            .disposed(by: disposeBag)
+    }
+    
+    func transformPost(input: Input) {
+        input.selectedImage
+            .withLatestFrom(props) { image, before -> ProjectCreateProps in
+                var props = before
+                
+                props.banner += image
+                
+                return props
+            }
+            .bind(to: props)
+            .disposed(by: disposeBag)
+        
+        input.deleteImageTap
+            .withLatestFrom(props) { image, before -> ProjectCreateProps in
+                var props = before
+                
+                if let index = props.banner.firstIndex(where: { $0 == image }) {
+                    props.banner.remove(at: index)
+                }
+                
+                return props
+            }
+            .bind(to: props)
+            .disposed(by: disposeBag)
+        
+        input.introduce
+            .withLatestFrom(props) { introduce, before -> ProjectCreateProps in
+                var props = before
+                
+                props.introducion = introduce
+                
+                return props
+            }
+            .bind(to: props)
+            .disposed(by: disposeBag)
+        
+        input.leaderPart
+            .withLatestFrom(props) { leaderPart, before -> ProjectCreateProps in
+                var props = before
+                
+                props.leaderParts = leaderPart
+                
+                return props
+            }
+            .bind(to: props)
+            .disposed(by: disposeBag)
+        
+        input.recruitTeamOne
+            .withLatestFrom(props) { recurit, before -> ProjectCreateProps in
+                var props = before
+                
+                props.recruits = recurit
+                
+                return props
+            }
+            .bind(to: props)
+            .disposed(by: disposeBag)
+        
+        input.selectedSkillTap
+            .withLatestFrom(props) { skill, before -> ProjectCreateProps in
+                var props = before
+                
+                if !props.skills.contains(skill) {
+                    props.skills.append(skill)
+                }
+                
+                return props
+            }
+            .bind(to: props)
+            .disposed(by: disposeBag)
+        
+        input.deleteSkillTap
+            .withLatestFrom(props) { skill, before -> ProjectCreateProps in
+                var props = before
+                
+                if props.skills.contains(skill),
+                   let index = props.skills.firstIndex(where: { $0 == skill}) {
+                    props.skills.remove(at: index)
+                }
+                
+                return props
+            }
+            .bind(to: props)
+            .disposed(by: disposeBag)
+        
         Observable.combineLatest(
             input.introduce,
             input.leaderPart,
@@ -196,303 +443,27 @@ final class ProjectCreateMainViewModel: ViewModel {
                 return false
             }
         }
-        .bind(to: projectCanCreate)
+        .bind(to: canCreate)
         .disposed(by: disposeBag)
-        
-        input.recruitTeamOne
-            .bind(to: selectedRecruits)
-            .disposed(by: disposeBag)
-        
-        
-        let combine1 = Observable.combineLatest(selectedImage, input.projectName, isOnlineSubject, location, state, minCareer, maxCareer)
-        let combine2 = Observable.combineLatest(input.leaderPart, selectedCategory, purpose, input.introduce, selectedRecruits, selectedSkills)
-        
-        createAlertResultSubject
-            .filter { $0 == true }
-            .withLatestFrom(Observable.combineLatest(combine1, combine2))
+    }
+    
+    func transformCreatePost(input: Input) {
+        input.createButtonTap
+            .withLatestFrom(props)
             .withUnretained(self)
-            .flatMap { this, properties in
-                
-                let props = ProjectCreateProps(
-                    banner: properties.0.0,
-                    title: properties.0.1,
-                    region: properties.0.3,
-                    online: properties.0.2,
-                    state: (properties.0.4 ?? .before),
-                    careerMin: properties.0.5,
-                    careerMax: properties.0.6,
-                    leaderParts: properties.1.0,
-                    category: properties.1.1,
-                    goal: properties.1.2,
-                    introducion: properties.1.3,
-                    recruits: properties.1.4,
-                    skills: properties.1.5
-                )
-                
+            .flatMap{ this, props in
                 return this.projectCreateUseCase.create(props: props)
+                    .asObservable()
+                    .catch { error in
+                        this.error.onNext(error)
+                        
+                        return .empty()
+                    }
             }
             .withUnretained(self)
             .subscribe(onNext: { this, _ in
                 this.navigation.onNext(.finish)
-            }, onError: { [weak self] error in
-                // TODO: - 에러처리
-                self?.navigation.onNext(.finish)
             })
-            .disposed(by: disposeBag)
-            
-    }
-
-    func transformPost(input: Input) {
-        input.selectedImage
-            .withLatestFrom(selectedImage) {
-                return ($0, $1)
-            }
-            .map { selected, current in
-                return current + selected
-            }
-            .bind(to: selectedImage)
-            .disposed(by: disposeBag)
-
-        input.deleteImageTap
-            .withLatestFrom(selectedImage) {
-                return ($0, $1)
-            }
-            .map { (delete, current) in
-
-                print("!!!!!!!!!!!\(self)::::")
-                print(delete)
-                print("!!!!!!!!!!!!")
-                var newCurrent = current
-
-                if let index = current.firstIndex(where: { $0 == delete }) {
-                    newCurrent.remove(at: index)
-                }
-
-                return newCurrent
-            }
-            .bind(to: selectedImage)
-            .disposed(by: disposeBag)
-
-        input.selectedSkillTap
-            .withLatestFrom(selectedSkills) { select, current in
-                var newCurrent = current
-
-                if !newCurrent.contains(select) {
-                    newCurrent.append(select)
-                }
-
-                return newCurrent
-            }
-            .bind(to: selectedSkills)
-            .disposed(by: disposeBag)
-
-        input.deleteSkillTap
-            .withLatestFrom(selectedSkills) { select, current in
-                var newCurrent = current
-
-                if newCurrent.contains(select),
-                   let index = newCurrent.firstIndex(where: { $0 == select}) {
-                    newCurrent.remove(at: index)
-                }
-
-                return newCurrent
-            }
-            .bind(to: selectedSkills)
-            .disposed(by: disposeBag)
-    }
-
-    func transformCategory(input: Input) {
-        input.categoryTap
-            .withLatestFrom(selectedCategory) { tap, current in
-                return (tap, current)
-            }
-            .map { (tap, current) in
-
-                var newCurrent = current
-
-                if newCurrent.contains(where: { $0 == tap}),
-                   let index = current.firstIndex(of: tap) {
-                    newCurrent.remove(at: index)
-                } else {
-                    if newCurrent.count < 3 {
-                        newCurrent.append(tap)
-                    }
-                }
-
-                return newCurrent
-            }
-            .bind(to: selectedCategory)
-            .disposed(by: disposeBag)
-    }
-
-    func transformPurposeCareer(input: Input) {
-
-        Observable.merge(
-            input.purposePortfolioTap.map { _ in return Purpose.portfolio },
-            input.purposeStartUpTap.map { _ in return Purpose.startup }
-        )
-        .bind(to: purpose)
-        .disposed(by: disposeBag)
-
-        input.noRequiredExperienceTap
-            .withLatestFrom(isNoRequiredExperience)
-            .map { !$0 }
-            .bind(to: isNoRequiredExperience)
-            .disposed(by: disposeBag)
-        
-        isNoRequiredExperience
-            .filter { $0 == true }
-            .withUnretained(self)
-            .subscribe(onNext: { this, _ in
-                this.minCareer.onNext(.none)
-                this.maxCareer.onNext(.none)
-                this.minCareerSelected.onNext(true)
-                this.maxCareerSelected.onNext(true)
-            })
-            .disposed(by: disposeBag)
-        
-        input.selectedMinCareer
-            .withUnretained(self)
-            .bind(onNext: { this, career in
-                this.minCareer.onNext(career)
-                this.minCareerSelected.onNext(true)
-                this.maxCareerSelected.onNext(false)
-            })
-            .disposed(by: disposeBag)
-        
-        input.selectedMaxCareer
-            .withUnretained(self)
-            .bind(onNext: { this, career in
-                this.maxCareer.onNext(career)
-                this.maxCareerSelected.onNext(true)
-            })
-            .disposed(by: disposeBag)
-    
-        Observable.combineLatest(
-            minCareerSelected,
-            maxCareerSelected
-        )
-        .withUnretained(self)
-        .subscribe(onNext: { (viewModel, arg) in
-            let min = arg.0
-            let max = arg.1
-            
-            if min != false && max != false {
-                viewModel.purposeCareerCanNextPage.onNext(true)
-            } else {
-                viewModel.purposeCareerCanNextPage.onNext(false)
-            }
-        })
-        .disposed(by: disposeBag)
-        
-    }
-
-    func transformNavigation(input: Input) {
-
-        input.closeButtonTap
-            .withUnretained(self)
-            .map { viewModel, _ in
-                viewModel.cancleAlert
-            }
-            .bind(to: cancleAlertSubject)
-            .disposed(by: disposeBag)
-
-        alertResultSubject
-            .filter { $0 == true }
-            .map { _ in
-                return ProjectCreateMainNavigation.close
-            }
-            .bind(to: navigation)
-            .disposed(by: disposeBag)
-        
-        input.createButtonTap
-            .withUnretained(self)
-            .map { this, _ in
-                this.createAlert
-            }
-            .bind(to: createAlertSubject)
-            .disposed(by: disposeBag)
-    }
-
-    func transformPages(input: Input) {
-        input.nextButtonTap
-            .withLatestFrom(currentPage)
-            .map { $0 + 1 }
-            .bind(to: currentPage)
-            .disposed(by: disposeBag)
-
-        input.beforeButtonTap
-            .withLatestFrom(currentPage)
-            .map { $0 - 1 }
-            .bind(to: currentPage)
-            .disposed(by: disposeBag)
-    }
-
-    func transformStateisOnline(input: Input) {
-
-        // State
-
-        let stateChange = Observable.merge(
-            input.stateBeforeTap.map { ProjectState.before },
-            input.stateRunningTap.map { ProjectState.running }
-        )
-
-        stateChange
-            .map { [state] newState in
-                return Observable.just(newState)
-                    .withLatestFrom(state.asObservable().startWith(nil)) { ($0, $1) }
-                    .map { new, current in
-                        return new == current ? nil : new
-                    }
-                    .distinctUntilChanged()
-            }
-            .concat()
-            .bind(to: state)
-            .disposed(by: disposeBag)
-
-        // region
-
-        // -- Output
-
-        input.viewWillAppear
-            .map { KM.shared.getRegion() }
-            .bind(to: regions)
-            .disposed(by: disposeBag)
-
-        // -- Input
-
-        let isOnlineChange = Observable.merge(
-            input.onlineTap.map { isOnline.online },
-            input.onOfflineTap.map { isOnline.onOffline },
-            input.offlineTap.map { isOnline.offline }
-        )
-
-        isOnlineChange
-            .bind(to: isOnlineSubject)
-            .disposed(by: disposeBag)
-
-        input.selectLocation
-            .bind(to: location)
-            .disposed(by: disposeBag)
-
-        // toNextable
-
-        Observable.combineLatest(state, isOnlineSubject, location)
-            .map { (state, isOnline, location) in
-                // state가 nil이면 false, region이 none이라면 false
-                guard let state = state else { return false }
-                if isOnline == .none { return false }
-
-                // offline, onoffline일 경우에는 location이 ""이 아닌경우에만
-                if (isOnline == .offline || isOnline == .onOffline) && !location.isEmpty {
-                    return true
-                } else if isOnline == .online {
-                    return true
-                } else {
-                    return false
-                }
-            }
-            .bind(to: stateRegionCanNextPage)
             .disposed(by: disposeBag)
     }
 }

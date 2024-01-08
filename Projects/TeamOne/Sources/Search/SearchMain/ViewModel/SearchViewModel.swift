@@ -23,7 +23,7 @@ final class SearchViewModel: ViewModel {
     private let recentHistoryFacade = DIContainer.shared.resolve(RecentHistoryFacade.self)
     
     private let projectListUseCase = DIContainer.shared.resolve(ProjectListUseCaseProtocol.self)
-    private let projectUseCase = DIContainer.shared.resolve(ProjectUseCaseProtocol.self)
+    private let projectUseCase = DIContainer.shared.resolve(ProjectInfoUseCase.self)
     private let projectLikeUseCase = DIContainer.shared.resolve(ProjectLikeUseCaseProtocol.self)
     
     struct Input {

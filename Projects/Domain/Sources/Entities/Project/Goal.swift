@@ -8,7 +8,7 @@
 
 import Foundation
 
-public enum Purpose: CaseIterable{
+public enum Goal: CaseIterable{
     case none
     case startup
     case portfolio
@@ -35,7 +35,7 @@ public enum Purpose: CaseIterable{
         }
     }
     
-    public static func findCellStringToPurpose(string: String) -> Purpose {
+    public static func findCellStringToPurpose(string: String) -> Goal {
         if let purpose = Self.allCases.first(where: { $0.toCellString() == string }) {
             return purpose
         } else {

@@ -27,9 +27,9 @@ final class HomeViewModel: ViewModel {
     let projectListUseCase: ProjectListUseCaseProtocol
     let projectLikeUseCase: ProjectLikeUseCaseProtocol
     let myProfileUseCase: MyProfileUseCaseProtocol
-    let projectUseCase: ProjectUseCaseProtocol
+    let projectUseCase: ProjectInfoUseCase
 
-    public init(projectListUseCase: ProjectListUseCaseProtocol, projectLikeUseCase: ProjectLikeUseCaseProtocol, myProfileUseCase: MyProfileUseCaseProtocol, projectUseCase: ProjectUseCaseProtocol) {
+    public init(projectListUseCase: ProjectListUseCaseProtocol, projectLikeUseCase: ProjectLikeUseCaseProtocol, myProfileUseCase: MyProfileUseCaseProtocol, projectUseCase: ProjectInfoUseCase) {
         self.projectListUseCase = projectListUseCase
         self.projectLikeUseCase = projectLikeUseCase
         self.myProfileUseCase = myProfileUseCase

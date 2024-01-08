@@ -14,10 +14,12 @@ public struct Project {
     public let title: String
     public let banners: [String]
     public var region: String
-    public let online: Bool
-    public let createdAt, state, careerMin, careerMax: String
+    public let isOnline: isOnline
+    public let createdAt: String
+    public let state: ProjectState
+    public let careerMin, careerMax: Career
     public let category: [String]
-    public let goal: String
+    public let goal: Goal
     public let leader: Leader
     public let introduction: String
     public var favorite: Int
@@ -36,13 +38,21 @@ public struct Project {
         self.title = title
         self.banners = banners
         self.region = region
-        self.online = online
+        
+        if online == true {
+            self.isOnline = .online
+        } else if online == true && region != "미설정" {
+            self.isOnline = .onOffline
+        } else {
+            self.isOnline = .offline
+        }
+        
         self.createdAt = createdAt
-        self.state = state
-        self.careerMin = careerMin
-        self.careerMax = careerMax
+        self.state = ProjectState.findState(string: state)
+        self.careerMin = Career.findCareer(string: careerMin)
+        self.careerMax = Career.findCareer(string: careerMax)
         self.category = category
-        self.goal = goal
+        self.goal = Goal.findCellStringToPurpose(string: goal)
         self.leader = leader
         self.introduction = introduction
         self.favorite = favorite

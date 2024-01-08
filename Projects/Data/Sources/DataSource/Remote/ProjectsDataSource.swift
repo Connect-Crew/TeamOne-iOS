@@ -55,9 +55,6 @@ public struct ProjectsDataSource: ProjectsDataSouceProtocol {
     
     public func project(_ projectId: Int) -> Observable<ProjectResponseDTO> {
         return provider.request(ProjectsTarget.project(projectId: projectId))
-            .catch { _ in
-                return Observable.error(ProjectError.loadFail)
-            }
     }
     
     public func apply(_ request: ProjectApplyRequestDTO) -> Single<ProjectApplyResponseDTO> {

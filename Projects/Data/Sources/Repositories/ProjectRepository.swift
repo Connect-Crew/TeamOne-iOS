@@ -77,8 +77,8 @@ public struct ProjectRepository: ProjectRepositoryProtocol {
         var mappedKeyProps = props
         
         let region = props.region == "" ? "NONE" : props.region
-        let leaderParts = KM.shared.key(name: props.leaderParts)
-        var recruits = [Recurit]()
+        let leaderParts = KM.shared.key(name: props.leaderParts ?? "")
+        var recruits = [Recruit]()
         var categorys = [String]()
         
         props.recruits.forEach {
@@ -99,23 +99,23 @@ public struct ProjectRepository: ProjectRepositoryProtocol {
         if region == "NONE" {
             mappedKeyProps.region = region
         } else {
-            mappedKeyProps.region = KM.shared.key(name: props.region)
+            mappedKeyProps.region = KM.shared.key(name: props.region ?? "")
         }
         
         let compactImagesData = props.banner.map { $0.jpegData(compressionQuality:  1) }
         
         return ProjectCreateRequestDTO(
             banner: compactImagesData, 
-            title: mappedKeyProps.title,
-            region: mappedKeyProps.region,
-            online: mappedKeyProps.online.toBool(),
-            state: mappedKeyProps.state.toMultiPartValue(), 
-            careerMin: mappedKeyProps.careerMin.toMultiPartValue(),
-            careerMax: mappedKeyProps.careerMax.toMultiPartValue(),
-            leaderParts: mappedKeyProps.leaderParts,
+            title: mappedKeyProps.title ?? "",
+            region: mappedKeyProps.region ?? "",
+            online: mappedKeyProps.isOnline?.toBool() ?? false,
+            state: mappedKeyProps.state?.toMultiPartValue() ?? "",
+            careerMin: mappedKeyProps.careerMin?.toMultiPartValue() ?? "",
+            careerMax: mappedKeyProps.careerMax?.toMultiPartValue() ?? "",
+            leaderParts: mappedKeyProps.leaderParts ?? "",
             category: mappedKeyProps.category,
-            goal: mappedKeyProps.goal.toMultiPartValue(),
-            introduction: mappedKeyProps.introducion,
+            goal: mappedKeyProps.goal?.toMultiPartValue() ?? "",
+            introduction: mappedKeyProps.introducion ?? "",
             recruits: mappedKeyProps.recruits.map {
                 ProjectRecruitDTO(part: $0.part, comment: $0.comment, max: $0.max)
             },

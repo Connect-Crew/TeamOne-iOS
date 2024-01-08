@@ -99,10 +99,11 @@ final class ProjectSetStateRegionViewController: ViewController {
 
     public func bind(output: ProjectCreateMainViewModel.Output) {
         
-        output.selectedState
-            .emit(onNext: { [weak self] state in
+        output.projectCreateProps
+            .map { $0.state }
+            .drive(onNext: { [weak self] state in
                 switch state {
-                case .none:
+                case nil:
                     self?.buttonStateBefore.isSelected = false
                     self?.buttonStateRunning.isSelected = false
                 case .before:
@@ -115,10 +116,11 @@ final class ProjectSetStateRegionViewController: ViewController {
             })
             .disposed(by: disposeBag)
 
-        output.selectedIsOnline
+        output.projectCreateProps
+            .map { $0.isOnline }
             .drive(onNext: { [weak self] isOnline in
                 switch isOnline {
-                case .none:
+                case nil, .none:
                     self?.buttonRegionOnline.isSelected = false
                     self?.buttonRegionOffline.isSelected = false
                     self?.buttonRegionOnOffline.isSelected = false
@@ -140,6 +142,8 @@ final class ProjectSetStateRegionViewController: ViewController {
                     self?.buttonRegionOnOffline.isSelected = false
                     self?.locaionListStackView.isUserInteractionEnabled = false
                     self?.locaionListStackView.resetSelect()
+                default:
+                    break
                 }
             })
             .disposed(by: disposeBag)

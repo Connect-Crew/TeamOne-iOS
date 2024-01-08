@@ -10,25 +10,25 @@ import Foundation
 import UIKit
 
 public struct ProjectCreateProps {
-    public var banner: [UIImage]
-    public var title: String
-    public var region: String
-    public var online: isOnline
-    public var state: ProjectState
-    public var careerMin: Career
-    public var careerMax: Career
-    public var leaderParts: String
-    public var category: [String]
-    public var goal: Purpose
-    public var introducion: String
-    public var recruits: [Recurit]
-    public var skills: [String]
+    public var banner: [UIImage] = []
+    public var title: String? = nil
+    public var region: String? = nil
+    public var isOnline: isOnline? = nil
+    public var state: ProjectState? = nil
+    public var careerMin: Career? = nil
+    public var careerMax: Career? = nil
+    public var leaderParts: String? = nil
+    public var category: [String] = []
+    public var goal: Goal? = nil
+    public var introducion: String? = nil
+    public var recruits: [Recruit] = []
+    public var skills: [String] = []
     
-    public init(banner: [UIImage], title: String, region: String, online: isOnline, state: ProjectState, careerMin: Career, careerMax: Career, leaderParts: String, category: [String], goal: Purpose, introducion: String, recruits: [Recurit], skills: [String]) {
+    public init(banner: [UIImage], title: String, region: String, isOnline: isOnline, state: ProjectState, careerMin: Career, careerMax: Career, leaderParts: String, category: [String], goal: Goal, introducion: String, recruits: [Recruit], skills: [String]) {
         self.banner = banner
         self.title = title
         self.region = region
-        self.online = online
+        self.isOnline = isOnline
         self.state = state
         self.careerMin = careerMin
         self.careerMax = careerMax
@@ -39,4 +39,6 @@ public struct ProjectCreateProps {
         self.recruits = recruits
         self.skills = skills
     }
+    
+    public init() { }
 }
