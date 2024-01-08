@@ -76,6 +76,17 @@ final class ProjectSetPostViewController: ViewController, UINavigationController
     let labelSetRecuritTeamOneTitle = UILabel().then {
         $0.setLabel(text: "팀원 모집", typo: .body2, color: .teamOne.grayscaleEight)
     }
+    
+    let imageViewPartWarnning = UIImageView(image: .image(dsimage: .warinning))
+    
+    let labelPartWarnning = UILabel().setLabel(text: "한 팀원이 여러 직무를 맡을 수 있습니다.", typo: .caption2, color: .teamOne.point)
+    
+    let imageViewModifyWarnning = UIImageView(image: .image(dsimage: .warinning))
+    
+    let labelModifyWarnning = UILabel().then {
+        $0.numberOfLines = 0
+        $0.setLabel(text: "한 번 설정한 파트 별 인원은 확정된 인원이 한 명이라도 있을 시 인원수를 그보다 줄이거나 삭제할 수 없습니다.", typo: .caption2, color: .teamOne.point)
+    }
 
     let labelSetRecuritTeamOneContent = UILabel().then {
         $0.setLabel(text: "  리더 포함 최대 30인까지 모집 가능합니다.", typo: .caption2, color: .teamOne.grayscaleSeven)
@@ -117,7 +128,8 @@ final class ProjectSetPostViewController: ViewController, UINavigationController
         createSecondStackView(),
         createThirdStackView(),
         createFourthStackView(),
-        createFifthStackView()
+        createFifthStackView(),
+        UIView()
     ]).then {
         $0.axis = .vertical
         $0.spacing = 30
@@ -443,12 +455,16 @@ final class ProjectSetPostViewController: ViewController, UINavigationController
         textViewIntroduce.snp.makeConstraints {
             $0.height.equalTo(200)
         }
+        
+        [imageViewPartWarnning, imageViewModifyWarnning].forEach {
+            $0.snp.makeConstraints {
+                $0.width.height.equalTo(16)
+            }
+        }
     }
 
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-
-        scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: buttonStackView.frame.height, right: 0)
     }
 
     func createFirstStackView() -> UIStackView {
@@ -534,10 +550,14 @@ final class ProjectSetPostViewController: ViewController, UINavigationController
 
     func createFourthStackView() -> UIStackView {
 
+        let labelStackView = makeLabelStackView()
         let categoryButtonStackView = categoryButtonStackView()
-
+        let partWarnning = makeWarnningStackView(subViews: [imageViewPartWarnning, labelPartWarnning])
+        let modifyWarnning = makeWarnningStackView(subViews: [imageViewModifyWarnning, labelModifyWarnning])
         return UIStackView(arrangedSubviews: [
-            labelStackView(),
+            labelStackView,
+            partWarnning,
+            modifyWarnning,
             categoryButtonStackView,
             leaderRecuritTeamOneDropBox,
             viewSetPart
@@ -545,9 +565,10 @@ final class ProjectSetPostViewController: ViewController, UINavigationController
             $0.axis = .vertical
             $0.spacing = 10
             $0.setCustomSpacing(5, after: categoryButtonStackView)
+            $0.setCustomSpacing(5, after: partWarnning)
         }
 
-        func labelStackView() -> UIStackView {
+        func makeLabelStackView() -> UIStackView {
             return UIStackView(arrangedSubviews: [
                 labelSetRecuritTeamOnePoint,
                 labelSetRecuritTeamOneTitle,
@@ -597,17 +618,53 @@ final class ProjectSetPostViewController: ViewController, UINavigationController
 
     func setKeyboardInset() {
         RxKeyboard.instance.visibleHeight
+            .distinctUntilChanged()
             .drive(onNext: { [weak self] height in
 
                 guard let self = self else { return }
+                
+                print("!!!!!!!!!!!\(self)::::")
+                print(height)
+                print("!!!!!!!!!!!!")
 
                 if height == 0 {
                     self.scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: buttonStackView.frame.height, right: 0)
                 } else {
                     self.scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: height, right: 0)
+                    
+                    if let firstResponder = findFirstResponder(in: self.scrollView) {
+                        if firstResponder == textFieldSetStack {
+                            let skillViewFrame = self.scrollView.convert(viewSelectSkill.frame, from: viewSelectSkill.superview)
+                            self.scrollView.scrollRectToVisible(skillViewFrame, animated: true)
+                        } else {
+                            let frame = self.scrollView.convert(firstResponder.frame, from: firstResponder.superview)
+                            self.scrollView.scrollRectToVisible(frame, animated: true)
+                        }
+                    }
                 }
             })
             .disposed(by: disposeBag)
+    }
+    
+    func findFirstResponder(in view: UIView) -> UIView? {
+        for subview in view.subviews {
+            if subview.isFirstResponder {
+                return subview
+            }
+
+            if let recursiveSubview = findFirstResponder(in: subview) {
+                return recursiveSubview
+            }
+        }
+        return nil
+    }
+    
+    func makeWarnningStackView(subViews: [UIView]) -> UIStackView {
+        return UIStackView(arrangedSubviews: subViews).then {
+            $0.axis = .horizontal
+            $0.spacing = 2
+            $0.alignment = .top
+        }
     }
 }
 
@@ -615,7 +672,7 @@ extension ProjectSetPostViewController: UIImagePickerControllerDelegate {
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         self.imagePickerController.dismiss(animated: true)
         
-        // 10. 선택된 이미지(소스)가 없을수도 있으니 옵셔널 바인딩해주고, 이미지가 선택된게 없다면 오류를 발생시킵니다.
+        // 선택된 이미지(소스)가 없을수도 있으니 옵셔널 바인딩해주고, 이미지가 선택된게 없다면 오류를 발생시킵니다.
         guard let userPickedImage = info[.originalImage] as? UIImage else {
             fatalError("선택된 이미지를 불러오지 못했습니다 : userPickedImage의 값이 nil입니다. ")
         }
