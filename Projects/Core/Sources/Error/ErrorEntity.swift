@@ -7,3 +7,11 @@
 //
 
 import Foundation
+
+public struct ErrorEntity: Codable {
+    let timestamp: String
+    let path: String
+    let status: Int
+    let error: String
+    let message: String
+}
