@@ -74,6 +74,7 @@ final class HomeViewController: ViewController {
         let output = viewModel.transform(input: input)
 
         bindHomeTableView(output: output)
+        bindError(output: output)
     }
 
     func bindHomeTableView(output: HomeViewModel.Output) {
@@ -105,14 +106,14 @@ final class HomeViewController: ViewController {
                 return cell
             }
             .disposed(by: disposeBag)
-
-//        output.isEmpty
-//            .drive(onNext: { [weak self] bool in
-//                self?.tableView.rx.isHidden.onNext(bool)
-//                self?.mainView.viewEmpty.rx.isHidden.onNext(!bool)
-//            })
-//            .disposed(by: disposeBag)
     }
+    
+    func bindError(output: HomeViewModel.Output) {
+        output.error
+            .bind(to: rx.presentErrorAlert)
+            .disposed(by: disposeBag)
+    }
+    
 }
 
 extension HomeViewController: UITableViewDelegate {
