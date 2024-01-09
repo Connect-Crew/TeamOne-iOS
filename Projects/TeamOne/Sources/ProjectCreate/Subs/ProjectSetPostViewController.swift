@@ -138,8 +138,9 @@ final class ProjectSetPostViewController: ViewController, UINavigationController
     }
 
     let buttonBefore = UIButton().then {
-        $0.backgroundColor = .teamOne.grayscaleTwo
-        $0.setButton(text: "이전", typo: .button1, color: .teamOne.grayscaleFive)
+        $0.backgroundColor = .teamOne.white
+        $0.setButton(text: "이전", typo: .button1, color: .teamOne.mainColor)
+        $0.setLayer(width: 1, color: .teamOne.mainColor)
         $0.snp.makeConstraints {
             $0.height.equalTo(52)
         }
