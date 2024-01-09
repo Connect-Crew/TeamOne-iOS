@@ -470,7 +470,8 @@ final class ProjectCreateMainViewModel: ViewModel {
             .disposed(by: disposeBag)
     }
     
-    // TODO: - 수정하기
+    // MARK: - 수정하기관련
+    
     func transformModify(input: Input) {
         let modify = props
             .take(1)
@@ -488,7 +489,7 @@ final class ProjectCreateMainViewModel: ViewModel {
                 this.projectInfoUseCase.project(projectId: target)
                     .catch { error in
                         this.error.onNext(error)
-                        
+                        this.navigation.onNext(.close)
                         return .empty()
                     }
             }
