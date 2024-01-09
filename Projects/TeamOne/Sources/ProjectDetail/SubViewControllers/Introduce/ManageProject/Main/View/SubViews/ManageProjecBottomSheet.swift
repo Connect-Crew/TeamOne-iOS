@@ -38,7 +38,7 @@ final class ManageProjecBottomSheet: View {
         $0.setLayer(width: 1, color: .teamOne.mainColor)
     }
     
-    let buttonModified = UIButton().then {
+    let buttonModify = UIButton().then {
         $0.setButton(text: "수정하기", typo: .button1, color: .teamOne.mainColor)
         $0.backgroundColor = .teamOne.white
         $0.setRound(radius: 8)
@@ -88,7 +88,7 @@ final class ManageProjecBottomSheet: View {
         topIndicatorStackView,
         labelManageProject,
         buttonManageApplicants,
-        buttonModified,
+        buttonModify,
         buttonDelete,
         warnningStackView,
         divider,
@@ -124,7 +124,7 @@ final class ManageProjecBottomSheet: View {
             $0.height.equalTo(5)
         }
         
-        [buttonManageApplicants, buttonModified, buttonDelete, buttonComplete]
+        [buttonManageApplicants, buttonModify, buttonDelete, buttonComplete]
             .forEach {
                 $0.snp.makeConstraints{
                     $0.height.equalTo(52)
@@ -166,6 +166,30 @@ final class ManageProjecBottomSheet: View {
                 self.buttonDelete.isEnabled = false
                 self.buttonDelete.setLayer(width: 1, color: .teamOne.grayscaleFive)
                 self.buttonDelete.setTitleColor(.teamOne.grayscaleFive, for: .normal)
+            })
+            .disposed(by: disposeBag)
+        
+        let isCompletable = output.isCompletable
+            .filter { $0 == true }
+        
+        let isUnCompletable = output.isCompletable
+            .filter { $0 == false }
+        
+        isCompletable
+            .drive(onNext: { [weak self] _ in
+                guard let self = self else { return }
+                
+                self.buttonComplete.isEnabled = true
+            })
+            .disposed(by: disposeBag)
+        
+        isUnCompletable
+            .drive(onNext: { [weak self] _ in
+                guard let self = self else { return }
+                
+                self.buttonComplete.isEnabled = false
+                self.buttonComplete.setLayer(width: 1, color: .teamOne.grayscaleFive)
+                self.buttonComplete.setTitleColor(.teamOne.grayscaleFive, for: .normal)
             })
             .disposed(by: disposeBag)
     }

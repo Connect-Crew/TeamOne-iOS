@@ -109,8 +109,29 @@ final class ProjectDetailCoordinator: BaseCoordinator<ProjectDetailCoordinatorRe
         let manage = ManageProjectCoordinator(navigationController, project: project, needRefreshSubject: needRefreshSubject)
         
         coordinate(to: manage)
-            .subscribe(onNext: {
+            .subscribe(onNext: { [weak self] in
                 switch $0 {
+                case .finish:
+                    break
+                case .modify:
+                    self?.showModify(projectId: self?.project.id)
+                }
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    func showModify(projectId: Int?) {
+        let modify = ProjectCreateCoordinator(
+            type: .modify,
+            projectId: projectId,
+            navigationController
+        )
+        
+        coordinate(to: modify)
+            .subscribe(onNext: { [weak self] in
+                switch $0 {
+                case .created:
+                    break
                 case .finish:
                     break
                 }

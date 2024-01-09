@@ -93,10 +93,15 @@ final class ProjectDetailPageSubIntroduceViewModel: ViewModel {
     }
     
     func transformNavigation(input: Input) {
+        
         input.manageButtonTap
             .withLatestFrom(project)
             .compactMap { $0 }
-            .map{ ProjectDetailPageSubIntroduceNavigation.manageProject($0) }
+            .map{
+                print("!!!!!!!!!!!\(self)::::")
+                print($0)
+                print("!!!!!!!!!!!!")
+                return ProjectDetailPageSubIntroduceNavigation.manageProject($0) }
             .bind(to: navigation)
             .disposed(by: disposeBag)
         

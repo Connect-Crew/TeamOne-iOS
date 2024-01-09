@@ -13,8 +13,6 @@ import RxCocoa
 import Core
 import DSKit
 
-// TODO: - 2번쨰 화면부터 리팩토링.
-
 enum ProjectCreateMainNavigation {
     case finish
     case close
@@ -34,7 +32,7 @@ final class ProjectCreateMainViewModel: ViewModel {
         projectCreateUseCase: ProjectCreateUseCase,
         projectInfoUseCase: ProjectInfoUseCase,
         type: ProjectCreateType = .create,
-        projectId: Int = 0
+        projectId: Int?
     ) {
         self.projectCreateUseCase = projectCreateUseCase
         self.projectInfoUseCase = projectInfoUseCase
@@ -75,6 +73,7 @@ final class ProjectCreateMainViewModel: ViewModel {
         let deleteSkillTap: Observable<String>
         
         let createButtonTap: Observable<Void>
+        let errorOKTap: Observable<Void>
     }
     
     struct Output {
@@ -90,6 +89,7 @@ final class ProjectCreateMainViewModel: ViewModel {
         let projectCreateProps: Driver<ProjectCreateProps>
         // 에러
         let error: PublishSubject<Error>
+        let isModify: Observable<Void>
     }
     
     var disposeBag: DisposeBag = .init()
@@ -97,7 +97,7 @@ final class ProjectCreateMainViewModel: ViewModel {
     
     
     // MARK: - Page
-    let currentPage = BehaviorRelay<Int>(value: 1)
+    let currentPage = BehaviorRelay<Int>(value: 0)
     let titleCanNextPage = BehaviorRelay<Bool>(value: false)
     let stateRegionCanNextPage = BehaviorRelay<Bool>(value: false)
     let goalCareerCanNextPage = BehaviorRelay<Bool>(value: false)
@@ -114,7 +114,8 @@ final class ProjectCreateMainViewModel: ViewModel {
     // MARK: - type(수정하기인 경우 필요)
     
     let type = BehaviorSubject<ProjectCreateType>(value: .create)
-    let modifyTarget: Int
+    let modifyTarget: Int?
+    let isModify = PublishRelay<Void>()
     
     // MARK: - Error
     
@@ -130,6 +131,7 @@ final class ProjectCreateMainViewModel: ViewModel {
         transformCategory(input: input)
         transformPost(input: input)
         transformCreatePost(input: input)
+        transformModify(input: input)
         
         input.viewWillAppear
             .map { KM.shared.getRegion() }
@@ -145,7 +147,8 @@ final class ProjectCreateMainViewModel: ViewModel {
             canCreate: canCreate.asDriver(),
             regionList: regionList.asDriver(onErrorJustReturn: []),
             projectCreateProps: props.asDriver(),
-            error: error
+            error: error,
+            isModify: isModify.take(1)
         )
     }
     
@@ -329,7 +332,7 @@ final class ProjectCreateMainViewModel: ViewModel {
                 if props.category.contains(where: { $0 == category}),
                    let index = props.category.firstIndex(of: category) {
                     props.category.remove(at: index)
-                } else if props.category.count < 3{
+                } else if props.category.count < 3 {
                     props.category.append(category)
                 }
                 
@@ -437,7 +440,7 @@ final class ProjectCreateMainViewModel: ViewModel {
         )
         .map { introduce, leaderPart, recruit in
             
-            if !introduce.isEmpty && !introduce.contains("글자수 공백포함 1000자") && !leaderPart.isEmpty && !recruit.isEmpty  {
+            if !introduce.isEmpty && !leaderPart.isEmpty && !recruit.isEmpty  {
                 return true
             } else {
                 return false
@@ -463,6 +466,45 @@ final class ProjectCreateMainViewModel: ViewModel {
             .withUnretained(self)
             .subscribe(onNext: { this, _ in
                 this.navigation.onNext(.finish)
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    // TODO: - 수정하기
+    func transformModify(input: Input) {
+        let modify = props
+            .take(1)
+            .withLatestFrom(type)
+            .filter { $0 == .modify }
+        
+        modify
+            .withUnretained(self)
+            .map { this, _ in
+                return this.modifyTarget
+            }
+            .compactMap { $0 }
+            .withUnretained(self)
+            .flatMap { this, target in
+                this.projectInfoUseCase.project(projectId: target)
+                    .catch { error in
+                        this.error.onNext(error)
+                        
+                        return .empty()
+                    }
+            }
+            .withUnretained(self)
+            .subscribe(onNext: { this, project in
+                this.props.accept(project.toProps())
+                this.isModify.accept(())
+                UIImageView.pathToImage(path: project.banners) { images in
+                    let unOptionalImages = images.compactMap { $0 }
+                    
+                    var props = this.props.value
+                    props.banner = unOptionalImages
+                    
+                    this.props.accept(props)
+                    this.isModify.accept(())
+                }
             })
             .disposed(by: disposeBag)
     }

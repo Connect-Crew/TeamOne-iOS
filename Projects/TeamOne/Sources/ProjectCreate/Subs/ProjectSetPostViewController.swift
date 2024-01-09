@@ -171,6 +171,8 @@ final class ProjectSetPostViewController: ViewController, UINavigationController
     lazy var seledtedRecruitSubClass = PublishSubject<(String, Int)>()
     
     var imagePickerController = UIImagePickerController()
+    
+    var isLayoutFirst = true
 
     // MARK: - LifeCycle
 
@@ -218,6 +220,12 @@ final class ProjectSetPostViewController: ViewController, UINavigationController
                 self?.collectionViewSelectPhoto.setImage(images: images)
             })
             .disposed(by: disposeBag)
+        
+        output.projectCreateProps
+            .map { $0.introducion }
+            .compactMap { $0 }
+            .drive(textViewIntroduce.rx.text)
+            .disposed(by: disposeBag)
 
         collectionViewSelectPhoto.onClickDeletePhoto
             .bind(to: deleteImage)
@@ -227,9 +235,39 @@ final class ProjectSetPostViewController: ViewController, UINavigationController
             .map { $0.skills }
             .drive(viewSelectedStack.rx.list)
             .disposed(by: disposeBag)
+        
 
         output.canCreate
             .drive(buttonCreateProject.rx.isEnabled)
+            .disposed(by: disposeBag)
+        
+        bindModify(output: output)
+    }
+    
+    func bindModify(output: ProjectCreateMainViewModel.Output) {
+        
+//         TODO: - API에 리더의 역할 대분류/소분류가 추가되면 아래처럼 리더의 역할도 바인딩
+        
+        output.isModify
+            .withLatestFrom(output.projectCreateProps)
+            .map { return $0.recruits }
+            .subscribe(on: MainScheduler.instance)
+            .withUnretained(self)
+            .subscribe(onNext: { this, recruit in
+                this.viewSetPart.setRecruits(recruits: recruit.map { DSRecurit(
+                    partMajor: "",
+                    partSub: $0.part,
+                    comment: $0.comment,
+                    max: $0.max)
+                })
+            })
+            .disposed(by: disposeBag)
+        
+        output.isModify
+            .withUnretained(self)
+            .subscribe(onNext: { this, _ in
+                this.buttonCreateProject.setTitle("수정하기", for: .normal)
+            })
             .disposed(by: disposeBag)
     }
 
@@ -407,6 +445,8 @@ final class ProjectSetPostViewController: ViewController, UINavigationController
                 this.viewSetPart.addRecruits(major: major.selectedText ?? "", sub: result.0)
             })
             .disposed(by: disposeBag)
+        
+        
     }
 
     func bindSkill() {
@@ -468,6 +508,11 @@ final class ProjectSetPostViewController: ViewController, UINavigationController
 
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
+        
+        if isLayoutFirst {
+            isLayoutFirst = false
+            self.scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: buttonStackView.frame.height, right: 0)
+        }
     }
 
     func createFirstStackView() -> UIStackView {
@@ -626,9 +671,6 @@ final class ProjectSetPostViewController: ViewController, UINavigationController
 
                 guard let self = self else { return }
                 
-                print("!!!!!!!!!!!\(self)::::")
-                print(height)
-                print("!!!!!!!!!!!!")
 
                 if height == 0 {
                     self.scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: buttonStackView.frame.height, right: 0)

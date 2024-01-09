@@ -14,6 +14,7 @@ import Domain
 
 enum ManageProjectCoordinatorResult {
     case finish
+    case modify
 }
 
 final class ManageProjectCoordinator: BaseCoordinator<ManageProjectCoordinatorResult> {
@@ -48,6 +49,8 @@ final class ManageProjectCoordinator: BaseCoordinator<ManageProjectCoordinatorRe
                     self?.finish.onNext(.finish)
                 case .manageApplicants:
                     break
+                case .modify:
+                    self?.finish.onNext(.modify)
                 }
             })
             .disposed(by: disposeBag)

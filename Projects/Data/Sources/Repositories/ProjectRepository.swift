@@ -76,7 +76,7 @@ public struct ProjectRepository: ProjectRepositoryProtocol {
     func propsToRequestDTO(props: ProjectCreateProps) -> ProjectCreateRequestDTO {
         var mappedKeyProps = props
         
-        let region = props.region == "" ? "NONE" : props.region
+        let region = props.region == nil ? "NONE" : props.region
         let leaderParts = KM.shared.key(name: props.leaderParts ?? "")
         var recruits = [Recruit]()
         var categorys = [String]()

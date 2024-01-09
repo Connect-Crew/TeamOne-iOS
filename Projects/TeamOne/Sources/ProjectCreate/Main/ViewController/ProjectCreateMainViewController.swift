@@ -129,7 +129,9 @@ final class ProjectCreateMainViewController: ViewController {
 
             selectedSkillTap: postVC.viewSelectSkill.selectedSkillSubject,
             deleteSkillTap: postVC.viewSelectedStack.deleteButtonTapSubject,
-            createButtonTap: createSubject.filter { $0 == true }.map { _ in return () }
+            createButtonTap: createSubject.filter { $0 == true }.map { _ in return () },
+            // TODO: - <#할일입력#>
+            errorOKTap: .empty()
         )
 
         let output = viewModel.transform(input: input)
@@ -137,6 +139,7 @@ final class ProjectCreateMainViewController: ViewController {
         bindPage(output: output)
         bindNavigation(output: output)
 
+        nameVC.bind(output: output)
         stateRegionVC.bind(output: output)
         goalCareerVC.bind(output: output)
         categoryVC.bind(output: output)

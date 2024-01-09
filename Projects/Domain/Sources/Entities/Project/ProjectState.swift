@@ -31,6 +31,9 @@ public enum ProjectState: CaseIterable {
     }
     
     public static func findState(string: String) -> ProjectState {
-        return Self.allCases.first { $0.toString() == string }!
+        guard let state = Self.allCases.first(where: { $0.toString() == string }) else {
+            fatalError("findStateError:::\(string)")
+        }
+        return state
     }
 }

@@ -82,6 +82,7 @@ final class ProjectSetCategoryViewController: ViewController {
     }
 
     var categoryTapSubject = PublishSubject<String>()
+    var setCategoryFinish = PublishSubject<Void>()
 
     // MARK: - LifeCycle
 
@@ -93,22 +94,27 @@ final class ProjectSetCategoryViewController: ViewController {
     }
 
     func bind(output: ProjectCreateMainViewModel.Output) {
-        output
-            .projectCreateProps
-            .map { $0.category }
-            .drive(onNext: { [weak self] selected in
-                guard let self = self else { return }
-
-                for view in self.categoryViewArray {
-                    if selected.contains(where: { $0 == view.categoryTitle }) {
-                        view.isSelected = true
-                    } else {
-                        view.isSelected = false
-                    }
+        
+        Observable.combineLatest(
+            setCategoryFinish,
+            output.projectCreateProps.asObservable()
+        )
+        .map { $0.1 }
+        .map { $0.category }
+        .compactMap { $0 }
+        .subscribe(on: MainScheduler.instance)
+        .subscribe(onNext: { [weak self] selected in
+            guard let self = self else { return }
+            for view in self.categoryViewArray {
+                if selected.contains(where: { $0 == view.categoryTitle }) {
+                    view.isSelected = true
+                } else {
+                    view.isSelected = false
                 }
-
-            })
-            .disposed(by: disposeBag)
+            }
+            
+        })
+        .disposed(by: disposeBag)
 
         output.categoryCanNextpage
             .drive(buttonNext.rx.isEnabled)
@@ -139,6 +145,7 @@ final class ProjectSetCategoryViewController: ViewController {
     }
 
     func setCategory() {
+        categoryViewArray = []
         for category in ProjectCreateCategoryList.allCases {
             let categoryView = ProjectCreateCategoryView()
             categoryView.isSelected = false
@@ -159,6 +166,8 @@ final class ProjectSetCategoryViewController: ViewController {
                 .bind(to: categoryTapSubject)
                 .disposed(by: disposeBag)
         }
+        
+        setCategoryFinish.onNext(())
     }
 
     func layoutCategory() {

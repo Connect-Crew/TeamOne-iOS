@@ -25,6 +25,9 @@ public extension UIImageView {
     }
     
     static func pathToImage(path: [String?], completion: @escaping ([UIImage?]) -> Void) {
+        
+        Loading.start()
+        
         var images: [UIImage?] = Array(repeating: nil, count: path.count)
             let group = DispatchGroup()
             
@@ -48,6 +51,7 @@ public extension UIImageView {
             
             group.notify(queue: .main) {
                 completion(images) // 모든 이미지 다운로드가 완료되면 콜백을 호출합니다.
+                Loading.stop()
             }
     }
 }

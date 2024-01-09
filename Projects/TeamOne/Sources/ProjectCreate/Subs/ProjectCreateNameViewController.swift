@@ -96,12 +96,18 @@ final class ProjectCreateNameViewController: ViewController {
 
         buttonStackView.adjustForKeyboard(disposeBag: disposeBag)
     }
-
-    override func bind() {
-
-        let textAvailable = textFieldName.rx.text.orEmpty
+    
+    func bind(output: ProjectCreateMainViewModel.Output) {
+        output.projectCreateProps
+            .map { $0.title }
+            .drive(textFieldName.rx.text)
+            .disposed(by: disposeBag)
+        
+        let textAvailable = output.projectCreateProps
+            .map { $0.title }
+            .compactMap { $0 }
             .map { $0.count >= 2}
-            .subscribe(on: MainScheduler.instance)
+            .asObservable()
 
         textAvailable
             .bind(to: labelError.rx.isHidden)
@@ -123,12 +129,13 @@ final class ProjectCreateNameViewController: ViewController {
                 }
             })
             .disposed(by: disposeBag)
-
-        textFieldName.rx.text.orEmpty
-            .map { $0.count }
-            .withUnretained(self)
-            .bind(onNext: { view, result in
-                view.labelCounting.text = "\(result)/30"
+        
+        output.projectCreateProps
+            .map { $0.title }
+            .map { $0?.count }
+            .compactMap { $0 }
+            .drive(onNext: { [weak self] result in
+                self?.labelCounting.text = "\(result)/30"
             })
             .disposed(by: disposeBag)
 
