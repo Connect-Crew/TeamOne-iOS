@@ -129,5 +129,28 @@ final class ProjectDetailPageSubIntroduceViewController: ViewController {
                 }
             })
             .disposed(by: disposeBag)
+        
+        // 내 프로젝트가 아니면서, 지원이 마감되었을 때 처리
+        Observable.combineLatest(
+            output.project.map { $0?.isAppliable }.asObservable(),
+            output.isMyproject.asObservable()
+        )
+        .map { result in
+            let isAppliable = result.0
+            let isMyproject = result.1
+            
+            if isMyproject == false && isAppliable == false {
+                return true
+            }
+            
+            return false
+        }
+        .filter { $0 == true }
+        .subscribe(on: MainScheduler.instance)
+        .withUnretained(self)
+        .subscribe(onNext: { this, _ in
+
+            this.mainView.viewBottom.buttonApply.isEnabled = false
+        })
     }
 }

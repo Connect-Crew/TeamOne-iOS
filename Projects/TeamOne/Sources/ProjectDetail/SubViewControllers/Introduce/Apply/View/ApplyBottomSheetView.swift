@@ -142,6 +142,19 @@ final class ApplyBottomSheetView: UIView {
         $0.setButton(text: "닫기", typo: .body3, color: .teamOne.grayscaleSeven)
     }
     
+    let imageViewWarnning = UIImageView().then {
+        $0.image = .image(dsimage: .warinning)
+        
+        $0.snp.makeConstraints {
+            $0.width.height.equalTo(16)
+        }
+    }
+    
+    let labelWarnning = UILabel().then {
+        $0.numberOfLines = 0
+        $0.setLabel(text: "한 사람이 여러 직무를 맡을 수 있습니다. ex) A지원자가 기획, 디자인 중복 지원", typo: .caption2, color: .teamOne.point)
+    }
+    
     let contentStackView = UIStackView().then {
         $0.layoutMargins = UIEdgeInsets(top: 20, left: 24, bottom: 20, right: 24)
         $0.isLayoutMarginsRelativeArrangement = true
@@ -199,6 +212,8 @@ final class ApplyBottomSheetView: UIView {
     func setStatus(recruit: [RecruitStatus]) {
         
         contentStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
+        
+        contentStackView.addArrangedSubview(makeWarnningStackView(subViews: [ imageViewWarnning, labelWarnning ]))
         
         guard !recruit.isEmpty else { return }
         
@@ -289,6 +304,14 @@ final class ApplyBottomSheetView: UIView {
             
             contentStackView.addArrangedSubview(topStackView)
             
+        }
+    }
+    
+    func makeWarnningStackView(subViews: [UIView]) -> UIStackView {
+        return UIStackView(arrangedSubviews: subViews).then {
+            $0.axis = .horizontal
+            $0.spacing = 2
+            $0.alignment = .top
         }
     }
     

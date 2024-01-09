@@ -98,9 +98,6 @@ final class ProjectDetailPageSubIntroduceViewModel: ViewModel {
             .withLatestFrom(project)
             .compactMap { $0 }
             .map{
-                print("!!!!!!!!!!!\(self)::::")
-                print($0)
-                print("!!!!!!!!!!!!")
                 return ProjectDetailPageSubIntroduceNavigation.manageProject($0) }
             .bind(to: navigation)
             .disposed(by: disposeBag)
