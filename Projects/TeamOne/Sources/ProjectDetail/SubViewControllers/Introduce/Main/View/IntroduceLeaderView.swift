@@ -82,23 +82,25 @@ final class IntroduceLeaderView: UIView {
 
     func createMiddleStackView() -> UIStackView {
 
-        let nameStackView = UIStackView(arrangedSubviews: [labelName, labelLeader]).then {
+        let nameStackView = UIStackView(arrangedSubviews: [labelName, labelLeader, UIView()]).then {
             $0.axis = .horizontal
             $0.spacing = 8
             $0.distribution = .fill
         }
 
-        return UIStackView(arrangedSubviews: [nameStackView, labelPart]).then {
+        return UIStackView(arrangedSubviews: [nameStackView, labelPart, UIView()]).then {
             $0.axis = .vertical
             $0.spacing = 2
             $0.distribution = .fill
         }
     }
-
+    
+    // MARK: - 리더응답률
     func createResponseRateStackView() -> UIStackView {
         return UIStackView(arrangedSubviews: [imageViewResponseRate, labelResponseRate]).then {
             $0.axis = .vertical
             $0.spacing = 2
+            $0.isHidden = true
         }
     }
 
