@@ -64,7 +64,7 @@ final class SearchCoordinator: BaseCoordinator<SearchCoordinatorResult> {
         viewController.navigation
             .subscribe(onNext: { [weak self] in
                 switch $0 {
-                case let .detail(element: participants):
+                case let .detail(projectId):
                     break
                 }
             })

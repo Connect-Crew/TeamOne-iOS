@@ -15,7 +15,7 @@ import DSKit
 import RxSwift
 
 enum RecuritmentStatusDetailResult {
-    case detail(element: SideProjectListElement?)
+    case detail(projectId: Int)
 }
 
 final class RecruitmentStatusDetailViewController: ViewController {
@@ -33,7 +33,7 @@ final class RecruitmentStatusDetailViewController: ViewController {
         $0.distribution = .fill
     }
 
-    let element: SideProjectListElement?
+    let element: SideProjectListElement!
 
     let navigation = PublishSubject<RecuritmentStatusDetailResult>()
 
@@ -185,7 +185,7 @@ final class RecruitmentStatusDetailViewController: ViewController {
 
     @objc func showDetail() {
         self.dismiss(animated: false, completion: {
-            self.navigation.onNext(.detail(element: self.element))
+            self.navigation.onNext(.detail(projectId: self.element.id))
         })
     }
 }

@@ -60,12 +60,22 @@ final class HomeCoordinator: BaseCoordinator<HomeCoordinatorResult> {
 
     func showparticipatnsDetail(_ element: SideProjectListElement?) {
         let viewController = Inject.ViewControllerHost(RecruitmentStatusDetailViewController(element: element))
+        
+        let projectInfoUseCase = DIContainer.shared.resolve(ProjectInfoUseCase.self)
 
         viewController.navigation
             .subscribe(onNext: { [weak self] in
+                
+                guard let self = self else { return }
+                
                 switch $0 {
-                case let .detail(element: element):
-                    break
+                case let .detail(id):
+                    projectInfoUseCase.project(projectId: id)
+                        .withUnretained(self)
+                        .subscribe(onNext: { this, project in
+                            this.showDetail(project)
+                        })
+                        .disposed(by: disposeBag)
                 }
             })
             .disposed(by: disposeBag)
@@ -75,7 +85,6 @@ final class HomeCoordinator: BaseCoordinator<HomeCoordinatorResult> {
     }
 
     func showDetail(_ project: Project) {
-        print("DEBUG: showDetail!!!!!!!!")
 
         let projectDetail = ProjectDetailCoordinator(navigationController, project: project)
 
@@ -87,7 +96,6 @@ final class HomeCoordinator: BaseCoordinator<HomeCoordinatorResult> {
     }
     
     func pushToSearch() {
-        print("DEBUG: showDetail!!!!!!!!")
 
         let searchCoordinator = SearchCoordinator(navigationController)
 
