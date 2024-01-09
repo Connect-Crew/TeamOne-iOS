@@ -23,10 +23,10 @@ public struct SideProjectListElement: Hashable {
     public let title: String
     public let thumbnail: String?
     public let region: String
-    public let online: Bool
-    public let careerMin, careerMax: Career
+    public let isOnline: isOnline
+    public var careerMin, careerMax: Career
     public let createdAt: String
-    public let state: String
+    public let state: ProjectState
     public var favorite: Int
     public var myFavorite: Bool
     public let category: [String]
@@ -39,11 +39,21 @@ public struct SideProjectListElement: Hashable {
         self.title = title
         self.thumbnail = thumbnail
         self.region = region
-        self.online = online
+        
+        if online == true {
+            self.isOnline = .online
+        } else if online == true && region != "미설정" {
+            self.isOnline = .onOffline
+        } else {
+            self.isOnline = .offline
+        }
+        
         self.careerMin = Career.findCareer(string: careerMin)
         self.careerMax = Career.findCareer(string: careerMax)
         self.createdAt = createdAt
-        self.state = state
+        self.state = ProjectState.findState(string: state)
+        self.careerMin = Career.findCareer(string: careerMin)
+        self.careerMax = Career.findCareer(string: careerMax)
         self.favorite = favorite
         self.myFavorite = myFavorite
         self.category = category
@@ -54,7 +64,7 @@ public struct SideProjectListElement: Hashable {
     }
     
     mutating func setHashTags() {
-        self.HashTags.append(HashTag(title: state, background: .pink, titleColor: .gray))
+        self.HashTags.append(HashTag(title: state.toString(), background: .pink, titleColor: .gray))
         self.HashTags.append(HashTag(title: "\(self.careerMin.toCellString())", background: .pink, titleColor: .gray))
         self.HashTags.append(HashTag(title: "\(self.goal.toCellString())", background: .gray, titleColor: .gray))
         category.forEach {

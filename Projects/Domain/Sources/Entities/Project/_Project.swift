@@ -87,18 +87,14 @@ public struct Project {
         if online == true {
             self.region = "온라인"
         }
-
-
-
-        self.hashTags.append(HashTag(title: state, background: .pink, titleColor: .gray))
-
-        if careerMin == "경력무관" {
-            self.hashTags.append(HashTag(title: "경력 무관", background: .pink, titleColor: .gray))
-        } else {
-            self.hashTags.append(HashTag(title: "\(careerMin) 차 이상", background: .pink, titleColor: .gray))
-        }
-        self.hashTags.append(HashTag(title: goal, background: .gray, titleColor: .gray))
-
+        
+        setHashTags()
+    }
+    
+    mutating func setHashTags() {
+        self.hashTags.append(HashTag(title: state.toString(), background: .pink, titleColor: .gray))
+        self.hashTags.append(HashTag(title: "\(self.careerMin.toCellString())", background: .pink, titleColor: .gray))
+        self.hashTags.append(HashTag(title: "\(self.goal.toCellString())", background: .gray, titleColor: .gray))
         category.forEach {
             self.hashTags.append(HashTag(title: $0, background: .gray, titleColor: .gray))
         }

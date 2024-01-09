@@ -157,7 +157,6 @@ final class IntroduceMainView: View {
             $0.bottom.equalToSuperview()
         }
 
-
         hashtagListCollectionView.snp.makeConstraints {
             $0.height.equalTo(20)
         }

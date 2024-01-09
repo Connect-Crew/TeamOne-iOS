@@ -119,8 +119,10 @@ final class HomeCell: UICollectionViewCell, CellIdentifiable {
 
         self.labelTitle.text = project.title
 
-        if project.online == true {
+        if project.isOnline == .online {
             self.labelLocation.text = "온라인"
+        } else if project.isOnline == .onOffline {
+            self.labelLocation.text = "온라인, \(project.region)"
         } else {
             self.labelLocation.text = project.region
         }
