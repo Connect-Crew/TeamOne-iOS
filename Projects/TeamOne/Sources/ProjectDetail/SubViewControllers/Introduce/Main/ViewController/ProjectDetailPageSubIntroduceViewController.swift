@@ -56,6 +56,7 @@ final class ProjectDetailPageSubIntroduceViewController: ViewController {
         bindProject(output: output)
         
         mainView.viewBottom.bind(output: output)
+        mainView.viewRecuritStatus.bind(output: output)
     }
 
     func bindProject(output: ProjectDetailPageSubIntroduceViewModel.Output) {
@@ -88,11 +89,6 @@ final class ProjectDetailPageSubIntroduceViewController: ViewController {
             .drive(onNext: { [weak self] in
                 self?.mainView.initHashTag(hashTags: $0)
             })
-            .disposed(by: disposeBag)
-
-        project
-            .map { $0.recruitStatus }
-            .drive(mainView.viewRecuritStatus.rx.status)
             .disposed(by: disposeBag)
 
         project
