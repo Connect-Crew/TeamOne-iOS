@@ -52,7 +52,7 @@ final class IntroduceBottomView: View {
         }
         
         buttonLike.snp.makeConstraints {
-            $0.height.equalTo(52)
+            $0.height.equalTo(50)
             $0.width.equalTo(50)
         }
         
