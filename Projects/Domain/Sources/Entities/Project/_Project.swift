@@ -153,4 +153,23 @@ public struct Project {
             skills: self.skills
         )
     }
+    
+    public func toListElement() -> SideProjectListElement {
+        return SideProjectListElement(
+            id: self.id,
+            title: self.title,
+            thumbnail: self.banners.first,
+            region: self.region,
+            online: self.isOnline.toBool(),
+            careerMin: self.careerMin.toString(),
+            careerMax: self.careerMax.toString(),
+            createdAt: self.createdAt,
+            state: self.state.toString(),
+            favorite: self.favorite,
+            myFavorite: self.myFavorite,
+            category: self.category,
+            goal: self.goal.toCellString(),
+            recruitStatus: self.recruitStatus
+        )
+    }
 }

@@ -19,6 +19,7 @@ enum HomeCoordinatorResult {
 final class HomeCoordinator: BaseCoordinator<HomeCoordinatorResult> {
 
     let finish = PublishSubject<HomeCoordinatorResult>()
+    let projectChangedSubject = PublishSubject<Project>()
 
     override func start() -> Observable<HomeCoordinatorResult> {
         showHome()
@@ -51,6 +52,10 @@ final class HomeCoordinator: BaseCoordinator<HomeCoordinatorResult> {
                     self?.pushToSearch()
                 }
             })
+            .disposed(by: disposeBag)
+        
+        projectChangedSubject
+            .bind(to: viewModel.projectChangedSubject)
             .disposed(by: disposeBag)
 
        let viewController = Inject.ViewControllerHost(HomeViewController(viewModel: viewModel))
@@ -92,6 +97,11 @@ final class HomeCoordinator: BaseCoordinator<HomeCoordinatorResult> {
             .subscribe(onNext: { [weak self] _ in
                 self?.popTabbar(animated: true)
             })
+            .disposed(by: disposeBag)
+        
+        projectDetail
+            .projectChangedSubject
+            .bind(to: projectChangedSubject)
             .disposed(by: disposeBag)
     }
     

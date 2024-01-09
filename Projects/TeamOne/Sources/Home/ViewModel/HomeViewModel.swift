@@ -63,6 +63,8 @@ final class HomeViewModel: ViewModel {
     var error = PublishRelay<Error>()
     
     var refresh = PublishSubject<Void>()
+    // 하위 코디네이터에서 프로젝트의 정보가 변경된 경우 변경된 사항을 반영하기위한 서브젝트
+    var projectChangedSubject = PublishSubject<Project>()
 
     func transform(input: Input) -> Output {
 
@@ -73,7 +75,8 @@ final class HomeViewModel: ViewModel {
         transformLikeButton(input: input)
         transformDidSelectCell(input: input)
         tarsfromMoveToSearch(input: input)
-
+        transformChanged(input: input)
+        
         return Output(
             projects: projects.asDriver(onErrorJustReturn: []),
             error: error
@@ -229,6 +232,22 @@ final class HomeViewModel: ViewModel {
             }
             .map { HomeNavigation.detail($0) }
             .bind(to: navigation)
+            .disposed(by: disposeBag)
+    }
+    
+    func transformChanged(input: Input) {
+        projectChangedSubject
+            .withLatestFrom(projects) { changed, current in
+                
+                var newProjects = current
+                
+                if let index = newProjects.firstIndex(where: { $0.id == changed.id }) {
+                    newProjects[index] = changed.toListElement()
+                }
+                
+                return newProjects
+            }
+            .bind(to: projects)
             .disposed(by: disposeBag)
     }
 }
