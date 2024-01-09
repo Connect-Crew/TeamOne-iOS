@@ -149,8 +149,8 @@ final class ProjectDetailPageSubIntroduceViewController: ViewController {
         .subscribe(on: MainScheduler.instance)
         .withUnretained(self)
         .subscribe(onNext: { this, _ in
-
             this.mainView.viewBottom.buttonApply.isEnabled = false
         })
+        .disposed(by: disposeBag)
     }
 }
