@@ -36,6 +36,8 @@ public extension String {
         }
     }
 
+    /// "2023-11-04T11:45:54"형식 ISO8601 포멧의 문자열에 사용된다.
+    /// 7일이 경과하지 않았으면 true, 경과했으면 false를 리턴합니다.
     func isNewData() -> Bool {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime]
@@ -51,6 +53,28 @@ public extension String {
             return false
         }
     }
+    
+    /**
+     "2023-11-04T11:45:54"형식 ISO8601 포멧의 문자열에 사용
+     주어진 일 수가 경과하였는지
+     - Parameter : 일 수(Int)
+     - returns : 경과 하였다면 true 아니라면 false
+     */
+    func isDateWithin(days: Int) -> Bool {
+            let formatter = ISO8601DateFormatter()
+            formatter.formatOptions = [.withInternetDateTime]
+
+            guard let date = formatter.date(from: self) else { return false }
+            let calendar = Calendar.current
+            let now = Date()
+            let components = calendar.dateComponents([.day], from: date, to: now)
+
+            if let day = components.day, day <= days {
+                return false
+            } else {
+                return true
+            }
+        }
 
     func toDate() -> Date? {
         let formatter = ISO8601DateFormatter()

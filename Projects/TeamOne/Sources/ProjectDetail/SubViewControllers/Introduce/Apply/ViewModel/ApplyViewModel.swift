@@ -21,9 +21,9 @@ enum ApplyNavigation {
 final class ApplyViewModel: ViewModel {
 
     let applyUseCase: ProjectApplyUseCaseProtocol
-    let projectUseCase: ProjectUseCaseProtocol
+    let projectUseCase: ProjectInfoUseCase
 
-    init(applyUseCase: ProjectApplyUseCaseProtocol, projectUseCase: ProjectUseCaseProtocol) {
+    init(applyUseCase: ProjectApplyUseCaseProtocol, projectUseCase: ProjectInfoUseCase) {
         self.applyUseCase = applyUseCase
         self.projectUseCase = projectUseCase
     }

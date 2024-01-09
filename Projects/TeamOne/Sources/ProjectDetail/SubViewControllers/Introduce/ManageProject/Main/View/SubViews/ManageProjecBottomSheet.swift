@@ -38,7 +38,7 @@ final class ManageProjecBottomSheet: View {
         $0.setLayer(width: 1, color: .teamOne.mainColor)
     }
     
-    let buttonModified = UIButton().then {
+    let buttonModify = UIButton().then {
         $0.setButton(text: "수정하기", typo: .button1, color: .teamOne.mainColor)
         $0.backgroundColor = .teamOne.white
         $0.setRound(radius: 8)
@@ -52,12 +52,12 @@ final class ManageProjecBottomSheet: View {
         $0.setLayer(width: 1, color: .teamOne.mainColor)
     }
     
-    let imageViewWarnning = UIImageView().then {
+    let imageViewDeleteWarnning = UIImageView().then {
         $0.image = .image(dsimage: .warinning)
         $0.contentMode = .scaleAspectFit
     }
     
-    let labelWarnning = UILabel().then {
+    let labelDeleteWarnning = UILabel().then {
         $0.setLabel(text: "팀원이 한 명 이상 생기면 프로젝트를 삭제할 수 없습니다.", typo: .caption2, color: .teamOne.point)
     }
     
@@ -72,14 +72,30 @@ final class ManageProjecBottomSheet: View {
         $0.setLayer(width: 1, color: .teamOne.point)
     }
     
+    let imageViewCompleteWarnning = UIImageView().then {
+        $0.image = .image(dsimage: .warinning)
+        $0.contentMode = .scaleAspectFit
+    }
+    
+    let labelCompleteWarnning = UILabel().then {
+        $0.setLabel(text: "프로젝트 시작 후 14일 전까진 프로젝트 완수 버튼이 비활성화됩니다.", typo: .caption2, color: .teamOne.point)
+    }
+    
     private lazy var topIndicatorStackView = UIStackView(arrangedSubviews: [viewTopGrayIndicator]).then {
         $0.alignment = .center
         $0.axis = .vertical
     }
     
-    private lazy var warnningStackView = UIStackView(arrangedSubviews: [
-        imageViewWarnning,
-        labelWarnning
+    private lazy var warnningDeleteStackView = UIStackView(arrangedSubviews: [
+        imageViewDeleteWarnning,
+        labelDeleteWarnning
+    ]).then {
+        $0.spacing = 3
+    }
+    
+    private lazy var warnningCompleteStackView = UIStackView(arrangedSubviews: [
+        imageViewCompleteWarnning,
+        labelCompleteWarnning
     ]).then {
         $0.spacing = 3
     }
@@ -88,11 +104,12 @@ final class ManageProjecBottomSheet: View {
         topIndicatorStackView,
         labelManageProject,
         buttonManageApplicants,
-        buttonModified,
+        buttonModify,
         buttonDelete,
-        warnningStackView,
+        warnningDeleteStackView,
         divider,
-        buttonComplete
+        buttonComplete,
+        warnningCompleteStackView
     ]).then {
         $0.axis = .vertical
         $0.spacing = 8
@@ -124,14 +141,18 @@ final class ManageProjecBottomSheet: View {
             $0.height.equalTo(5)
         }
         
-        [buttonManageApplicants, buttonModified, buttonDelete, buttonComplete]
+        [buttonManageApplicants, buttonModify, buttonDelete, buttonComplete]
             .forEach {
                 $0.snp.makeConstraints{
                     $0.height.equalTo(52)
                 }
             }
         
-        imageViewWarnning.snp.makeConstraints {
+        imageViewDeleteWarnning.snp.makeConstraints {
+            $0.width.height.equalTo(16)
+        }
+        
+        imageViewCompleteWarnning.snp.makeConstraints {
             $0.width.height.equalTo(16)
         }
     }
@@ -156,16 +177,59 @@ final class ManageProjecBottomSheet: View {
     // MARK: - Bind
     
     func bind(output: ManageProjectMainViewModel.Output) {
+                
+        let isDeletable = output.isDeletable
+            .filter { $0 == true }
         
-        // 팀원이 2명 이상이라 삭제가 불가능 한 경우 삭제버튼 비활성화 처리
-        output.isDeletable
+        let isUnDeletable = output.isDeletable
             .filter { $0 == false }
+        
+        isDeletable
+            .drive(onNext: { [weak self] _ in
+                guard let self = self else { return }
+                
+                self.buttonDelete.isEnabled = true
+                self.buttonDelete.setLayer(width: 1, color: .teamOne.mainColor)
+                self.buttonDelete.setTitleColor(.teamOne.mainColor, for: .normal)
+                self.warnningDeleteStackView.isHidden = true
+            })
+            .disposed(by: disposeBag)
+        
+        isUnDeletable
             .drive(onNext: { [weak self] _ in
                 guard let self = self else { return }
                 
                 self.buttonDelete.isEnabled = false
                 self.buttonDelete.setLayer(width: 1, color: .teamOne.grayscaleFive)
                 self.buttonDelete.setTitleColor(.teamOne.grayscaleFive, for: .normal)
+                self.warnningDeleteStackView.isHidden = false
+            })
+            .disposed(by: disposeBag)
+        
+
+        let isCompletable = output.isCompletable
+            .filter { $0 == true }
+        
+        let isUnCompletable = output.isCompletable
+            .filter { $0 == false }
+        
+        isCompletable
+            .drive(onNext: { [weak self] _ in
+                guard let self = self else { return }
+                
+                self.buttonComplete.isEnabled = true
+                self.warnningDeleteStackView.isHidden = true
+            })
+            .disposed(by: disposeBag)
+        
+        isUnCompletable
+            .drive(onNext: { [weak self] _ in
+                guard let self = self else { return }
+                
+                self.buttonComplete.isEnabled = false
+                self.buttonComplete.setLayer(width: 1, color: .teamOne.grayscaleFive)
+                self.buttonComplete.setTitleColor(.teamOne.grayscaleFive, for: .normal)
+                self.warnningDeleteStackView.isHidden = false
             })
             .disposed(by: disposeBag)
     }

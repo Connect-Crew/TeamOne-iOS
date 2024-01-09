@@ -27,9 +27,9 @@ final class HomeViewModel: ViewModel {
     let projectListUseCase: ProjectListUseCaseProtocol
     let projectLikeUseCase: ProjectLikeUseCaseProtocol
     let myProfileUseCase: MyProfileUseCaseProtocol
-    let projectUseCase: ProjectUseCaseProtocol
+    let projectUseCase: ProjectInfoUseCase
 
-    public init(projectListUseCase: ProjectListUseCaseProtocol, projectLikeUseCase: ProjectLikeUseCaseProtocol, myProfileUseCase: MyProfileUseCaseProtocol, projectUseCase: ProjectUseCaseProtocol) {
+    public init(projectListUseCase: ProjectListUseCaseProtocol, projectLikeUseCase: ProjectLikeUseCaseProtocol, myProfileUseCase: MyProfileUseCaseProtocol, projectUseCase: ProjectInfoUseCase) {
         self.projectListUseCase = projectListUseCase
         self.projectLikeUseCase = projectLikeUseCase
         self.myProfileUseCase = myProfileUseCase
@@ -49,6 +49,7 @@ final class HomeViewModel: ViewModel {
 
     struct Output {
         let projects: Driver<[SideProjectListElement]>
+        let error: PublishRelay<Error>
     }
 
     lazy var projects = BehaviorSubject<[SideProjectListElement]>(value: [])
@@ -59,6 +60,7 @@ final class HomeViewModel: ViewModel {
 
     let navigation = PublishSubject<HomeNavigation>()
     var disposeBag = DisposeBag()
+    var error = PublishRelay<Error>()
     
     var refresh = PublishSubject<Void>()
 
@@ -73,7 +75,8 @@ final class HomeViewModel: ViewModel {
         tarsfromMoveToSearch(input: input)
 
         return Output(
-            projects: projects.asDriver(onErrorJustReturn: [])
+            projects: projects.asDriver(onErrorJustReturn: []),
+            error: error
         )
     }
     
@@ -181,6 +184,12 @@ final class HomeViewModel: ViewModel {
             .withUnretained(self)
             .flatMap { viewModel, project in
                 return viewModel.projectLikeUseCase.like(projectId: project.id)
+                    .catch { error in
+                        
+                        viewModel.error.accept(error)
+                        
+                        return .empty()
+                    }
                     .withLatestFrom(viewModel.projects) { like, projects in
 
                         var newProject = projects
@@ -213,6 +222,10 @@ final class HomeViewModel: ViewModel {
             .withUnretained(self)
             .flatMap { viewModel, project in
                 viewModel.projectUseCase.project(projectId: project.id)
+                    .catch { error in
+                        viewModel.error.accept(error)
+                        return .empty()
+                    }
             }
             .map { HomeNavigation.detail($0) }
             .bind(to: navigation)

@@ -30,7 +30,7 @@ open class TextView_PlaceHolder: UITextView {
     
     public var rxText: String = ""
     
-    private lazy var rxTextObservable = self.rx.text
+    public lazy var rxTextObservable = self.rx.text
         .withUnretained(self)
         .map { this, text in
             if text == this.placeholder {

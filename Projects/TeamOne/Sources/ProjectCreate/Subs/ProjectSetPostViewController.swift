@@ -76,6 +76,17 @@ final class ProjectSetPostViewController: ViewController, UINavigationController
     let labelSetRecuritTeamOneTitle = UILabel().then {
         $0.setLabel(text: "팀원 모집", typo: .body2, color: .teamOne.grayscaleEight)
     }
+    
+    let imageViewPartWarnning = UIImageView(image: .image(dsimage: .warinning))
+    
+    let labelPartWarnning = UILabel().setLabel(text: "한 팀원이 여러 직무를 맡을 수 있습니다.", typo: .caption2, color: .teamOne.point)
+    
+    let imageViewModifyWarnning = UIImageView(image: .image(dsimage: .warinning))
+    
+    let labelModifyWarnning = UILabel().then {
+        $0.numberOfLines = 0
+        $0.setLabel(text: "한 번 설정한 파트 별 인원은 확정된 인원이 한 명이라도 있을 시 인원수를 그보다 줄이거나 삭제할 수 없습니다.", typo: .caption2, color: .teamOne.point)
+    }
 
     let labelSetRecuritTeamOneContent = UILabel().then {
         $0.setLabel(text: "  리더 포함 최대 30인까지 모집 가능합니다.", typo: .caption2, color: .teamOne.grayscaleSeven)
@@ -117,7 +128,8 @@ final class ProjectSetPostViewController: ViewController, UINavigationController
         createSecondStackView(),
         createThirdStackView(),
         createFourthStackView(),
-        createFifthStackView()
+        createFifthStackView(),
+        UIView()
     ]).then {
         $0.axis = .vertical
         $0.spacing = 30
@@ -126,8 +138,9 @@ final class ProjectSetPostViewController: ViewController, UINavigationController
     }
 
     let buttonBefore = UIButton().then {
-        $0.backgroundColor = .teamOne.grayscaleTwo
-        $0.setButton(text: "이전", typo: .button1, color: .teamOne.grayscaleFive)
+        $0.backgroundColor = .teamOne.white
+        $0.setButton(text: "이전", typo: .button1, color: .teamOne.mainColor)
+        $0.setLayer(width: 1, color: .teamOne.mainColor)
         $0.snp.makeConstraints {
             $0.height.equalTo(52)
         }
@@ -159,6 +172,8 @@ final class ProjectSetPostViewController: ViewController, UINavigationController
     lazy var seledtedRecruitSubClass = PublishSubject<(String, Int)>()
     
     var imagePickerController = UIImagePickerController()
+    
+    var isLayoutFirst = true
 
     // MARK: - LifeCycle
 
@@ -171,7 +186,8 @@ final class ProjectSetPostViewController: ViewController, UINavigationController
 
     public func bind(output: ProjectCreateMainViewModel.Output) {
         collectionViewSelectPhoto.onClickAddPhoto
-            .withLatestFrom(output.selectedImage)
+            .withLatestFrom(output.projectCreateProps)
+            .map { $0.banner }
             .withUnretained(self)
             .subscribe(onNext: { this, selectedImage in
 
@@ -199,22 +215,60 @@ final class ProjectSetPostViewController: ViewController, UINavigationController
             })
             .disposed(by: disposeBag)
 
-        output.selectedImage
+        output.projectCreateProps
+            .map { $0.banner }
             .drive(onNext: { [weak self] images in
                 self?.collectionViewSelectPhoto.setImage(images: images)
             })
+            .disposed(by: disposeBag)
+        
+        output.projectCreateProps
+            .map { $0.introducion }
+            .compactMap { $0 }
+            .drive(textViewIntroduce.rx.text)
             .disposed(by: disposeBag)
 
         collectionViewSelectPhoto.onClickDeletePhoto
             .bind(to: deleteImage)
             .disposed(by: disposeBag)
 
-        output.selectedSkill
+        output.projectCreateProps
+            .map { $0.skills }
             .drive(viewSelectedStack.rx.list)
             .disposed(by: disposeBag)
+        
 
-        output.projectCanCreate
+        output.canCreate
             .drive(buttonCreateProject.rx.isEnabled)
+            .disposed(by: disposeBag)
+        
+        bindModify(output: output)
+    }
+    
+    func bindModify(output: ProjectCreateMainViewModel.Output) {
+        
+//         TODO: - API에 리더의 역할 대분류/소분류가 추가되면 아래처럼 리더의 역할도 바인딩
+        
+        output.isModify
+            .withLatestFrom(output.projectCreateProps)
+            .map { return $0.recruits }
+            .subscribe(on: MainScheduler.instance)
+            .withUnretained(self)
+            .subscribe(onNext: { this, recruit in
+                this.viewSetPart.setRecruits(recruits: recruit.map { DSRecurit(
+                    partMajor: "",
+                    partSub: $0.part,
+                    comment: $0.comment,
+                    max: $0.max)
+                })
+            })
+            .disposed(by: disposeBag)
+        
+        output.isModify
+            .withUnretained(self)
+            .subscribe(onNext: { this, _ in
+                this.buttonCreateProject.setTitle("수정하기", for: .normal)
+            })
             .disposed(by: disposeBag)
     }
 
@@ -392,6 +446,8 @@ final class ProjectSetPostViewController: ViewController, UINavigationController
                 this.viewSetPart.addRecruits(major: major.selectedText ?? "", sub: result.0)
             })
             .disposed(by: disposeBag)
+        
+        
     }
 
     func bindSkill() {
@@ -443,12 +499,21 @@ final class ProjectSetPostViewController: ViewController, UINavigationController
         textViewIntroduce.snp.makeConstraints {
             $0.height.equalTo(200)
         }
+        
+        [imageViewPartWarnning, imageViewModifyWarnning].forEach {
+            $0.snp.makeConstraints {
+                $0.width.height.equalTo(16)
+            }
+        }
     }
 
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-
-        scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: buttonStackView.frame.height, right: 0)
+        
+        if isLayoutFirst {
+            isLayoutFirst = false
+            self.scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: buttonStackView.frame.height, right: 0)
+        }
     }
 
     func createFirstStackView() -> UIStackView {
@@ -534,10 +599,14 @@ final class ProjectSetPostViewController: ViewController, UINavigationController
 
     func createFourthStackView() -> UIStackView {
 
+        let labelStackView = makeLabelStackView()
         let categoryButtonStackView = categoryButtonStackView()
-
+        let partWarnning = makeWarnningStackView(subViews: [imageViewPartWarnning, labelPartWarnning])
+        let modifyWarnning = makeWarnningStackView(subViews: [imageViewModifyWarnning, labelModifyWarnning])
         return UIStackView(arrangedSubviews: [
-            labelStackView(),
+            labelStackView,
+            partWarnning,
+            modifyWarnning,
             categoryButtonStackView,
             leaderRecuritTeamOneDropBox,
             viewSetPart
@@ -545,9 +614,10 @@ final class ProjectSetPostViewController: ViewController, UINavigationController
             $0.axis = .vertical
             $0.spacing = 10
             $0.setCustomSpacing(5, after: categoryButtonStackView)
+            $0.setCustomSpacing(5, after: partWarnning)
         }
 
-        func labelStackView() -> UIStackView {
+        func makeLabelStackView() -> UIStackView {
             return UIStackView(arrangedSubviews: [
                 labelSetRecuritTeamOnePoint,
                 labelSetRecuritTeamOneTitle,
@@ -597,17 +667,50 @@ final class ProjectSetPostViewController: ViewController, UINavigationController
 
     func setKeyboardInset() {
         RxKeyboard.instance.visibleHeight
+            .distinctUntilChanged()
             .drive(onNext: { [weak self] height in
 
                 guard let self = self else { return }
+                
 
                 if height == 0 {
                     self.scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: buttonStackView.frame.height, right: 0)
                 } else {
                     self.scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: height, right: 0)
+                    
+                    if let firstResponder = findFirstResponder(in: self.scrollView) {
+                        if firstResponder == textFieldSetStack {
+                            let skillViewFrame = self.scrollView.convert(viewSelectSkill.frame, from: viewSelectSkill.superview)
+                            self.scrollView.scrollRectToVisible(skillViewFrame, animated: true)
+                        } else {
+                            let frame = self.scrollView.convert(firstResponder.frame, from: firstResponder.superview)
+                            self.scrollView.scrollRectToVisible(frame, animated: true)
+                        }
+                    }
                 }
             })
             .disposed(by: disposeBag)
+    }
+    
+    func findFirstResponder(in view: UIView) -> UIView? {
+        for subview in view.subviews {
+            if subview.isFirstResponder {
+                return subview
+            }
+
+            if let recursiveSubview = findFirstResponder(in: subview) {
+                return recursiveSubview
+            }
+        }
+        return nil
+    }
+    
+    func makeWarnningStackView(subViews: [UIView]) -> UIStackView {
+        return UIStackView(arrangedSubviews: subViews).then {
+            $0.axis = .horizontal
+            $0.spacing = 2
+            $0.alignment = .top
+        }
     }
 }
 
@@ -615,7 +718,7 @@ extension ProjectSetPostViewController: UIImagePickerControllerDelegate {
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         self.imagePickerController.dismiss(animated: true)
         
-        // 10. 선택된 이미지(소스)가 없을수도 있으니 옵셔널 바인딩해주고, 이미지가 선택된게 없다면 오류를 발생시킵니다.
+        // 선택된 이미지(소스)가 없을수도 있으니 옵셔널 바인딩해주고, 이미지가 선택된게 없다면 오류를 발생시킵니다.
         guard let userPickedImage = info[.originalImage] as? UIImage else {
             fatalError("선택된 이미지를 불러오지 못했습니다 : userPickedImage의 값이 nil입니다. ")
         }

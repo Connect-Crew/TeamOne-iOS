@@ -19,9 +19,9 @@ enum ProjectDetailPageSubIntroduceNavigation {
 final class ProjectDetailPageSubIntroduceViewModel: ViewModel {
 
     let projectLikeUseCase: ProjectLikeUseCaseProtocol
-    let projectUseCase: ProjectUseCaseProtocol
+    let projectUseCase: ProjectInfoUseCase
 
-    public init(projectLikeUseCase: ProjectLikeUseCaseProtocol, projectUseCase: ProjectUseCaseProtocol) {
+    public init(projectLikeUseCase: ProjectLikeUseCaseProtocol, projectUseCase: ProjectInfoUseCase) {
         self.projectLikeUseCase = projectLikeUseCase
         self.projectUseCase = projectUseCase
     }
@@ -93,10 +93,12 @@ final class ProjectDetailPageSubIntroduceViewModel: ViewModel {
     }
     
     func transformNavigation(input: Input) {
+        
         input.manageButtonTap
             .withLatestFrom(project)
             .compactMap { $0 }
-            .map{ ProjectDetailPageSubIntroduceNavigation.manageProject($0) }
+            .map{
+                return ProjectDetailPageSubIntroduceNavigation.manageProject($0) }
             .bind(to: navigation)
             .disposed(by: disposeBag)
         

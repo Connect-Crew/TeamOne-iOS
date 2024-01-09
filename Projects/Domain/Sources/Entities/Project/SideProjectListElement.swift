@@ -30,7 +30,7 @@ public struct SideProjectListElement: Hashable {
     public var favorite: Int
     public var myFavorite: Bool
     public let category: [String]
-    public let goal: Purpose
+    public let goal: Goal
     public let recruitStatus: [RecruitStatus]
     public var HashTags: [HashTag] = []
 
@@ -61,7 +61,7 @@ public struct SideProjectListElement: Hashable {
         self.favorite = favorite
         self.myFavorite = myFavorite
         self.category = category
-        self.goal = Purpose.findCellStringToPurpose(string: goal)
+        self.goal = Goal.findCellStringToPurpose(string: goal)
         self.recruitStatus = recruitStatus
         
         setHashTags()

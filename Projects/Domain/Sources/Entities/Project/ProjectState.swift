@@ -8,7 +8,7 @@
 
 import Foundation
 
-public enum ProjectState {
+public enum ProjectState: CaseIterable {
     case before
     case running
     
@@ -19,5 +19,21 @@ public enum ProjectState {
         case .running:
             return "IN_PROGRESS"
         }
+    }
+    
+    public func toString() -> String {
+        switch self {
+        case .before:
+            return "진행 전"
+        case .running:
+            return "진행 후"
+        }
+    }
+    
+    public static func findState(string: String) -> ProjectState {
+        guard let state = Self.allCases.first(where: { $0.toString() == string }) else {
+            fatalError("findStateError:::\(string)")
+        }
+        return state
     }
 }

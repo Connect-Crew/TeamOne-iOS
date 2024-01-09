@@ -83,7 +83,10 @@ public class KM {
     public func key(name: String) -> String {
         if let key = data[name] {
             return key
-        } else {
+        } else if name == "" {
+            return ""
+        }
+            else {
 
             print("!!!!!!!!!!!\(self)::::")
             print("KEY ERROR=== \(name)")

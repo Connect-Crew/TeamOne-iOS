@@ -20,6 +20,18 @@ enum ProjectCreateCoordinatorResult {
 final class ProjectCreateCoordinator: BaseCoordinator<ProjectCreateCoordinatorResult> {
 
     let finish = PublishSubject<ProjectCreateCoordinatorResult>()
+    let type: ProjectCreateType
+    let projectId: Int?
+    
+    public init(
+        type: ProjectCreateType = .create,
+        projectId: Int? = nil,
+        _ navigationController: UINavigationController
+    ) {
+        self.type = type
+        self.projectId = projectId
+        super.init(navigationController)
+    }
 
     override func start() -> Observable<ProjectCreateCoordinatorResult> {
         showPorjectCreate()
@@ -31,7 +43,12 @@ final class ProjectCreateCoordinator: BaseCoordinator<ProjectCreateCoordinatorRe
 
     func showPorjectCreate() {
         
-        let viewModel = ProjectCreateMainViewModel(projectCreateUseCase: DIContainer.shared.resolve(ProjectCreateUseCase.self))
+        let viewModel = ProjectCreateMainViewModel(
+            projectCreateUseCase: DIContainer.shared.resolve(ProjectCreateUseCase.self),
+            projectInfoUseCase: DIContainer.shared.resolve(ProjectInfoUseCase.self),
+            type: type, 
+            projectId: projectId
+        )
 
         viewModel.navigation
             .subscribe(onNext: { [weak self] in

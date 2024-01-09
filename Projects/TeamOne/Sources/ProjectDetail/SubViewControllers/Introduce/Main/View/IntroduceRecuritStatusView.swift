@@ -13,8 +13,59 @@ import Then
 import Domain
 import RxSwift
 import RxCocoa
+import Core
 
-final class IntroduceRecuritStatusView: UIView {
+final class IntroduceRecuritStatusView: View {
+    
+    enum IntroduceRecruitStatus {
+        case appliable
+        case isQuotafull
+        case allPartQuotafull
+        
+        var categoryTextColor: UIColor {
+            switch self {
+            case .appliable:
+                UIColor.teamOne.mainColor
+            case .isQuotafull:
+                UIColor.teamOne.grayscaleFive
+            case .allPartQuotafull:
+                UIColor.teamOne.grayscaleFive
+            }
+        }
+        
+        var partTextColor: UIColor {
+            switch self {
+            case .appliable:
+                UIColor.teamOne.grayscaleSeven
+            case .isQuotafull:
+                UIColor.teamOne.grayscaleFive
+            case .allPartQuotafull:
+                UIColor.teamOne.grayscaleFive
+            }
+        }
+        
+        var countTextColor: UIColor {
+            switch self {
+            case .appliable:
+                UIColor.teamOne.point
+            case .isQuotafull:
+                UIColor.teamOne.grayscaleFive
+            case .allPartQuotafull:
+                UIColor.teamOne.grayscaleFive
+            }
+        }
+        
+        var bgColor: UIColor {
+            switch self {
+            case .appliable:
+                UIColor.teamOne.mainlightColor
+            case .isQuotafull:
+                UIColor.teamOne.white
+            case .allPartQuotafull:
+                UIColor.teamOne.white
+            }
+        }
+    }
 
     let imageViewPerson = UIImageView(image: .image(dsimage: .count))
 
@@ -25,9 +76,6 @@ final class IntroduceRecuritStatusView: UIView {
     let labelCount = UILabel().then {
         $0.setLabel(text: "0/0", typo: .body4, color: .teamOne.mainColor)
     }
-
-    let countNow: Int = 0
-    let countTarget: Int = 0
 
     lazy var contentView = UIStackView(arrangedSubviews: [
         createFirstStackView()
@@ -59,6 +107,21 @@ final class IntroduceRecuritStatusView: UIView {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    func bind(output: ProjectDetailPageSubIntroduceViewModel.Output) {
+        let project = output
+            .project
+            .compactMap { $0 }
+        
+        project
+            .drive(onNext: { [weak self] project in
+                self?.setStatus(
+                    status: project.recruitStatus,
+                    isAppliableProject: project.isAppliable
+                )
+            })
+            .disposed(by: disposeBag)
+    }
 
     func initSetting() {
         self.setRound(radius: 8)
@@ -71,24 +134,20 @@ final class IntroduceRecuritStatusView: UIView {
         }
     }
 
-    func setStatus(status: [RecruitStatus]) {
+    func setStatus(status: [RecruitStatus], isAppliableProject: Bool) {
 
         contentView.arrangedSubviews.forEach { $0.removeFromSuperview() }
 
         status.forEach { data in
 
-            let isEnable = data.max > data.current
-
-            let categoryTextColor = isEnable ? UIColor.teamOne.mainColor : UIColor.teamOne.grayscaleFive
-
-            let partTextColor = isEnable ? UIColor.teamOne.grayscaleSeven : UIColor.teamOne.grayscaleFive
-
-            let countTextColor = isEnable ? UIColor.teamOne.point : UIColor.teamOne.grayscaleFive
-
-            let bgColor = isEnable ? UIColor.teamOne.mainlightColor : UIColor.teamOne.white
+            var state = IntroduceRecruitStatus.appliable
+            
+            if data.max > data.current { state = .appliable }
+            
+            if isAppliableProject == false { state = .allPartQuotafull }
 
             let labelCategory = UILabel().then {
-                $0.setLabel(text: data.category, typo: .caption2, color: categoryTextColor)
+                $0.setLabel(text: data.category, typo: .caption2, color: state.categoryTextColor)
                 $0.textAlignment = .center
                 $0.snp.makeConstraints {
                     $0.width.equalTo(70)
@@ -96,11 +155,11 @@ final class IntroduceRecuritStatusView: UIView {
             }
 
             let labelPart = UILabel().then {
-                $0.setLabel(text: data.part, typo: .button2, color: partTextColor)
+                $0.setLabel(text: data.part, typo: .button2, color: state.partTextColor)
             }
 
             let labelCount = UILabel().then {
-                $0.setLabel(text: "\(data.current) / \(data.max)", typo: .button2, color: countTextColor)
+                $0.setLabel(text: "\(data.current) / \(data.max)", typo: .button2, color: state.countTextColor)
                 $0.textAlignment = .right
             }
 
@@ -114,18 +173,18 @@ final class IntroduceRecuritStatusView: UIView {
                 $0.alignment = .center
                 $0.layoutMargins = UIEdgeInsets(top: 12, left: 0, bottom: 12, right: 24)
                 $0.isLayoutMarginsRelativeArrangement = true
-                $0.backgroundColor = bgColor
+                $0.backgroundColor = state.bgColor
             }
 
             contentView.addArrangedSubview(stackView)
         }
+        
+        layoutContentView(isAppliableProject: isAppliableProject)
     }
-}
-
-extension Reactive where Base: IntroduceRecuritStatusView {
-    var status: Binder<[RecruitStatus]> {
-        return Binder(self.base) { view, status in
-            view.setStatus(status: status)
-        }
+    
+    func layoutContentView(isAppliableProject: Bool) {
+        imageViewPerson.tintColor = .teamOne.grayscaleFive
+        labelCount.textColor = .teamOne.grayscaleFive
+        labelStatus.textColor = .teamOne.grayscaleFive
     }
 }

@@ -12,13 +12,14 @@ import Core
 import Inject
 import Domain
 
-enum ManageProjectCoordinatorResult {
+enum ProjectManageCoordinatorResult {
     case finish
+    case modify
 }
 
-final class ManageProjectCoordinator: BaseCoordinator<ManageProjectCoordinatorResult> {
+final class ProjectManageCoordinator: BaseCoordinator<ProjectManageCoordinatorResult> {
 
-    let finish = PublishSubject<ManageProjectCoordinatorResult>()
+    let finish = PublishSubject<ProjectManageCoordinatorResult>()
     
     let project: Project
     let needRefreshSubject: PublishSubject<Void>
@@ -29,7 +30,7 @@ final class ManageProjectCoordinator: BaseCoordinator<ManageProjectCoordinatorRe
         super.init(navigationController)
     }
 
-    override func start() -> Observable<ManageProjectCoordinatorResult> {
+    override func start() -> Observable<ProjectManageCoordinatorResult> {
         showManage()
         return finish
             .do(onNext: { [weak self] _ in
@@ -48,6 +49,8 @@ final class ManageProjectCoordinator: BaseCoordinator<ManageProjectCoordinatorRe
                     self?.finish.onNext(.finish)
                 case .manageApplicants:
                     break
+                case .modify:
+                    self?.finish.onNext(.modify)
                 }
             })
             .disposed(by: disposeBag)

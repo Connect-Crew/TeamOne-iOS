@@ -16,6 +16,7 @@ import DSKit
 enum ManageProjectMainViewModelNavigation {
     case finish
     case manageApplicants
+    case modify
 }
 
 final class ManageProjectMainViewModel: ViewModel {
@@ -31,15 +32,18 @@ final class ManageProjectMainViewModel: ViewModel {
         let viewDidLoad: Observable<Void>
         let viewWillAppear: Observable<Void>
         let closeManageProjectButtonTap: Observable<Void>
+        let modifyButtonTap: Observable<Void>
         let deleteButtonTap: Observable<Void>
         let completeButtonTap: Observable<Void>
         let finishSubject: Observable<Void>
+
     }
     
     struct Output {
 //        let showDeleteAlert: Observable<Void>
         let showCompleteAlert: PublishSubject<ResultAlertView_Image_Title_Content_Alert>
         let isDeletable: Driver<Bool>
+        let isCompletable: Driver<Bool>
     }
     
     var disposeBag: DisposeBag = .init()
@@ -75,7 +79,8 @@ final class ManageProjectMainViewModel: ViewModel {
     lazy var deleteAlertResultSubject = PublishSubject<Bool>()
     lazy var completeProjectAlertResultSubject = PublishSubject<Bool>()
     
-    lazy var projectDeletable = PublishSubject<Bool>()
+    lazy var isDeletable = BehaviorRelay<Bool>(value: false)
+    let isCompletable = BehaviorRelay<Bool>(value: false)
     
     // MARK: - Transform
     
@@ -83,11 +88,14 @@ final class ManageProjectMainViewModel: ViewModel {
         
         transformNavigation(input: input)
         transformAlert(input: input)
+        transformDeletableCompletable(input: input)
+        transformModify(input: input.modifyButtonTap)
         
         return Output(
 //            showDeleteAlert: <#Observable<Void>#>,
             showCompleteAlert: completeProjectAlertSubject,
-            isDeletable: projectDeletable.asDriver(onErrorJustReturn: true)
+            isDeletable: isDeletable.asDriver(),
+            isCompletable: isCompletable.asDriver()
         )
     }
     
@@ -120,7 +128,19 @@ final class ManageProjectMainViewModel: ViewModel {
         completeProjectAlertResultSubject
             .filter { $0 == true }
         
-        
+    }
+    
+    func transformModify(input: Observable<Void>) {
+        input
+            .withUnretained(self)
+            .map { this, _ in
+                return ManageProjectMainViewModelNavigation.modify
+            }
+            .bind(to: navigation)
+            .disposed(by: disposeBag)
+    }
+    
+    func transformDeletableCompletable(input: Input) {
         // projectMember가 2명 이상이면 삭제 불가 처리
         // 지울 수 없으면 false
         input.viewDidLoad
@@ -132,7 +152,15 @@ final class ManageProjectMainViewModel: ViewModel {
             }
             .map { $0.count }
             .map { !($0 >= 2) }
-            .bind(to: projectDeletable)
+            .bind(to: isDeletable)
+            .disposed(by: disposeBag)
+        
+        // 2주가 경과하였으면 삭제가능
+        input.viewDidLoad
+            .withLatestFrom(projectSubject)
+            .map { $0.createdAt }
+            .map { $0.isDateWithin(days: 14) }
+            .bind(to: isCompletable)
             .disposed(by: disposeBag)
     }
 }

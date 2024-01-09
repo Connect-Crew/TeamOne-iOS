@@ -25,8 +25,8 @@ public struct RecruitStatus: Codable {
 
         self.isAppliable = true
 
-        if current >= max || applied == true{
-            isAppliable = false
+        if current >= max {
+            self.isAppliable = false
         }
     }
 }

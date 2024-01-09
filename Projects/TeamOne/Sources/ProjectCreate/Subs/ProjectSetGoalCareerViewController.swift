@@ -15,7 +15,7 @@ import DSKit
 import SnapKit
 import Domain
 
-final class ProjectSetPurposeCareerViewController: ViewController {
+final class ProjectSetGoalCareerViewController: ViewController {
 
     let scrollView = BaseScrollView(frame: .zero)
 
@@ -58,8 +58,9 @@ final class ProjectSetPurposeCareerViewController: ViewController {
     let dropBoxCareer = BaseDropBox()
 
     let buttonBefore = UIButton().then {
-        $0.backgroundColor = .teamOne.grayscaleTwo
-        $0.setButton(text: "이전", typo: .button1, color: .teamOne.grayscaleFive)
+        $0.backgroundColor = .teamOne.white
+        $0.setButton(text: "이전", typo: .button1, color: .teamOne.mainColor)
+        $0.setLayer(width: 1, color: .teamOne.mainColor)
         $0.snp.makeConstraints {
             $0.height.equalTo(52)
         }
@@ -214,65 +215,77 @@ final class ProjectSetPurposeCareerViewController: ViewController {
     }
 
     func bind(output: ProjectCreateMainViewModel.Output) {
-
-        output.isNoRequiredExperience
-            .drive(buttonnoExperienceRequiredCheckBox.rx.isSelected)
-            .disposed(by: disposeBag)
-
-        output.isNoRequiredExperience
-            .drive(onNext: { [weak self] bool in
-                if bool == true {
-                    self?.buttonMinCareer.isUserInteractionEnabled = false
-                    self?.buttonMaxCareer.isUserInteractionEnabled = false
+        
+        output
+            .projectCreateProps
+            .map {
+                return ($0.careerMin, $0.careerMax)
+            }
+            .drive(onNext: { [weak self] value in
+                guard let self = self else { return }
+                
+                let min = value.0
+                let max = value.1
+                
+                if min == Career.none && max == Career.none {
+                    buttonnoExperienceRequiredCheckBox.isSelected = true
                 } else {
-                    self?.buttonMinCareer.isUserInteractionEnabled = true
-                    self?.buttonMaxCareer.isUserInteractionEnabled = true
+                    buttonnoExperienceRequiredCheckBox.isSelected = false
                 }
+                
             })
             .disposed(by: disposeBag)
         
-        output.minCareer
-            .map { $0.toString() }
-            .drive(onNext: { [weak self] string in
-                self?.buttonMinCareer.selectedText = string
+        output.projectCreateProps
+            .map { $0.careerMin }
+            .drive(onNext: { [weak self] min in
+                
+                if min == nil {
+                    self?.buttonMinCareer.selectedText = nil
+                    self?.buttonMinCareer.isSelected = false
+                } else {
+                    self?.buttonMinCareer.selectedText = min?.toCellString()
+                    self?.buttonMinCareer.isSelected = true
+                }
+                
             })
             .disposed(by: disposeBag)
         
-        output.minCareerSelected
-            .drive(buttonMinCareer.rx.isSelected)
-            .disposed(by: disposeBag)
-        
-        output.maxCareer
-            .map { $0.toString() }
-            .drive(onNext: { [weak self] string in
-                self?.buttonMaxCareer.selectedText = string
+        output.projectCreateProps
+            .map { $0.careerMax }
+            .drive(onNext: { [weak self] max in
+                
+                if max == nil {
+                    self?.buttonMaxCareer.selectedText = nil
+                    self?.buttonMaxCareer.isSelected = false
+                } else {
+                    self?.buttonMaxCareer.selectedText = max?.toCellString()
+                    self?.buttonMaxCareer.isSelected = true
+                }
+                
             })
             .disposed(by: disposeBag)
         
-        output.maxCareerSelected
-            .drive(buttonMaxCareer.rx.isSelected)
-            .disposed(by: disposeBag)
-        
-        output.purpose
-            .drive(onNext: { [weak self] purpose in
-                switch purpose {
-                case .none:
-                    self?.buttonPurposePortfolio.isSelected = false
-                    self?.buttonPurposeStartup.isSelected = false
+        output.projectCreateProps
+            .map { $0.goal }
+            .drive(onNext: { [weak self] goal in
+                switch goal {
                 case .portfolio:
                     self?.buttonPurposePortfolio.isSelected = true
                     self?.buttonPurposeStartup.isSelected = false
                 case .startup:
                     self?.buttonPurposePortfolio.isSelected = false
                     self?.buttonPurposeStartup.isSelected = true
+                default:
+                    self?.buttonPurposePortfolio.isSelected = false
+                    self?.buttonPurposeStartup.isSelected = false
                 }
             })
             .disposed(by: disposeBag)
         
-        output.purposeCareerCanNextPage
+        output.goalCareerCanNextPage
             .drive(buttonNext.rx.isEnabled)
             .disposed(by: disposeBag)
-
     }
 
     override func viewDidLayoutSubviews() {

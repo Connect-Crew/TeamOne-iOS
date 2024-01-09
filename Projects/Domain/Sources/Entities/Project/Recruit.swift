@@ -8,9 +8,9 @@
 
 import Foundation
 
-public typealias Recurits = [Recurit]
+public typealias Recurits = [Recruit]
 
-public struct Recurit {
+public struct Recruit {
     /// 직군
     public var part: String
 

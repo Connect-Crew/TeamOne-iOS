@@ -62,9 +62,11 @@ public final class RecruitSetPartView: UIView {
 
     public func addRecruits(major: String, sub: String) {
 
-        guard DSRecurit.remainTeamNumber > 1 else { return }
+        guard DSRecurit.remainTeamNumber > 1,
+        !recruits.contains(where: { $0.partSub == sub } ) else { return }
 
         let recruit = DSRecurit(partMajor: major, partSub: sub, comment: "", max: 1)
+        
         self.recruits.append(recruit)
 
         let cell = RecruitSetPartCell(recruit: recruit)
@@ -116,6 +118,73 @@ public final class RecruitSetPartView: UIView {
             } }
 
         self.contentView.addArrangedSubview(cell)
+    }
+    
+    public func setRecruits(recruits: [DSRecurit]) {
+        
+        self.recruits = recruits
+        
+        recruits.forEach { item in
+            
+            guard DSRecurit.remainTeamNumber > 1 else { return }
+            
+            let recruit = DSRecurit(
+                partMajor: item.partMajor,
+                partSub: item.partSub,
+                comment: item.comment,
+                max: item.max
+            )
+
+            let cell = RecruitSetPartCell(recruit: recruit)
+
+            DSRecurit.remainTeamNumber -= 1
+
+            cell.onDelete = { [weak self, weak cell] in
+                guard let self = self, let cell = cell else { return }
+
+                if let index = self.contentView.arrangedSubviews.firstIndex(of: cell) {
+                    DSRecurit.remainTeamNumber += self.recruits[index].max
+
+                    self.contentView.removeArrangedSubview(cell)
+                    cell.removeFromSuperview()
+                    self.recruits.remove(at: index)
+                }
+            }
+
+            cell.onPlus = { [weak self, weak cell] in
+                guard let self = self, let cell = cell else { return }
+
+                if let index = self.contentView.arrangedSubviews.firstIndex(of: cell) {
+                    if DSRecurit.remainTeamNumber > 0 {
+                        self.recruits[index].max += 1
+                        DSRecurit.remainTeamNumber -= 1
+                        cell.recruit = self.recruits[index]
+                    }
+                }
+            }
+
+            cell.onMinus = { [weak self, weak cell] in
+                guard let self = self, let cell = cell else { return }
+
+                if let index = self.contentView.arrangedSubviews.firstIndex(of: cell) {
+                    if self.recruits[index].max > 1 {
+                        self.recruits[index].max -= 1
+                        DSRecurit.remainTeamNumber += 1
+                        cell.recruit = self.recruits[index]
+                    }
+                }
+
+            }
+
+            cell.onChangeComment = { [weak self, weak cell] in
+                guard let self = self, let cell = cell else { return }
+
+                if let index = self.contentView.arrangedSubviews.firstIndex(of: cell) {
+                    self.recruits[index].comment = $0
+                } }
+
+            self.contentView.addArrangedSubview(cell)
+        }
     }
 
     func initLayout() {
@@ -201,14 +270,14 @@ public final class RecruitSetPartCell: View {
     var onChangeComment: ((String) -> Void)?
 
     public init(recruit: DSRecurit) {
-
+        
+        self.recruit = recruit
+        
         super.init(frame: .zero)
 
-        self.recruit = recruit
-
         initLayout()
-        bind()
         setContent()
+        bind()
     }
 
     func initLayout() {
@@ -231,6 +300,7 @@ public final class RecruitSetPartCell: View {
     func setContent() {
         self.labelMajorPart.text = recruit.partMajor
         self.labelSubPart.text = recruit.partSub
+        self.textfieldComment.text = self.recruit.comment
         self.buttonCount.setTitle("\(recruit.max)", for: .normal)
     }
 

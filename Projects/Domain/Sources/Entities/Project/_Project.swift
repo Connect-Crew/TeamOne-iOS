@@ -8,16 +8,19 @@
 
 import Foundation
 import Core
+import UIKit
 
 public struct Project {
     public let id: Int
     public let title: String
     public let banners: [String]
     public var region: String
-    public let online: Bool
-    public let createdAt, state, careerMin, careerMax: String
+    public let isOnline: isOnline
+    public let createdAt: String
+    public let state: ProjectState
+    public let careerMin, careerMax: Career
     public let category: [String]
-    public let goal: String
+    public let goal: Goal
     public let leader: Leader
     public let introduction: String
     public var favorite: Int
@@ -36,13 +39,21 @@ public struct Project {
         self.title = title
         self.banners = banners
         self.region = region
-        self.online = online
+        
+        if online == true {
+            self.isOnline = .online
+        } else if online == true && region != "미설정" {
+            self.isOnline = .onOffline
+        } else {
+            self.isOnline = .offline
+        }
+        
         self.createdAt = createdAt
-        self.state = state
-        self.careerMin = careerMin
-        self.careerMax = careerMax
+        self.state = ProjectState.findState(string: state)
+        self.careerMin = Career.findCareer(string: careerMin)
+        self.careerMax = Career.findCareer(string: careerMax)
         self.category = category
-        self.goal = goal
+        self.goal = Goal.findCellStringToPurpose(string: goal)
         self.leader = leader
         self.introduction = introduction
         self.favorite = favorite
@@ -93,5 +104,53 @@ public struct Project {
         }
     }
     
-    public static let noneInfoProject = Project(id: Int.max, title: "", banners: [], region: "", online: true, createdAt: "", state: "", careerMin: "", careerMax: "", category: [], goal: "", leader: Leader(id: Int.max, nickname: "", profile: "", introduction: "", temperature: 0.0, responseRate: 0, parts: [], representProjects: []), introduction: "", favorite: 0, myFavorite: false, recruitStatus: [], skills: [])
+    public static let noneInfoProject = Project(
+        id: Int.max,
+        title: "",
+        banners: [],
+        region: "",
+        online: true,
+        createdAt: "",
+        state: ProjectState.before.toString(),
+        careerMin: "경력무관",
+        careerMax: "경력무관",
+        category: [],
+        goal: "NONE",
+        leader: Leader(
+            id: Int.max,
+            nickname: "",
+            profile: "",
+            introduction: "",
+            temperature: 0.0,
+            responseRate: 0,
+            parts: [],
+            representProjects: []
+        ),
+        introduction: "", 
+        favorite: 0,
+        myFavorite: false,
+        recruitStatus: [],
+        skills: []
+    )
+    
+    public func toProps() -> ProjectCreateProps {
+
+        return ProjectCreateProps(
+            banner: [],
+            title: self.title,
+            region: self.region,
+            isOnline: self.isOnline,
+            state: self.state,
+            careerMin: self.careerMin,
+            careerMax: self.careerMax,
+            leaderParts: "리더파트정보필요",
+            category: self.category,
+            goal: self.goal,
+            introducion: self.introduction,
+            recruits: self.recruitStatus.map {
+                return Recruit(part: $0.part, comment: $0.comment, max: $0.max)
+            },
+            skills: self.skills
+        )
+    }
 }

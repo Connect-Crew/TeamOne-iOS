@@ -45,6 +45,7 @@ final class ManageProjectMainVC: ViewController {
     // MARK: - Subject
     
     let finishSubject = PublishSubject<Void>()
+    let modifySubject = PublishSubject<Void>()
     
     override func bind() {
         let input = ManageProjectMainViewModel.Input(
@@ -52,6 +53,7 @@ final class ManageProjectMainVC: ViewController {
             viewWillAppear: rx.viewWillAppear.map { _ in () },
             closeManageProjectButtonTap: mainView.bottomSheet.buttonClose.rx.tap
                 .throttle(.seconds(1), latest: true, scheduler: MainScheduler.instance),
+            modifyButtonTap: modifySubject,
             deleteButtonTap: mainView.bottomSheet.buttonDelete.rx.tap
                 .throttle(.seconds(1), latest: true, scheduler: MainScheduler.instance),
             completeButtonTap: mainView.bottomSheet.buttonComplete.rx.tap
@@ -87,6 +89,17 @@ final class ManageProjectMainVC: ViewController {
             .subscribe(onNext: { this, _ in
                 this.mainView.dismissBottomSheet(completion: { _ in
                     this.finishSubject.onNext(())
+                })
+            })
+            .disposed(by: disposeBag)
+        
+        // 수정하기를 누르면 바텀시트를 내린 후 이동
+        mainView.bottomSheet.buttonModify.rx.tap
+            .subscribe(on: MainScheduler.instance)
+            .withUnretained(self)
+            .subscribe(onNext: { this, _ in
+                this.mainView.dismissBottomSheet(completion: { _ in
+                    this.modifySubject.onNext(())
                 })
             })
             .disposed(by: disposeBag)

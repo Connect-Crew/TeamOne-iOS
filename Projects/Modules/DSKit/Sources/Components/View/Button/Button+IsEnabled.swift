@@ -11,8 +11,18 @@ import SnapKit
 
 public class Button_IsEnabled: UIButton {
 
-    var enabledString: String? = nil
-    var disabledString: String? = nil
+    public var enabledString: String? = nil {
+        didSet {
+            setEnabled()
+        }
+    }
+    
+    
+    public var disabledString: String? = nil {
+        didSet {
+            setEnabled()
+        }
+    }
 
     public init(enabledString: String, disabledString: String) {
         self.enabledString = enabledString
@@ -30,15 +40,19 @@ public class Button_IsEnabled: UIButton {
 
     public override var isEnabled: Bool {
         didSet {
-            if isEnabled {
-                self.backgroundColor = .teamOne.mainColor
-                self.setTitleColor(.white, for: .normal)
-                self.setTitle(self.enabledString, for: .normal)
-            } else {
-                self.backgroundColor = .teamOne.grayscaleTwo
-                self.setTitleColor(.teamOne.grayscaleFive, for: .normal)
-                self.setTitle(self.disabledString, for: .normal)
-            }
+            setEnabled()
+        }
+    }
+    
+    private func setEnabled() {
+        if isEnabled {
+            self.backgroundColor = .teamOne.mainColor
+            self.setTitleColor(.white, for: .normal)
+            self.setTitle(self.enabledString, for: .normal)
+        } else {
+            self.backgroundColor = .teamOne.grayscaleTwo
+            self.setTitleColor(.teamOne.grayscaleFive, for: .normal)
+            self.setTitle(self.disabledString, for: .normal)
         }
     }
 

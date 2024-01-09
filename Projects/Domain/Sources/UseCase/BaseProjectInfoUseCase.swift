@@ -10,12 +10,20 @@ import Foundation
 import RxSwift
 import Core
 
-public protocol ProjectUseCaseProtocol {
+public protocol ProjectInfoUseCase {
+    /**
+     프로젝트 정보
+     - Authors: 강현준
+     - parameters:
+        - projectId: 프로젝트 ID
+     - returns: Observable<Project>
+     */
     func project(projectId: Int) -> Observable<Project>
+    
     func isMyProject(project: Project) -> Bool
 }
 
-public struct ProjectUseCase: ProjectUseCaseProtocol {
+public struct BaseProjectInfoUseCase: ProjectInfoUseCase {
 
     let projectRepository: ProjectRepositoryProtocol
 

@@ -34,7 +34,7 @@ final class ProjectDetailCoordinator: BaseCoordinator<ProjectDetailCoordinatorRe
 
     func showDetail() {
         let viewModel = ProjectDetailMainViewModel(
-            projectUseCase: DIContainer.shared.resolve(ProjectUseCaseProtocol.self)
+            projectUseCase: DIContainer.shared.resolve(ProjectInfoUseCase.self)
         )
 
         viewModel.project = project
@@ -50,7 +50,7 @@ final class ProjectDetailCoordinator: BaseCoordinator<ProjectDetailCoordinatorRe
 
         let introduceVM = ProjectDetailPageSubIntroduceViewModel(
             projectLikeUseCase: DIContainer.shared.resolve(ProjectLikeUseCaseProtocol.self),
-            projectUseCase: DIContainer.shared.resolve(ProjectUseCaseProtocol.self)
+            projectUseCase: DIContainer.shared.resolve(ProjectInfoUseCase.self)
         )
 
         introduceVM.project.onNext(project)
@@ -85,7 +85,7 @@ final class ProjectDetailCoordinator: BaseCoordinator<ProjectDetailCoordinatorRe
     func showApply(project: Project, isReload: PublishSubject<Void>) {
         let viewModel = ApplyViewModel(
             applyUseCase: DIContainer.shared.resolve(ProjectApplyUseCaseProtocol.self),
-            projectUseCase: DIContainer.shared.resolve(ProjectUseCaseProtocol.self))
+            projectUseCase: DIContainer.shared.resolve(ProjectInfoUseCase.self))
 
         viewModel.project.onNext(project)
 
@@ -106,11 +106,33 @@ final class ProjectDetailCoordinator: BaseCoordinator<ProjectDetailCoordinatorRe
     }
     
     func showManage(project: Project, needRefreshSubject: PublishSubject<Void>) {
-        let manage = ManageProjectCoordinator(navigationController, project: project, needRefreshSubject: needRefreshSubject)
+        let manage = ProjectManageCoordinator(navigationController, project: project, needRefreshSubject: needRefreshSubject)
         
         coordinate(to: manage)
-            .subscribe(onNext: {
+            .subscribe(onNext: { [weak self] in
                 switch $0 {
+                case .finish:
+                    break
+                case .modify:
+                    self?.showModify(projectId: self?.project.id)
+                }
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    func showModify(projectId: Int?) {
+        let modify = ProjectCreateCoordinator(
+            type: .modify,
+            projectId: projectId,
+            navigationController
+        )
+        
+        coordinate(to: modify)
+            .subscribe(onNext: { [weak self] in
+                switch $0 {
+                case .created:
+                    // TODO: - 생성하기 끝난 후 detail화면 refresh 추가
+                    break
                 case .finish:
                     break
                 }

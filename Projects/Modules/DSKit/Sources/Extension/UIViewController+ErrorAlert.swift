@@ -13,7 +13,6 @@ import RxCocoa
 import Core
 import SnapKit
 import Then
-import TeamOneNetwork
 
 public extension Reactive where Base: UIViewController {
     var presentErrorAlert: Binder<Error> {

@@ -29,7 +29,7 @@ public final class RegionListStackView: View {
 
     private var horizontalCellCount: Int = 3
 
-    public let selectLocationSubject = BehaviorSubject<String>(value: "")
+    public let selectLocationSubject = PublishSubject<String>()
 
     private lazy var verticalStackView = UIStackView(arrangedSubviews: [])
         .then {
@@ -56,13 +56,10 @@ public final class RegionListStackView: View {
     }
 
     public func resetSelect() {
-        selectLocationSubject.onNext("")
         buttons.forEach { $0.isSelected = false }
     }
 
     public func addRegions(_ regions: [String]) {
-//        self.regions = regions
-//        print(regions)
         layoutSubviews()
     }
 
