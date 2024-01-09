@@ -34,7 +34,7 @@ final class HomeCoordinator: BaseCoordinator<HomeCoordinatorResult> {
         ///  홈 화면에 리프레시가 필요할경우 해당 서브젝트로 Void 전달
         refreshHome
             .subscribe(onNext: {
-                
+                viewModel.refresh.onNext(())
             })
             .disposed(by: disposeBag)
 

@@ -130,8 +130,7 @@ final class ProjectCreateMainViewController: ViewController {
             selectedSkillTap: postVC.viewSelectSkill.selectedSkillSubject,
             deleteSkillTap: postVC.viewSelectedStack.deleteButtonTapSubject,
             createButtonTap: createSubject.filter { $0 == true }.map { _ in return () },
-            // TODO: - <#할일입력#>
-            errorOKTap: .empty()
+            errorOKTap: errorSubject
         )
 
         let output = viewModel.transform(input: input)
@@ -157,6 +156,7 @@ final class ProjectCreateMainViewController: ViewController {
     
     let closeSubject = PublishSubject<Bool>()
     let createSubject = PublishSubject<Bool>()
+    let errorSubject = PublishSubject<Void>()
 
     func bindNavigation(output: ProjectCreateMainViewModel.Output) {
         
@@ -211,7 +211,12 @@ final class ProjectCreateMainViewController: ViewController {
             .disposed(by: disposeBag)
         
         output.error
-            .bind(to: self.rx.presentErrorAlert)
+            .subscribe(onNext: { [weak self] error in
+                self?.presentErrorAlert(
+                    error: error,
+                    finishSubject: self?.errorSubject
+                )
+            })
             .disposed(by: disposeBag)
     }
 }

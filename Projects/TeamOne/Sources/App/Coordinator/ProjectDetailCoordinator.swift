@@ -106,7 +106,7 @@ final class ProjectDetailCoordinator: BaseCoordinator<ProjectDetailCoordinatorRe
     }
     
     func showManage(project: Project, needRefreshSubject: PublishSubject<Void>) {
-        let manage = ManageProjectCoordinator(navigationController, project: project, needRefreshSubject: needRefreshSubject)
+        let manage = ProjectManageCoordinator(navigationController, project: project, needRefreshSubject: needRefreshSubject)
         
         coordinate(to: manage)
             .subscribe(onNext: { [weak self] in
@@ -131,6 +131,7 @@ final class ProjectDetailCoordinator: BaseCoordinator<ProjectDetailCoordinatorRe
             .subscribe(onNext: { [weak self] in
                 switch $0 {
                 case .created:
+                    // TODO: - 생성하기 끝난 후 detail화면 refresh 추가
                     break
                 case .finish:
                     break

@@ -132,6 +132,7 @@ final class ProjectCreateMainViewModel: ViewModel {
         transformPost(input: input)
         transformCreatePost(input: input)
         transformModify(input: input)
+        transformError(input: input.errorOKTap)
         
         input.viewWillAppear
             .map { KM.shared.getRegion() }
@@ -507,6 +508,13 @@ final class ProjectCreateMainViewModel: ViewModel {
                     this.isModify.accept(())
                 }
             })
+            .disposed(by: disposeBag)
+    }
+    
+    func transformError(input: Observable<Void>) {
+        input
+            .map { ProjectCreateMainNavigation.close }
+            .bind(to: navigation)
             .disposed(by: disposeBag)
     }
 }
