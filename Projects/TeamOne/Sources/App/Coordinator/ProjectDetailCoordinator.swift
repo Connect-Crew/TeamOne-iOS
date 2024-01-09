@@ -19,6 +19,8 @@ enum ProjectDetailCoordinatorResult {
 final class ProjectDetailCoordinator: BaseCoordinator<ProjectDetailCoordinatorResult> {
 
     let finish = PublishSubject<ProjectDetailCoordinatorResult>()
+    // 변동사항(좋아요변경)등을 상위 코디네이터에 전달해야하는 경우 필요한 서브젝트
+    let projectChangedSubject = PublishSubject<Project>()
     
     let project: Project
 
@@ -66,6 +68,12 @@ final class ProjectDetailCoordinator: BaseCoordinator<ProjectDetailCoordinatorRe
                     self?.showManage(project: project, needRefreshSubject: reload)
                 }
             })
+            .disposed(by: disposeBag)
+        
+        // 좋아요된 프로젝트를 상위 코디네이터로 전달하기 위한 부분
+        introduceVM.project
+            .compactMap { $0 }
+            .bind(to: self.projectChangedSubject)
             .disposed(by: disposeBag)
 
         reload.bind(to: introduceVM.reload)

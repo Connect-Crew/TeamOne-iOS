@@ -34,20 +34,6 @@ public struct SideProjectListElement: Hashable {
     public let recruitStatus: [RecruitStatus]
     public var HashTags: [HashTag] = []
 
-    public struct RecruitStatus: Codable {
-        public let category: String
-        public let part, comment: String
-        public let current, max: Int
-
-        public init(category: String, part: String, comment: String, current: Int, max: Int) {
-            self.category = category
-            self.part = part
-            self.comment = comment
-            self.current = current
-            self.max = max
-        }
-    }
-
     public init(id: Int, title: String, thumbnail: String?, region: String, online: Bool, careerMin: String, careerMax: String, createdAt: String, state: String, favorite: Int, myFavorite: Bool, category: [String], goal: String, recruitStatus: [RecruitStatus]) {
         self.id = id
         self.title = title

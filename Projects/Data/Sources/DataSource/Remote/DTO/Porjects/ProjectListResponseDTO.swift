@@ -22,17 +22,7 @@ public struct ProjectListResponseDTO: Decodable {
     let myFavorite: Bool
     let category: [String]
     let goal: String
-    let recruitStatus: [RecruitStatus]
-
-    struct RecruitStatus: Codable {
-        let category: String
-        let part, comment: String
-        let current, max: Int
-
-        func toDomain() -> SideProjectListElement.RecruitStatus {
-            return SideProjectListElement.RecruitStatus(category: self.category, part: self.part, comment: self.comment, current: self.current, max: self.max)
-        }
-    }
+    let recruitStatus: [RecruitStatusResponseDTO]
 
     public func toDomain() -> SideProjectListElement {
 

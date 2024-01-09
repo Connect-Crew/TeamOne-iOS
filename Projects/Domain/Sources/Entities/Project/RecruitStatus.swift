@@ -9,10 +9,13 @@
 import Foundation
 
 public struct RecruitStatus: Codable {
-    public let category, part, partKey, comment: String
+    public let category: String
+    public let part: String
+    public let partKey: String
+    public let comment: String
     public let current, max: Int
-    public var isAppliable: Bool
     public var applied: Bool
+    public var isAppliable: Bool
 
     public init(category: String, part: String, partKey: String, comment: String, current: Int, max: Int, applied: Bool) {
         self.category = category
