@@ -15,6 +15,42 @@ enum TabCoordinatorResult {
     case finish
 }
 
+enum Tablist: Int, CaseIterable {
+    case home
+    case notification
+    case profile
+    
+    var title: String {
+        switch self {
+        case .home: return "홈"
+        case .notification: return "알림"
+        case .profile:  return "마이페이지"
+        }
+    }
+    
+    var unSelectedImage: UIImage? {
+        switch self {
+        case .home:
+            return .image(dsimage: .homeLine)
+        case .notification:
+            return .image(dsimage: .notificationLine)
+        case .profile:
+            return .image(dsimage: .profileLine)
+        }
+    }
+    
+    var selectedImage: UIImage? {
+        switch self {
+        case .home:
+            return .image(dsimage: .homeSolid)
+        case .notification:
+            return .image(dsimage: .notificationSolid)
+        case .profile:
+            return .image(dsimage: .profileSolid)
+        }
+    }
+}
+
 final class TabCoordinator: BaseCoordinator<TabCoordinatorResult> {
 
     private var tabBarController = UITabBarController()
@@ -36,7 +72,7 @@ final class TabCoordinator: BaseCoordinator<TabCoordinatorResult> {
 
             switch $0 {
             case .home: showHome(navigationController)
-            case .myteam: break
+            case .notification: showNotification(navigationController)
             case .profile: break
             }
         }
@@ -48,12 +84,11 @@ final class TabCoordinator: BaseCoordinator<TabCoordinatorResult> {
         let navigationController = UINavigationController()
         let tabBarItem = UITabBarItem(
             title: tabItem.title,
-            image: UIImage.tabBar.loadSelectedImage(for: tabItem),
+            image: tabItem.unSelectedImage,
             tag: tabItem.rawValue
         )
 
-        tabBarItem.selectedImage = UIImage.tabBar.loadSelectedImage(for: tabItem)
-        tabBarItem.image = UIImage.tabBar.loadImage(for: tabItem)
+        tabBarItem.selectedImage = tabItem.selectedImage
 
         navigationController.tabBarItem = tabBarItem
         navigationController.isNavigationBarHidden = true
@@ -67,6 +102,16 @@ final class TabCoordinator: BaseCoordinator<TabCoordinatorResult> {
         coordinate(to: child)
             .subscribe(onNext: { _ in
 
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    private func showNotification(_ root: UINavigationController) {
+        let notification = NotificationCoordinator(root)
+        
+        coordinate(to: notification)
+            .subscribe(onNext: { _ in
+                
             })
             .disposed(by: disposeBag)
     }

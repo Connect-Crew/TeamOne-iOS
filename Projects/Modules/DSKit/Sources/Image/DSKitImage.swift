@@ -8,39 +8,36 @@
 
 import UIKit
 
-public enum Tablist: Int, CaseIterable {
-    case home
-    case myteam
-    case profile
-
-    public var title: String {
-        switch self {
-        case .home: return "홈"
-        case .myteam: return "나의 팀"
-        case .profile:  return "마이페이지"
-        }
-    }
-}
-
 public enum DSKitImage {
-
+    
+    // MARK: - Tab
+    
     case homeSolid
+    case homeLine
+    
+    case myteamSolid
+    case myteamLine
+    
+    case profileSolid
+    case profileLine
+    
+    case notificationSolid
+    case notificationSolidAlert
+    case notificationLine
+    
     case communitySolid
     case recruitmentSolid
-    case myteamSolid
-    case profileSolid
-    case homeline
+    
     case communityline
     case recruitmentline
-    case myteamline
-    case profileline
+    
+    
     case homeWriteButton
-
     case slider
     case search
-
+    
     // MARK: - HomeCategories
-
+    
     case categoryall
     case categorycustomerservice
     case categorydesign
@@ -52,7 +49,7 @@ public enum DSKitImage {
     case categoryplanning
     case categorysales
     case categoryspecialize
-
+    
     case categoryfillall
     case categoryfillcustomerservice
     case categoryfilldesign
@@ -64,14 +61,14 @@ public enum DSKitImage {
     case categoryfillplanning
     case categoryfillsales
     case categoryfillspecialize
-
+    
     // MARK: - logo
-
+    
     case logo
     case AppIcon
-
+    
     // MARK: - 홈 셀
-
+    
     case place
     case count
     case countDisable
@@ -84,11 +81,11 @@ public enum DSKitImage {
     case newTagBG
     case clock
     case emptyLogo
-
+    
     case homeHeader
-
+    
     // MARK: - 로그인
-
+    
     case appleLoginButtonBG
     case googleLoginButtonBG
     case kakaoLoginButtonBG
@@ -98,25 +95,25 @@ public enum DSKitImage {
     case checkNONOE
     case rightButton
     case checkOK
-
-
+    
+    
     // MARK: - 홈 네비게이션
-
+    
     case notification
     case notificationnew
-
+    
     // MARK: - Navigation
-
+    
     case threedot
-
+    
     // MARK: - ProjectDetail
-
+    
     case baseProfile
     case leaderResponseRate
     case defaultIntroduceImage
-
+    
     // MARK: - Common
-
+    
     case complete
     case warinning
     case write
@@ -126,9 +123,9 @@ public enum DSKitImage {
     case up
     case down
     case compleProject
-
+    
     // MARK: - ProjectCreate
-
+    
     case CreateIT
     case createAi
     case createApp
@@ -143,16 +140,18 @@ public enum DSKitImage {
     case createHouse
     case createLove
     case createTravel
-
+    
     // MARK: - PhotoSelect
-
     case photoSelect
-
+    
     // MARK: - Delete
     case delete3
     case delete2
     case delete4
-
+    
+    // MARK: - Chat
+    case send
+    
     var toName: String {
         switch self {
         case .homeSolid:
@@ -165,24 +164,29 @@ public enum DSKitImage {
             return "myteam_solid"
         case .profileSolid:
             return "profile_solid"
-        case .homeline:
+        case .homeLine:
             return "home_line"
         case .communityline:
             return "community_line"
         case .recruitmentline:
             return "recruitment_line"
-        case .myteamline:
+        case .myteamLine:
             return "myteam_line"
-        case .profileline:
+        case .profileLine:
             return "profile_line"
         case .slider:
             return "slider"
         case .search:
             return "search"
-
+        case .notificationSolid:
+            return "notification_solid"
+        case .notificationSolidAlert:
+            return "notification_soli_alert"
+        case .notificationLine:
+            return "notification_line"
         case .homeWriteButton:
             return "homeWriteButton"
-
+            
         case .categoryall:
             return "category.all"
         case .categorycustomerservice:
@@ -205,7 +209,7 @@ public enum DSKitImage {
             return "category.sales"
         case .categoryspecialize:
             return "category.specialized"
-
+            
         case .categoryfillall:
             return "category.fill.all"
         case .categoryfillcustomerservice:
@@ -237,56 +241,56 @@ public enum DSKitImage {
             return "Tagbg_red"
         case .newTagBG:
             return "newTagbg"
-
+            
         case .logo:
             return "logo"
         case .AppIcon:
             return "AppIcon"
-
+            
         case .count:
             return "countAvailable"
         case .countDisable:
             return "countDisable"
-
+            
         case .heartline:
             return "heart_line"
         case .heartsolid:
             return "heart_solid"
-
+            
         case .upTwo:
             return "up_2"
         case .downTow:
             return "down_2"
-
+            
         case .homeHeader:
             return "homeHeader"
-
+            
         case .notification:
             return "notification"
         case .notificationnew:
             return "notification_new"
-
+            
         case .threedot:
             return "threedot"
-
+            
         case .baseProfile: return "baseProfile"
         case .leaderResponseRate: return "leaderResponseRate"
         case .defaultIntroduceImage: return "defaultIntroduceImage"
-
+            
             // MARK: - 로그인
-
+            
         case .appleLoginButtonBG: return "AppleLoginBackground"
         case .googleLoginButtonBG: return "GoogleLoginBackground-1"
         case .kakaoLoginButtonBG: return "KaKaoLoginBackground-2"
         case .kakaoLoginExplain: return "kakaoLoginExplain"
-
+            
         case .backButtonImage: return "backButtonImage"
         case .closeButtonX: return "closeButtonX"
         case .checkNONOE: return "checkNONOE"
         case .rightButton: return "rightButton"
         case .checkOK: return "checkOK"
             
-        // MARK: - Common
+            // MARK: - Common
         case .complete: return "complete"
         case .warinning: return "warinning"
         case .write: return "write"
@@ -298,12 +302,12 @@ public enum DSKitImage {
             // MARK: - CheckBox
         case .CheckBoxChecked: return "CheckBoxChecked"
         case .CheckBoxNotChecked: return "CheckBoxNotChecked"
-        
+            
         case .up: return "up"
         case .down: return "down"
-
+            
             // MARK: - ProjectCreate
-
+            
         case .CreateIT: return "projectCreate_IT"
         case .createAi: return "projectCreate_Ai"
         case .createApp: return "projectCreate_App"
@@ -320,53 +324,26 @@ public enum DSKitImage {
         case .createTravel: return "projectCreate_Travel"
             
             // MARK: - PhotoSelect
-
         case .photoSelect: return "PhotoSelected"
-
+            
             // MARK: - Delete
-
         case .delete2: return "Delete2"
         case .delete3: return "Delete3"
         case .delete4: return "Delete4"
-
+            // MARK: - Chat
+        case .send: return "send"
         }
     }
 }
 
 public extension UIImage {
     static func image(dsimage: DSKitImage) -> UIImage? {
-        guard let image = UIImage(named: dsimage.toName, in: Bundle.module, compatibleWith: .none) else {
+        guard let image = UIImage(named: dsimage.toName, in: Bundle.module, compatibleWith: .none) else 
+        {
             print("DEBUG: image \(dsimage.toName) load 실패")
             fatalError()
-            return nil
         }
-
+        
         return image
-    }
-
-    static let tabBar = TabBar()
-}
-
-public struct TabBar {
-    public func loadSelectedImage(for tab: Tablist) -> UIImage? {
-        switch tab {
-        case .home:
-            return UIImage.image(dsimage: .homeSolid)
-        case .myteam:
-            return UIImage.image(dsimage: .myteamSolid)
-        case .profile:
-            return UIImage.image(dsimage: .profileSolid)
-        }
-    }
-
-    public func loadImage(for tab: Tablist) -> UIImage? {
-        switch tab {
-        case .home:
-            return UIImage.image(dsimage: .homeline)
-        case .myteam:
-            return UIImage.image(dsimage: .myteamline)
-        case .profile:
-            return UIImage.image(dsimage: .profileline)
-        }
     }
 }

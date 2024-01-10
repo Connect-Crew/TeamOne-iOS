@@ -1,5 +1,5 @@
 //
-//  NotificationViewController.swift
+//  ChatViewController.swift
 //  TeamOne
 //
 //  Created by 강현준 on 1/10/24.
@@ -12,11 +12,9 @@ import RxSwift
 import RxCocoa
 import Then
 
-final class NotificationViewController: ViewController {
+final class ChatViewController: ViewController {
     
-    private let viewModel: NotificationViewModel
-    
-    private let mainView = NotificationMainView()
+    private let mainView = ChatMainView()
     
     // MARK: - LifeCycle
     
@@ -26,13 +24,12 @@ final class NotificationViewController: ViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        view.backgroundColor = .white
     }
     
     // MARK: - Inits
     
-    init(viewModel: NotificationViewModel) {
-        self.viewModel = viewModel
+    init() {
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -41,9 +38,7 @@ final class NotificationViewController: ViewController {
     }
     
     override func bind() {
-        let input = NotificationViewModel.Input()
         
-        let output = viewModel.transform(input: input)
     }
 }
 

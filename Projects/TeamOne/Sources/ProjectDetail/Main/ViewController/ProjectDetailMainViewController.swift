@@ -42,9 +42,7 @@ final class ProjectDetailMainViewController: ViewController {
         $0.view.backgroundColor = .red
     }
 
-    let vc3 = UIViewController().then {
-        $0.view.backgroundColor = .black
-    }
+    let chatVC = ChatViewController()
 
     lazy var pageViewController = BasePageViewController(transitionStyle: .scroll, navigationOrientation: .horizontal)
 
@@ -123,7 +121,7 @@ final class ProjectDetailMainViewController: ViewController {
     }
 
     func initPage() {
-        pageViewController.addVC(addList: [introduceVC, vc2, vc3])
+        pageViewController.addVC(addList: [introduceVC, vc2, chatVC])
     }
     
     // MARK: - Subjects
