@@ -152,6 +152,19 @@ public enum DSKitImage {
     // MARK: - Chat
     case send
     
+    // MARK: - 꿀통
+    case honeyLarge1
+    case honeyLarge2
+    case honeyLarge3
+    case honeyLarge4
+    
+    case honeySmall1
+    case honeySmall2
+    case honeySmall3
+    case honeySmall4
+    
+    case rightsmall
+    
     var toName: String {
         switch self {
         case .homeSolid:
@@ -332,6 +345,18 @@ public enum DSKitImage {
         case .delete4: return "Delete4"
             // MARK: - Chat
         case .send: return "send"
+            
+        case .honeyLarge1: return "honey.large.1"
+        case .honeyLarge2: return "honey.large.2"
+        case .honeyLarge3: return "honey.large.3"
+        case .honeyLarge4: return "honey.large.4"
+        
+        case .honeySmall1: return "honey.small.1"
+        case .honeySmall2: return "honey.small.2"
+        case .honeySmall3: return "honey.small.3"
+        case .honeySmall4: return "honey.small.4"
+            
+        case .rightsmall: return "right.small"
         }
     }
 }

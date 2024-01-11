@@ -38,9 +38,7 @@ final class ProjectDetailMainViewController: ViewController {
 
     let introduceVC: ProjectDetailPageSubIntroduceViewController
 
-    let vc2 = UIViewController().then {
-        $0.view.backgroundColor = .red
-    }
+    let memberListVC = MemberListViewController()
 
     let chatVC = ChatViewController()
 
@@ -121,7 +119,7 @@ final class ProjectDetailMainViewController: ViewController {
     }
 
     func initPage() {
-        pageViewController.addVC(addList: [introduceVC, vc2, chatVC])
+        pageViewController.addVC(addList: [introduceVC, memberListVC, chatVC])
     }
     
     // MARK: - Subjects
@@ -139,7 +137,11 @@ final class ProjectDetailMainViewController: ViewController {
             viewWillAppear: rx.viewWillAppear.map { _ in return }.asObservable(),
             backButtonTap: viewNavigation.buttonNavigationLeft.rx.tap
                 .throttle(.seconds(1), scheduler: MainScheduler.instance), 
-            reportContent: reportedContentSubject
+            reportContent: reportedContentSubject,
+            profileSelected: memberListVC.profileSelected
+                .throttle(.seconds(1), latest: true, scheduler: MainScheduler.instance),
+            representProjectSelected: memberListVC.representProjectSelected
+                .throttle(.seconds(1), latest: true, scheduler: MainScheduler.instance)
         )
 
         let output = viewModel.transform(input: input)
@@ -149,6 +151,8 @@ final class ProjectDetailMainViewController: ViewController {
         bindDropDown()
         bindReport()
         bindAlert(output: output)
+        
+        memberListVC.bind(output: output)
     }
     
     func bindPage() {
