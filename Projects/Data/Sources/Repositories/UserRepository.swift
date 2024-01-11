@@ -22,8 +22,5 @@ public struct UserRepository: UserRepositoryProtocol {
     public func myProfile() -> Observable<Profile> {
         return self.userDataSource.myProfile()
             .map { $0.toDomain() }
-            .catch({ _ in
-                return Observable.error(UserError.loadFail)
-            })
     }
 }

@@ -60,13 +60,13 @@ final class HomeViewController: ViewController {
             parts: mainView.selected,
             writeButtonTap: mainView.buttonWrite.rx.tap
                 .throttle(.seconds(1), latest: true, scheduler: MainScheduler.instance),
-            participantsButtonTap: participantsButtonTap,
+            participantsButtonTap: participantsButtonTap.throttle(.seconds(1), latest: true, scheduler: MainScheduler.instance),
             likeButtonTap: likeButtonTap
                 .throttle(.seconds(1), latest: true, scheduler: MainScheduler.instance),
             didScrolledEnd: mainView.tableView.rx.reachedBottom
                 .throttle(.seconds(1), latest: true, scheduler: MainScheduler.instance),
             didSelectedCell: mainView.tableView.rx.itemSelected
-                .throttle(.seconds(1), scheduler: MainScheduler.instance),
+                .throttle(.seconds(1), latest: true, scheduler: MainScheduler.instance),
             tapSearch: mainView.searchButton.rx.tap.asObservable()
                 .throttle(.seconds(1), latest: true, scheduler: MainScheduler.instance)
         )

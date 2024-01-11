@@ -94,9 +94,7 @@ final class HomeCoordinator: BaseCoordinator<HomeCoordinatorResult> {
         let projectDetail = ProjectDetailCoordinator(navigationController, project: project)
 
         coordinate(to: projectDetail)
-            .subscribe(onNext: { [weak self] _ in
-                self?.popTabbar(animated: true)
-            })
+            .subscribe(onNext: { _ in })
             .disposed(by: disposeBag)
         
         projectDetail

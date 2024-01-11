@@ -8,10 +8,20 @@
 
 import Foundation
 
-public struct ProjectMember {
-    var profile: Profile
-    var isLeader: Bool
-    var parts: [String]
+public struct ProjectMember: Hashable {
+    
+    public static func == (lhs: ProjectMember, rhs: ProjectMember) -> Bool {
+        return lhs.identifier == rhs.identifier
+    }
+    
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(identifier)
+    }
+    
+    let identifier = UUID()
+    public var profile: Profile
+    public var isLeader: Bool
+    public var parts: [String]
     
     public init(profile: Profile, isLeader: Bool, parts: [String]) {
         self.profile = profile

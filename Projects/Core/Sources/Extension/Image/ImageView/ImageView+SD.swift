@@ -18,7 +18,8 @@ public extension UIImageView {
     /// path: api통신 후 가져온 이미지 주소
     func setTeamOneImage(path: String?) {
         
-        if let urlString = path,
+        if path != "",
+           let urlString = path,
            let url = URL(string: Self.baseNetworkURL + urlString) {
             self.sd_setImage(with: url)
         }

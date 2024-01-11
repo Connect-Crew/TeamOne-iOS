@@ -10,7 +10,7 @@ import Foundation
 import RxSwift
 
 public protocol GetProjectMemberUseCase {
-    func getProjectMemberUseCase(projectId: Int) -> Single<[ProjectMember]>
+    func getProjectMember(projectId: Int) -> Single<[ProjectMember]>
 }
 
 public struct GetProjectMember: GetProjectMemberUseCase {
@@ -21,7 +21,7 @@ public struct GetProjectMember: GetProjectMemberUseCase {
         self.projectRepository = projectRepository
     }
     
-    public func getProjectMemberUseCase(projectId: Int) -> Single<[ProjectMember]> {
+    public func getProjectMember(projectId: Int) -> Single<[ProjectMember]> {
         return projectRepository.member(projectId: projectId)
     }
 }

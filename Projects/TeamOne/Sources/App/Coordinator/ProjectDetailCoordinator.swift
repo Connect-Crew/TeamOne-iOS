@@ -32,6 +32,12 @@ final class ProjectDetailCoordinator: BaseCoordinator<ProjectDetailCoordinatorRe
     override func start() -> Observable<ProjectDetailCoordinatorResult> {
         showDetail()
         return finish
+            .do(onNext: { [weak self] in
+                switch $0 {
+                case .finish:
+                    self?.popTabbar(animated: true)
+                }
+            })
     }
 
     func showDetail() {
@@ -46,6 +52,11 @@ final class ProjectDetailCoordinator: BaseCoordinator<ProjectDetailCoordinatorRe
                 switch $0 {
                 case .back:
                     self?.finish.onNext(.finish)
+                case .pushRepresentProejct(let project):
+                    self?.showProjectDetail(project: project)
+                case .profile:
+                    // TODO: - 프로필이 나오면 프로필로 이동
+                    break
                 }
             })
             .disposed(by: disposeBag)
@@ -145,6 +156,17 @@ final class ProjectDetailCoordinator: BaseCoordinator<ProjectDetailCoordinatorRe
                     break
                 }
             })
+            .disposed(by: disposeBag)
+    }
+    
+    func showProjectDetail(project: Project) {
+        let detail = ProjectDetailCoordinator(
+            navigationController,
+            project: project
+        )
+        
+        coordinate(to: detail)
+            .subscribe(onNext: { _ in })
             .disposed(by: disposeBag)
     }
 }
