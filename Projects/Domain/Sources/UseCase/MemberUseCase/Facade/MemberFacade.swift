@@ -22,6 +22,6 @@ public struct BaseMemberFacade: MemberFacade {
     }
     
     public func getProjectMembers(projectId: Int) -> Single<[ProjectMember]> {
-        return getProjectMemberUseCase.getProjectMemberUseCase(projectId: projectId)
+        return getProjectMemberUseCase.getProjectMember(projectId: projectId)
     }
 }
