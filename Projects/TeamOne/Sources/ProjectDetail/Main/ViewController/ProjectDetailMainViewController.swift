@@ -12,6 +12,8 @@ import RxSwift
 import RxCocoa
 import Then
 import DSKit
+import Domain
+import Inject
 
 final class ProjectDetailMainViewController: ViewController {
 
@@ -127,8 +129,10 @@ final class ProjectDetailMainViewController: ViewController {
     let dropDownResultSubject = PublishSubject<String>()
     let reportButtonTabSubject = PublishSubject<Void>()
     
-    // 신고하기를 누르면 해당 서브젝트로 전달
+    /// 프로젝트 신고하기
     let reportedContentSubject = PublishSubject<String>()
+    /// 유저 내보내기
+    let expleResult = PublishRelay<ProjectMember>()
     
     // MARK: - Bind
     
@@ -151,6 +155,7 @@ final class ProjectDetailMainViewController: ViewController {
         bindDropDown()
         bindReport()
         bindAlert(output: output)
+        bindExple()
         
         memberListVC.bind(output: output)
     }
@@ -235,6 +240,22 @@ final class ProjectDetailMainViewController: ViewController {
                     source: this,
                     alert: alert
                 )
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    func bindExple() {
+        memberListVC.expleMemberSelected
+            .asSignal()
+            .withUnretained(self)
+            .emit(onNext: { this, member in
+                let expleVC = Inject.ViewControllerHost(UserExpleViewController(
+                    target: member,
+                    expleResult: this.expleResult
+                ))
+                
+                expleVC.modalPresentationStyle = .overFullScreen
+                this.present(expleVC, animated: false)
             })
             .disposed(by: disposeBag)
     }

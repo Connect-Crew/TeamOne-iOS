@@ -1,5 +1,5 @@
 //
-//  User+Exple.swift
+//  User+ExpleReason.swift
 //  Domain
 //
 //  Created by 강현준 on 1/12/24.
@@ -17,7 +17,7 @@ public enum User_ExpleReason {
     case inappropriateContent
     case other(String)
     
-    var description: String {
+    public var description: String {
         switch self {
         case .foulLanguage:
             return "욕설 / 비하발언"
@@ -33,17 +33,34 @@ public enum User_ExpleReason {
             return "기타"
         }
     }
+    
+    static func descriptionToCase(input: String) -> User_ExpleReason {
+        let first = User_ExpleReason.allCases.first(where: { $0.description == input })
+        
+        if let first = first {
+            return first
+        } else {
+            fatalError("\(input)is Unknown Case")
+        }
+    }
+}
+
+extension User_ExpleReason: Equatable {
+    
+    public static func == (lhs: User_ExpleReason, rhs: User_ExpleReason) -> Bool {
+            return lhs.description == rhs.description
+        
+    }
 }
 
 extension User_ExpleReason: CaseIterable {
-    public static var allCases: [User_ExpleReason] {
-        return [
-            .foulLanguage,
-            .lowParticipation,
-            .conflicWithTeamMembers,
-            .voluntaryWithdrawal,
-            .inappropriateContent,
-            .other("")
-        ]
-    }
+    
+    public static var allCases: [User_ExpleReason] = [
+        .conflicWithTeamMembers,
+        .foulLanguage,
+        .inappropriateContent,
+        .lowParticipation,
+        .voluntaryWithdrawal,
+        .other("")
+    ]
 }
