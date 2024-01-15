@@ -180,7 +180,7 @@ final class MemberListCell: UICollectionViewCell, CellIdentifiable {
             setLeader()
         }
     }
-    
+    // TODO: - 내보내기 UI 추가를 위해 내보내기 UI추가 비활성화
     private func setMember() {
 //        self.expelMemberStackView.isHidden = true
     }
