@@ -108,7 +108,7 @@ final class IntroduceLeaderView: UIView {
         self.leader = leader
 
         labelName.text = leader.nickname
-        labelPart.text = leader.parts.joined(separator: " ")
+        labelPart.text = leader.parts.map { $0.part }.joined(separator: ",")
         labelResponseRate.text = "리더 응답률 \(leader.responseRate)%"
     }
 

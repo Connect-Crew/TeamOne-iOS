@@ -16,18 +16,18 @@ public struct BaseUserResponseDTO: Codable {
     let introduction: String
     let temperature: Double
     let responseRate: Int
-    let parts: [String]
+    let parts: [BasePartsResponseDTO]
     let representProjects: [RepresentProjectResponseDTO]
-
+    
     public func toDomain() -> Profile {
         return Profile(id: self.id,
-                         nickname: self.nickname,
-                         profile: self.profile ?? "",
-                         introduction: self.introduction,
-                         temperature: self.temperature,
-                         responseRate: self.responseRate,
-                         parts: self.parts,
-                         representProjects: self.representProjects.map { $0.toDomain() })
+                       nickname: self.nickname,
+                       profile: self.profile ?? "",
+                       introduction: self.introduction,
+                       temperature: self.temperature,
+                       responseRate: self.responseRate,
+                       parts: self.parts.map { $0.toDomain() },
+                       representProjects: self.representProjects.map { $0.toDomain() })
     }
 }
 

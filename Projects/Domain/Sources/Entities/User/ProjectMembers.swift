@@ -19,6 +19,7 @@ public struct ProjectMember: Hashable {
     }
     
     let identifier = UUID()
+    
     public var profile: Profile
     public var isLeader: Bool
     public var parts: [String]

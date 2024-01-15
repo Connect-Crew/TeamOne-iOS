@@ -13,11 +13,11 @@ public struct Authorization: Codable {
     public var nickname, profile, introduction: String
     public var temperature: Double
     public var responseRate: Int
-    public var parts: [String]
+    public var parts: [Parts]
     public var email, token, exp, refreshToken: String
     public var refreshExp: String
 
-    public init(id: Int, nickname: String, profile: String, introduction: String, temperature: Double, responseRate: Int, parts: [String], email: String, token: String, exp: String, refreshToken: String, refreshExp: String) {
+    public init(id: Int, nickname: String, profile: String, introduction: String, temperature: Double, responseRate: Int, parts: [Parts], email: String, token: String, exp: String, refreshToken: String, refreshExp: String) {
         self.id = id
         self.nickname = nickname
         self.profile = profile

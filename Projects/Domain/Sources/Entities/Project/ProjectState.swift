@@ -26,7 +26,7 @@ public enum ProjectState: CaseIterable {
         case .before:
             return "진행 전"
         case .running:
-            return "진행 후"
+            return "진행 중"
         }
     }
     

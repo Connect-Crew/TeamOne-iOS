@@ -23,7 +23,7 @@ public struct ProjectMemberResponseDTO: Codable {
                 introduction: self.profile.introduction,
                 temperature: self.profile.temperature,
                 responseRate: self.profile.responseRate,
-                parts: self.profile.parts,
+                parts: self.profile.parts.map { $0.toDomain() },
                 representProjects: self.profile.representProjects.map { $0.toDomain() }
             ),
             isLeader: self.isLeader,

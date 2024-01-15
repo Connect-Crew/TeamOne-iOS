@@ -32,15 +32,6 @@ public struct MyProfileUseCase: MyProfileUseCaseProtocol {
                 UserDefaultKeyList.User.introduction = myProfile.introduction
                 UserDefaultKeyList.User.temperature = myProfile.temperature
                 UserDefaultKeyList.User.responseRate = myProfile.responseRate
-                UserDefaultKeyList.User.parts = myProfile.parts
-
-                print("!!!!!!!!!!!\(self):::::::::")
-                print(myProfile)
-                print("!!!!!!!!!!!!")
-            }, onError: {
-                print("!!!!!!!!!!!\(self)::::")
-                print($0)
-                print("!!!!!!!!!!!!")
             })
     }
 }
