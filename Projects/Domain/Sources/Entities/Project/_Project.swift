@@ -22,6 +22,7 @@ public struct Project {
     public let category: [String]
     public let goal: Goal
     public let leader: Leader
+    public let leaderParts: [Parts]
     public let introduction: String
     public var favorite: Int
     public var myFavorite: Bool
@@ -34,7 +35,25 @@ public struct Project {
 
     public var hashTags: [HashTag] = []
 
-    public init(id: Int, title: String, banners: [String], region: String, online: Bool, createdAt: String, state: String, careerMin: String, careerMax: String, category: [String], goal: String, leader: Leader, introduction: String, favorite: Int, myFavorite: Bool, recruitStatus: [RecruitStatus], skills: [String]) {
+    public init(id: Int, 
+                title: String,
+                banners: [String],
+                region: String,
+                online: Bool,
+                createdAt: String,
+                state: String,
+                careerMin: String,
+                careerMax: String,
+                category: [String],
+                goal: String,
+                leader: Leader,
+                leaderParts: [Parts],
+                introduction: String,
+                favorite: Int,
+                myFavorite: Bool,
+                recruitStatus: [RecruitStatus],
+                skills: [String])
+    {
         self.id = id
         self.title = title
         self.banners = banners
@@ -55,6 +74,7 @@ public struct Project {
         self.category = category
         self.goal = Goal.findCellStringToPurpose(string: goal)
         self.leader = leader
+        self.leaderParts = leaderParts
         self.introduction = introduction
         self.favorite = favorite
         self.myFavorite = myFavorite
@@ -121,8 +141,9 @@ public struct Project {
             responseRate: 0,
             parts: [],
             representProjects: []
-        ),
-        introduction: "", 
+        ), 
+        leaderParts: [],
+        introduction: "",
         favorite: 0,
         myFavorite: false,
         recruitStatus: [],
@@ -165,6 +186,7 @@ public struct Project {
             myFavorite: self.myFavorite,
             category: self.category,
             goal: self.goal.toCellString(),
+            leaderParts: self.leaderParts,
             recruitStatus: self.recruitStatus
         )
     }

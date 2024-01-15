@@ -121,7 +121,7 @@ final class RecruitmentStatusDetailViewController: ViewController {
         item.recruitStatus.forEach { status in
 
             let positionLabel = UILabel().then {
-                $0.setLabel(text: status.category, typo: .button2, color: .teamOne.grayscaleSeven)
+                $0.setLabel(text: status.part, typo: .button2, color: .teamOne.grayscaleSeven)
                 $0.textAlignment = .left
             }
 
