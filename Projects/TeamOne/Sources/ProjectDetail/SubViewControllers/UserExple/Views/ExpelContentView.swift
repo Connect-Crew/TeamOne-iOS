@@ -80,6 +80,8 @@ final class ExpelContentView: View {
     }
     
     private let textFieldOther = UITextField().then {
+        $0.font = .setFont(font: .button2)
+        $0.textColor = .teamOne.grayscaleFive
         $0.isEnabled = false
     }
     
