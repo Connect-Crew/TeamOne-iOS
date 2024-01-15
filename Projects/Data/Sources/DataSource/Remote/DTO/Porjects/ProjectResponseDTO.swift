@@ -22,12 +22,35 @@ public struct ProjectResponseDTO: Codable {
     let introduction: String
     let favorite: Int
     let myFavorite: Bool
-    let recruitStatus: [RecruitStatusResponseDTO]
+    var recruitStatus: [RecruitStatusResponseDTO]
     let skills: [String]
 
     func toDomain() -> Project {
-        return Project(id: self.id, title: self.title, banners: self.banners, region: self.region, online: self.online, createdAt: self.createdAt, state: self.state, careerMin: self.careerMin, careerMax: self.careerMax, category: self.category, goal: self.goal, leader: self.leader.toDoamin(), introduction: self.introduction, favorite: self.favorite, myFavorite: self.myFavorite, recruitStatus: self.recruitStatus.map { $0.toDomain()}, skills: self.skills)
+        
+        // 리더의 직무를 분리
+        let leaderParts = recruitStatus.filter { $0.containLeader == true }
+        
+        // 리더의 직무가 제외된 모집 내용
+        let exceptLeaerRecruitStatus = RecruitStatusResponseDTO.exceptLeaerPosition(status: self.recruitStatus)
+        
+        return Project(
+            id: self.id,
+            title: self.title,
+            banners: self.banners,
+            region: self.region,
+            online: self.online,
+            createdAt: self.createdAt,
+            state: self.state,
+            careerMin: self.careerMin,
+            careerMax: self.careerMax,
+            category: self.category,
+            goal: self.goal,
+            leader: self.leader.toDoamin(),
+            leaderParts: leaderParts.map { $0.toDomain() },
+            introduction: self.introduction,
+            favorite: self.favorite,
+            myFavorite: self.myFavorite,
+            recruitStatus: exceptLeaerRecruitStatus.map { $0.toDomain() },
+            skills: self.skills)
     }
 }
-
-

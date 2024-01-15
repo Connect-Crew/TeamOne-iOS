@@ -26,7 +26,16 @@ public struct ProjectListResponseDTO: Decodable {
 
     public func toDomain() -> SideProjectListElement {
 
-        let recruitStatus = self.recruitStatus.map { $0.toDomain() }
+        // 리더의 직무를 분리
+        let leaderParts = recruitStatus.filter { status in
+            status.containLeader == true
+        }.map { status -> Parts in
+            status.toDomain()
+        }
+        
+        
+        // 리더의 직무가 제외된 모집 내용
+        let exceptLeaerRecruitStatus = RecruitStatusResponseDTO.exceptLeaerPosition(status: self.recruitStatus)
 
         return SideProjectListElement(
             id: self.id,
@@ -42,7 +51,8 @@ public struct ProjectListResponseDTO: Decodable {
             myFavorite: self.myFavorite,
             category: self.category,
             goal: self.goal,
-            recruitStatus: recruitStatus
+            leaderParts: leaderParts,
+            recruitStatus: exceptLeaerRecruitStatus.map { $0.toDomain() }
         )
     }
 }

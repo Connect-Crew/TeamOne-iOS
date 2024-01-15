@@ -15,11 +15,11 @@ struct RecruitStatusResponseDTO: Codable {
     let part: String
     let partKey: String
     let comment: String
-    let current: Int
-    let max: Int
+    var current: Int
+    var max: Int
     let applied: Bool?
 
-    func toDomain() -> RecruitStatus {
+    public func toDomain() -> RecruitStatus {
         return RecruitStatus(
             category: self.category,
             part: self.part,
@@ -29,5 +29,33 @@ struct RecruitStatusResponseDTO: Codable {
             max: self.max,
             applied: self.applied ?? false
         )
+    }
+    
+    public func toDomain() -> Parts {
+        return Parts(
+            key: self.partKey,
+            part: self.part,
+            category: self.category
+        )
+    }
+    
+    public static func exceptLeaerPosition(status: [RecruitStatusResponseDTO]) -> [RecruitStatusResponseDTO] {
+        
+        let exceptLeaerRecruitStatus = status.filter { status in
+            !(status.containLeader == true && status.max == 1)
+        }.map { status in
+            if status.containLeader == true && status.max > 1 {
+                var modifiedStatus = status
+                
+                modifiedStatus.max -= 1
+                modifiedStatus.current -= 1
+                
+                return modifiedStatus
+            }
+            
+            return status
+        }
+        
+        return exceptLeaerRecruitStatus
     }
 }
