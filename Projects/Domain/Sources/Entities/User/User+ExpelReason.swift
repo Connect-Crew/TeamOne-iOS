@@ -1,5 +1,5 @@
 //
-//  User+ExpleReason.swift
+//  User+ExpelReason.swift
 //  Domain
 //
 //  Created by 강현준 on 1/12/24.
@@ -8,7 +8,7 @@
 
 import Foundation
 
-public enum User_ExpleReason {
+public enum User_ExpelReason {
     
     case foulLanguage
     case lowParticipation
@@ -34,8 +34,8 @@ public enum User_ExpleReason {
         }
     }
     
-    static func descriptionToCase(input: String) -> User_ExpleReason {
-        let first = User_ExpleReason.allCases.first(where: { $0.description == input })
+    static func descriptionToCase(input: String) -> User_ExpelReason {
+        let first = User_ExpelReason.allCases.first(where: { $0.description == input })
         
         if let first = first {
             return first
@@ -45,17 +45,17 @@ public enum User_ExpleReason {
     }
 }
 
-extension User_ExpleReason: Equatable {
+extension User_ExpelReason: Equatable {
     
-    public static func == (lhs: User_ExpleReason, rhs: User_ExpleReason) -> Bool {
+    public static func == (lhs: User_ExpelReason, rhs: User_ExpelReason) -> Bool {
             return lhs.description == rhs.description
         
     }
 }
 
-extension User_ExpleReason: CaseIterable {
+extension User_ExpelReason: CaseIterable {
     
-    public static var allCases: [User_ExpleReason] = [
+    public static var allCases: [User_ExpelReason] = [
         .conflicWithTeamMembers,
         .foulLanguage,
         .inappropriateContent,

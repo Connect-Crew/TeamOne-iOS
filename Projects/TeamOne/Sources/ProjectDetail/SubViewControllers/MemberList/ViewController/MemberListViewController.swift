@@ -36,7 +36,7 @@ final class MemberListViewController: ViewController {
     
     let profileSelected = PublishRelay<ProjectMember>()
     let representProjectSelected = PublishRelay<RepresentProject>()
-    let expleMemberSelected = PublishRelay<ProjectMember>()
+    let expelMemberSelected = PublishRelay<ProjectMember>()
     
     // MARK: - LifeCycle
     
@@ -138,8 +138,8 @@ final class MemberListViewController: ViewController {
                 .bind(to: representProjectSelected)
                 .disposed(by: cell.disposeBag)
             
-            cell.expleMemberSelected
-                .bind(to: expleMemberSelected)
+            cell.expelMemberSelected
+                .bind(to: expelMemberSelected)
                 .disposed(by: cell.disposeBag)
             
             return cell

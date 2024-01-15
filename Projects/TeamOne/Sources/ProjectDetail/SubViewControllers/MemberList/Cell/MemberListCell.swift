@@ -141,7 +141,7 @@ final class MemberListCell: UICollectionViewCell, CellIdentifiable {
     private var member: ProjectMember?
     
     var representProjectTap = PublishRelay<RepresentProject>()
-    var expleMemberSelected = PublishRelay<ProjectMember>()
+    var expelMemberSelected = PublishRelay<ProjectMember>()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -234,17 +234,17 @@ final class MemberListCell: UICollectionViewCell, CellIdentifiable {
     }
     
     private func bind() {
-        bindExpleButton()
+        bindExpelButton()
     }
     
-    private func bindExpleButton() {
+    private func bindExpelButton() {
         expelMemberButton.rx.tap
             .withUnretained(self)
             .map { this, _ in
                 return this.member
             }
             .compactMap { $0 }
-            .bind(to: expleMemberSelected)
+            .bind(to: expelMemberSelected)
             .disposed(by: disposeBag)
     }
     

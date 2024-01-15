@@ -132,7 +132,9 @@ final class ProjectDetailMainViewController: ViewController {
     /// 프로젝트 신고하기
     let reportedContentSubject = PublishSubject<String>()
     /// 유저 내보내기
-    let expleResult = PublishRelay<ProjectMember>()
+    let expelProps = PublishRelay<UserExpelProps>()
+    let expelSuccess = PublishRelay<Void>()
+    let expelFailure = PublishRelay<Error>()
     
     // MARK: - Bind
     
@@ -145,7 +147,8 @@ final class ProjectDetailMainViewController: ViewController {
             profileSelected: memberListVC.profileSelected
                 .throttle(.seconds(1), latest: true, scheduler: MainScheduler.instance),
             representProjectSelected: memberListVC.representProjectSelected
-                .throttle(.seconds(1), latest: true, scheduler: MainScheduler.instance)
+                .throttle(.seconds(1), latest: true, scheduler: MainScheduler.instance), 
+            expelProps: expelProps
         )
 
         let output = viewModel.transform(input: input)
@@ -155,7 +158,7 @@ final class ProjectDetailMainViewController: ViewController {
         bindDropDown()
         bindReport()
         bindAlert(output: output)
-        bindExple()
+        bindExpel(output: output)
         
         memberListVC.bind(output: output)
     }
@@ -244,18 +247,37 @@ final class ProjectDetailMainViewController: ViewController {
             .disposed(by: disposeBag)
     }
     
-    func bindExple() {
-        memberListVC.expleMemberSelected
-            .asSignal()
+    func bindExpel(output: ProjectDetailMainViewModel.Output) {
+        
+        output.expelSuccess
+            .bind(to: expelSuccess)
+            .disposed(by: disposeBag)
+        
+        output.expelFailure
+            .bind(to: expelFailure)
+            .disposed(by: disposeBag)
+        
+        memberListVC.expelMemberSelected
+            .withLatestFrom(output.project) { member, project in
+                return (member, project)
+            }
             .withUnretained(self)
-            .emit(onNext: { this, member in
-                let expleVC = Inject.ViewControllerHost(UserExpleViewController(
+            .subscribe(on: MainScheduler.instance)
+            .subscribe(onNext: { this, content in
+                
+                let member = content.0
+                let project = content.1
+                
+                let expelVC = Inject.ViewControllerHost(UserExpelViewController(
+                    project: project,
                     target: member,
-                    expleResult: this.expleResult
+                    expelProps: this.expelProps,
+                    expelSuccess: this.expelSuccess,
+                    expelFailure: this.expelFailure
                 ))
                 
-                expleVC.modalPresentationStyle = .overFullScreen
-                this.present(expleVC, animated: false)
+                expelVC.modalPresentationStyle = .overFullScreen
+                this.present(expelVC, animated: false)
             })
             .disposed(by: disposeBag)
     }

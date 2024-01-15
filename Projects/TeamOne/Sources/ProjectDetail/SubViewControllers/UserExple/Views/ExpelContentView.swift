@@ -1,5 +1,5 @@
 //
-//  ExpleContentView.swift
+//  ExpelContentView.swift
 //  TeamOne
 //
 //  Created by 강현준 on 1/12/24.
@@ -15,7 +15,7 @@ import SnapKit
 import DSKit
 import Domain
 
-final class ExpleContentView: View {
+final class ExpelContentView: View {
     
     private let labelTitle = UILabel().then {
         $0.textAlignment = .center
@@ -23,7 +23,7 @@ final class ExpleContentView: View {
     }
     
     private let buttonFoulLanguage = Button_CheckBox(
-        text: User_ExpleReason.foulLanguage.description,
+        text: User_ExpelReason.foulLanguage.description,
         typo: .button2,
         textColor: .teamOne.grayscaleSeven,
         type: .checkBoxBlue
@@ -32,7 +32,7 @@ final class ExpleContentView: View {
     }
     
     private let buttonLowParticipation = Button_CheckBox(
-        text: User_ExpleReason.lowParticipation.description,
+        text: User_ExpelReason.lowParticipation.description,
         typo: .button2,
         textColor: .teamOne.grayscaleSeven,
         type: .checkBoxBlue
@@ -44,7 +44,7 @@ final class ExpleContentView: View {
     }
     
     private let buttonConflicWithTeamMembers = Button_CheckBox(
-        text: User_ExpleReason.conflicWithTeamMembers.description,
+        text: User_ExpelReason.conflicWithTeamMembers.description,
         typo: .button2,
         textColor: .teamOne.grayscaleSeven,
         type: .checkBoxBlue
@@ -53,7 +53,7 @@ final class ExpleContentView: View {
     }
     
     private let buttonVoluntaryWithdrawal = Button_CheckBox(
-        text: User_ExpleReason.voluntaryWithdrawal.description,
+        text: User_ExpelReason.voluntaryWithdrawal.description,
         typo: .button2,
         textColor: .teamOne.grayscaleSeven,
         type: .checkBoxBlue
@@ -62,7 +62,7 @@ final class ExpleContentView: View {
     }
     
     private let buttonInappropriateContent = Button_CheckBox(
-        text: User_ExpleReason.inappropriateContent.description,
+        text: User_ExpelReason.inappropriateContent.description,
         typo: .button2,
         textColor: .teamOne.grayscaleSeven,
         type: .checkBoxBlue
@@ -71,7 +71,7 @@ final class ExpleContentView: View {
     }
     
     private let buttonOther = Button_CheckBox(
-        text: User_ExpleReason.other("").description,
+        text: User_ExpelReason.other("").description,
         typo: .button2,
         textColor: .teamOne.grayscaleSeven,
         type: .checkBoxBlue
@@ -108,11 +108,13 @@ final class ExpleContentView: View {
     /// 선택 결과
     let isExplable = BehaviorRelay(value: false)
     let cancleSelected = PublishRelay<Void>()
-    let expleSelected = PublishRelay<User_ExpleReason>()
+    let expelSelected = PublishRelay<[User_ExpelReason]>()
     
     /// 선택 상태
-    private let selectedReason = BehaviorRelay<[User_ExpleReason]>(value: [])
+    private let selectedReason = BehaviorRelay<[User_ExpelReason]>(value: [])
+    
     // TODO: - 취소, 신고버튼 처리, 폰트변경, 신고가능/불가능 상태 처리
+    
     private lazy var warnningStackView = UIStackView(arrangedSubviews: [
         imageViewWainning,
         labelWarnning,
@@ -154,7 +156,7 @@ final class ExpleContentView: View {
         super.init(frame: .zero)
         
         initSetting()
-        bindButtons()
+        bind()
     }
     
     func initSetting() {
@@ -180,6 +182,13 @@ final class ExpleContentView: View {
         }
     }
     
+    private func bind() {
+        bindButtons()
+        bindOther()
+        bindOkButton()
+        bindCancleButton()
+    }
+    
     private func bindButtons() {
         
         cancleButton.rx.tap
@@ -187,11 +196,11 @@ final class ExpleContentView: View {
             .disposed(by: disposeBag)
         
         let checkboxes = [
-            buttonFoulLanguage: User_ExpleReason.foulLanguage,
-            buttonLowParticipation: User_ExpleReason.lowParticipation,
-            buttonConflicWithTeamMembers: User_ExpleReason.conflicWithTeamMembers,
-            buttonVoluntaryWithdrawal: User_ExpleReason.voluntaryWithdrawal,
-            buttonInappropriateContent: User_ExpleReason.inappropriateContent
+            buttonFoulLanguage: User_ExpelReason.foulLanguage,
+            buttonLowParticipation: User_ExpelReason.lowParticipation,
+            buttonConflicWithTeamMembers: User_ExpelReason.conflicWithTeamMembers,
+            buttonVoluntaryWithdrawal: User_ExpelReason.voluntaryWithdrawal,
+            buttonInappropriateContent: User_ExpelReason.inappropriateContent
         ]
         
         for (button, reason) in checkboxes {
@@ -240,16 +249,9 @@ final class ExpleContentView: View {
             }
             .bind(to: isExplable)
             .disposed(by: disposeBag)
-        
-        isExplable
-            .bind(onNext: {
-                print("DEBUG: isExplable\($0)")
-            })
-        
-        bindOther()
     }
     
-    func bindOther() {
+    private func bindOther() {
         
         buttonOther.rx.tap
             .withUnretained(self)
@@ -334,7 +336,24 @@ final class ExpleContentView: View {
             .disposed(by: disposeBag)
     }
     
-    func updateSelect(with reasons: [User_ExpleReason]) {
+    private func bindOkButton() {
+        isExplable
+            .bind(to: okButton.rx.isEnabled)
+            .disposed(by: disposeBag)
+        
+        okButton.rx.tap
+            .withLatestFrom(selectedReason)
+            .bind(to: expelSelected)
+            .disposed(by: disposeBag)
+    }
+    
+    private func bindCancleButton() {
+        cancleButton.rx.tap
+            .bind(to: cancleSelected)
+            .disposed(by: disposeBag)
+    }
+    
+    func updateSelect(with reasons: [User_ExpelReason]) {
         
         buttonFoulLanguage.isSelected = reasons.contains(.foulLanguage)
         buttonLowParticipation.isSelected = reasons.contains(.lowParticipation)
@@ -344,7 +363,7 @@ final class ExpleContentView: View {
         
     }
     
-    func makeTitleStackView() -> UIStackView {
+    private func makeTitleStackView() -> UIStackView {
         
         return UIStackView(arrangedSubviews: [
             labelTitle,
@@ -355,7 +374,7 @@ final class ExpleContentView: View {
         }
     }
     
-    func makeContentStackView() -> UIStackView {
+    private func makeContentStackView() -> UIStackView {
         
         return UIStackView(arrangedSubviews: [
             buttonFoulLanguage,
@@ -372,7 +391,7 @@ final class ExpleContentView: View {
         }
     }
     
-    func makeButtonStackView() -> UIStackView {
+    private func makeButtonStackView() -> UIStackView {
         
         [cancleButton, okButton].forEach { button in
             button.snp.makeConstraints {
