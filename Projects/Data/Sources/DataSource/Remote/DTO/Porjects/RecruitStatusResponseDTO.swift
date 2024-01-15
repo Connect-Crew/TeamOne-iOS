@@ -10,6 +10,7 @@ import Foundation
 import Domain
 
 struct RecruitStatusResponseDTO: Codable {
+    let containLeader: Bool
     let category: String
     let part: String
     let partKey: String

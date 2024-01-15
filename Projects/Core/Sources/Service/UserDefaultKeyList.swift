@@ -23,7 +23,6 @@ public struct UserDefaultKeyList {
         @UserDefaultWrapper<String>(key: "introduction") public static var introduction
         @UserDefaultWrapper<Double>(key: "temperature") public static var temperature
         @UserDefaultWrapper<Int>(key: "responseRate") public static var responseRate
-        @UserDefaultWrapper<[String]>(key: "parts") public static var parts
     }
     
     public struct RecentSearchHistory {

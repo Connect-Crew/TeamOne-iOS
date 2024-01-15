@@ -13,10 +13,10 @@ public struct Leader {
     public let nickname, profile, introduction: String
     public let temperature: Double
     public let responseRate: Int
-    public let parts: [String]
+    public let parts: [Parts]
     public let representProjects: [RepresentProject]
 
-    public init(id: Int, nickname: String, profile: String, introduction: String, temperature: Double, responseRate: Int, parts: [String], representProjects: [RepresentProject]) {
+    public init(id: Int, nickname: String, profile: String, introduction: String, temperature: Double, responseRate: Int, parts: [Parts], representProjects: [RepresentProject]) {
         self.id = id
         self.nickname = nickname
         self.profile = profile

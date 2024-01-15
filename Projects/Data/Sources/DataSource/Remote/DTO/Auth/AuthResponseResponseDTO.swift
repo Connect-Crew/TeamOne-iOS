@@ -16,7 +16,7 @@ public struct AuthResponseResponseDTO: Decodable {
     let introducion: String?
     let temperature: Double
     let responseRate: Int
-    let parts: [String]?
+    let parts: [BasePartsResponseDTO]
     let email: String?
     let token: String
     let exp: String
@@ -31,7 +31,7 @@ public struct AuthResponseResponseDTO: Decodable {
             introduction: self.introducion ?? "",
             temperature: self.temperature,
             responseRate: self.responseRate,
-            parts: self.parts ?? [],
+            parts: self.parts.map { $0.toDomain() },
             email: self.email ?? "",
             token: self.token,
             exp: self.exp,
