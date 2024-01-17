@@ -28,7 +28,7 @@ public struct ProjectResponseDTO: Codable {
     func toDomain() -> Project {
         
         // 리더의 직무를 분리
-        let leaderParts = recruitStatus.filter { $0.containLeader == true }
+        let leaderParts = recruitStatus.filter { $0.containLeader == true }.first!
         
         // 리더의 직무가 제외된 모집 내용
         let exceptLeaerRecruitStatus = RecruitStatusResponseDTO.exceptLeaerPosition(status: self.recruitStatus)
@@ -46,7 +46,7 @@ public struct ProjectResponseDTO: Codable {
             category: self.category,
             goal: self.goal,
             leader: self.leader.toDoamin(),
-            leaderParts: leaderParts.map { $0.toDomain() },
+            leaderParts: leaderParts.toDomain(),
             introduction: self.introduction,
             favorite: self.favorite,
             myFavorite: self.myFavorite,

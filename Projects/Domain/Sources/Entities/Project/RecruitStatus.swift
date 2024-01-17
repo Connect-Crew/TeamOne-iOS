@@ -32,4 +32,13 @@ public struct RecruitStatus: Codable {
             self.isAppliable = false
         }
     }
+    
+    public func toRecruit() -> Recruit {
+        return Recruit(
+            category: self.category,
+            part: self.part,
+            comment: self.comment,
+            max: self.max
+        )
+    }
 }

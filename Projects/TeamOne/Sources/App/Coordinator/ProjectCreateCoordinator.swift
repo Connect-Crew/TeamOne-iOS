@@ -46,7 +46,8 @@ final class ProjectCreateCoordinator: BaseCoordinator<ProjectCreateCoordinatorRe
         let viewModel = ProjectCreateMainViewModel(
             projectCreateUseCase: DIContainer.shared.resolve(ProjectCreateUseCase.self),
             projectInfoUseCase: DIContainer.shared.resolve(ProjectInfoUseCase.self),
-            type: type, 
+            projectModifyUseCase: DIContainer.shared.resolve(ProjectModifyUseCase.self),
+            type: type,
             projectId: projectId
         )
 

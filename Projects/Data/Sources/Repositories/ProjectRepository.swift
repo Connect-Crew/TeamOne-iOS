@@ -66,60 +66,12 @@ public struct ProjectRepository: ProjectRepositoryProtocol {
     
     public func createProject(props: ProjectCreateProps) -> Single<ProjectCreateResponse> {
         
+        print("DEBUG: ProjectRepository 호출")
         
         let request = propsToRequestDTO(props: props)
         
         return projectDataSource.create(request)
             .map { $0.toDomain() }
-    }
-    
-    func propsToRequestDTO(props: ProjectCreateProps) -> ProjectCreateRequestDTO {
-        var mappedKeyProps = props
-        
-        let region = props.region == nil ? "NONE" : props.region
-        let leaderParts = KM.shared.key(name: props.leaderParts ?? "")
-        var recruits = [Recruit]()
-        var categorys = [String]()
-        
-        props.recruits.forEach {
-            var mappedRecruits = $0
-            mappedRecruits.part = KM.shared.key(name: $0.part)
-            recruits.append(mappedRecruits)
-        }
-        
-        for category in props.category {
-            categorys.append(KM.shared.key(name: category))
-        }
-        
-        mappedKeyProps.region = region
-        mappedKeyProps.leaderParts = leaderParts
-        mappedKeyProps.recruits = recruits
-        mappedKeyProps.category = categorys
-        
-        if region == "NONE" {
-            mappedKeyProps.region = region
-        } else {
-            mappedKeyProps.region = KM.shared.key(name: props.region ?? "")
-        }
-        
-        let compactImagesData = props.banner.map { $0.jpegData(compressionQuality:  1) }
-        
-        return ProjectCreateRequestDTO(
-            banner: compactImagesData, 
-            title: mappedKeyProps.title ?? "",
-            region: mappedKeyProps.region ?? "",
-            online: mappedKeyProps.isOnline?.toBool() ?? false,
-            state: mappedKeyProps.state?.toMultiPartValue() ?? "",
-            careerMin: mappedKeyProps.careerMin?.toMultiPartValue() ?? "",
-            careerMax: mappedKeyProps.careerMax?.toMultiPartValue() ?? "",
-            leaderParts: mappedKeyProps.leaderParts ?? "",
-            category: mappedKeyProps.category,
-            goal: mappedKeyProps.goal?.toMultiPartValue() ?? "",
-            introduction: mappedKeyProps.introducion ?? "",
-            recruits: mappedKeyProps.recruits.map {
-                ProjectRecruitDTO(part: $0.part, comment: $0.comment, max: $0.max)
-            },
-            skills: mappedKeyProps.skills)
     }
     
     public func report(projectId: Int, reason: String) -> Single<Bool> {
@@ -136,5 +88,105 @@ public struct ProjectRepository: ProjectRepositoryProtocol {
     public func member(projectId: Int) -> Single<[ProjectMember]> {
         return projectDataSource.members(projectId: projectId)
             .map { $0.map { $0.toDomain()} }
+    }
+    
+    public func modify(props: ProjectCreateProps, projectId: Int) -> Single<ProjectCreateResponse> {
+        
+        let request = propsToModifyRequestDTO(props: props)
+        
+        return projectDataSource.modify(request, projectId: projectId)
+            .map { $0.toDomain() }
+    }
+}
+
+extension ProjectRepository {
+    
+    func propsToRequestDTO(props: ProjectCreateProps) -> ProjectCreateRequestDTO {
+        
+        let region = props.region == nil ? "NONE" : KM.shared.key(name: props.region ?? "")
+        var recruits = [Recruit]()
+        var categories = [String]()
+        
+        props.recruits.forEach {
+            var mappedRecruits = $0
+            mappedRecruits.part = KM.shared.key(name: $0.part)
+            recruits.append(mappedRecruits)
+        }
+        
+        for category in props.category {
+            categories.append(KM.shared.key(name: category))
+        }
+        
+        var imageUploadRequestDTO = props.banner.map {
+            return ImageUploadRequestDTO(name: $0.name, image: $0.image)
+        }
+        
+        return ProjectCreateRequestDTO(
+            banner: imageUploadRequestDTO,
+            title: props.title ?? "",
+            region: region,
+            online: props.isOnline?.toBool() ?? false,
+            state: props.state?.toMultiPartValue() ?? "",
+            careerMin: props.careerMin?.toMultiPartValue() ?? "",
+            careerMax: props.careerMax?.toMultiPartValue() ?? "",
+            leaderParts: props.leaderParts?.key ?? "",
+            category: categories,
+            goal: props.goal?.toMultiPartValue() ?? "",
+            introduction: props.introducion ?? "",
+            recruits: props.recruits.map {
+                
+                ProjectRecruitDTO(
+                    part: KM.shared.key(name: $0.part),
+                    comment: $0.comment,
+                    max: $0.max
+                )
+                
+            },
+            skills: props.skills)
+    }
+    
+    func propsToModifyRequestDTO(props: ProjectCreateProps) -> ProjectModifyRequestDTO {
+        let region = props.region == nil ? "NONE" : KM.shared.key(name: props.region ?? "")
+        var recruits = [Recruit]()
+        var categories = [String]()
+        
+        props.recruits.forEach {
+            var mappedRecruits = $0
+            mappedRecruits.part = KM.shared.key(name: $0.part)
+            recruits.append(mappedRecruits)
+        }
+        
+        for category in props.category {
+            categories.append(KM.shared.key(name: category))
+        }
+        
+        var imageUploadRequestDTO = props.banner.map {
+            
+            return ImageUploadRequestDTO(name: $0.name, image: $0.image)
+        }
+        
+        return ProjectModifyRequestDTO(
+            banner: imageUploadRequestDTO,
+            removeBanners: props.removeBanners,
+            title: props.title ?? "",
+            region: region,
+            online: props.isOnline?.toBool() ?? false,
+            state: props.state?.toMultiPartValue() ?? "",
+            careerMin: props.careerMin?.toMultiPartValue() ?? "",
+            careerMax: props.careerMax?.toMultiPartValue() ?? "",
+            leaderParts: props.leaderParts?.key ?? "",
+            category: categories,
+            goal: props.goal?.toMultiPartValue() ?? "",
+            introduction: props.introducion ?? "",
+            recruits: props.recruits.map {
+                
+                ProjectRecruitDTO(
+                    part: KM.shared.key(name: $0.part),
+                    comment: $0.comment,
+                    max: $0.max
+                )
+                
+            },
+            skills: props.skills)
     }
 }

@@ -20,6 +20,7 @@ final class HomeCoordinator: BaseCoordinator<HomeCoordinatorResult> {
 
     let finish = PublishSubject<HomeCoordinatorResult>()
     let projectChangedSubject = PublishSubject<Project>()
+    let refreshHome = PublishSubject<Void>()
 
     override func start() -> Observable<HomeCoordinatorResult> {
         showHome()
@@ -30,9 +31,6 @@ final class HomeCoordinator: BaseCoordinator<HomeCoordinatorResult> {
         
         let viewModel = DIContainer.shared.resolve(HomeViewModel.self)
         
-        let refreshHome = PublishSubject<Void>()
-        
-        ///  홈 화면에 리프레시가 필요할경우 해당 서브젝트로 Void 전달
         refreshHome
             .subscribe(onNext: {
                 viewModel.refresh.onNext(())
@@ -43,7 +41,7 @@ final class HomeCoordinator: BaseCoordinator<HomeCoordinatorResult> {
             .subscribe(onNext: {  [weak self] in
                 switch $0 {
                 case .write:
-                    self?.showPorjectCreate(refresh: refreshHome)
+                    self?.showPorjectCreate()
                 case .participants(let element):
                     self?.showparticipatnsDetail(element)
                 case .detail(let project):
@@ -114,17 +112,17 @@ final class HomeCoordinator: BaseCoordinator<HomeCoordinatorResult> {
             .disposed(by: disposeBag)
     }
 
-    func showPorjectCreate(refresh: PublishSubject<Void>) {
+    func showPorjectCreate() {
 
         let projectCreate = ProjectCreateCoordinator(navigationController)
 
         coordinate(to: projectCreate)
-            .subscribe(onNext: {
+            .subscribe(onNext: { [weak self] in
                 switch $0 {
                 case .finish:
                     break
                 case .created:
-                    refresh.onNext(())
+                    self?.refreshHome.onNext(())
                 }
             })
             .disposed(by: disposeBag)

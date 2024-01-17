@@ -31,11 +31,11 @@ public struct SideProjectListElement: Hashable {
     public var myFavorite: Bool
     public let category: [String]
     public let goal: Goal
-    public let leaderParts: [Parts]
+    public let leaderParts: Parts
     public let recruitStatus: [RecruitStatus]
     public var HashTags: [HashTag] = []
 
-    public init(id: Int, title: String, thumbnail: String?, region: String, online: Bool, careerMin: String, careerMax: String, createdAt: String, state: String, favorite: Int, myFavorite: Bool, category: [String], goal: String, leaderParts: [Parts], recruitStatus: [RecruitStatus]) {
+    public init(id: Int, title: String, thumbnail: String?, region: String, online: Bool, careerMin: String, careerMax: String, createdAt: String, state: String, favorite: Int, myFavorite: Bool, category: [String], goal: String, leaderParts: Parts, recruitStatus: [RecruitStatus]) {
         self.id = id
         self.title = title
         self.thumbnail = thumbnail

@@ -26,4 +26,6 @@ public protocol ProjectRepositoryProtocol {
     func report(projectId: Int, reason: String) -> Single<Bool>
     
     func member(projectId: Int) -> Single<[ProjectMember]>
+    
+    func modify(props: ProjectCreateProps, projectId: Int) -> Single<ProjectCreateResponse>
 }
