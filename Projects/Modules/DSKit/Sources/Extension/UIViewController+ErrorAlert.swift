@@ -28,14 +28,16 @@ public extension UIViewController {
     
     func presentErrorAlert(
         error: Error?,
-        finishSubject: PublishSubject<Void>? = nil
+        finishSubject: PublishSubject<Bool>? = nil,
+        darkBackground: Bool = false
     ) {
         
         var alert = ResultAlertView_Image_Title_Content_Alert(
             image: .warnning,
             title: "에러",
             content: "",
-            availableCancle: false
+            availableCancle: false,
+            resultSubject: finishSubject
         )
         
         if let error = error as? APIError {
@@ -44,28 +46,23 @@ public extension UIViewController {
                 
             case .network(let statusCode, let message):
                 alert.content = "\(statusCode): \(message)"
-                self.presentResultAlertView_Image_Title_Content(
-                    source: self,
-                    alert: alert
-                )
                 
             case .notToken:
                 break
                 
             case .unknown:
                 alert.content = "알 수 없는 에러\n고객센터로 문의해주세요"
-                self.presentResultAlertView_Image_Title_Content(
-                    source: self,
-                    alert: alert
-                )
+
             }
         } else {
             alert.content = "알 수 없는 에러\n고객센터로 문의해주세요"
-            self.presentResultAlertView_Image_Title_Content(
-                source: self,
-                alert: alert
-            )
         }
+        
+        self.presentResultAlertView_Image_Title_Content(
+            source: self,
+            alert: alert,
+            darkbackground: darkBackground
+        )
     }
     
 }

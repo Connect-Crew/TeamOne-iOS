@@ -30,4 +30,5 @@ public struct TeamOneColor {
     public let grayscaleOne = UIColor(r: 245, g: 245, b: 245, a: 1)
     public let white = UIColor(r: 253, g: 253, b: 253, a: 1)
     public let bgColor = UIColor(r: 249, g: 250, b: 252, a: 1)
+    public let transparent = UIColor(r: 0, g: 0, b: 0, a: 0.7)
 }

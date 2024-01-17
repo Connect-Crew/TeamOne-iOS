@@ -28,10 +28,7 @@ public class Button_IsEnabled: UIButton {
         self.enabledString = enabledString
         self.disabledString = disabledString
         super.init(frame: .zero)
-
-        self.snp.makeConstraints {
-            $0.height.equalTo(52)
-        }
+        
     }
 
     required init?(coder: NSCoder) {
