@@ -226,24 +226,22 @@ final class ProjectSetPostViewController: ViewController, UINavigationController
             .map { $0.recruits }
             .bind(to: tableViewRecruit.rx.items(cellIdentifier: RecruitSetPartCell.identifier, cellType: RecruitSetPartCell.self)) { [weak self] _, recruit, cell in
                 
-                guard let self = self else { return }
-                
                 cell.initSetting(recruit: recruit)
                 
                 cell.onPlus = { recruit in
-                    self.plusRecruit.onNext(recruit)
+                    self?.plusRecruit.onNext(recruit)
                 }
                 
                 cell.onMinus = { recruit in
-                    self.minusRecruit.onNext(recruit)
+                    self?.minusRecruit.onNext(recruit)
                 }
                 
                 cell.onDelete = {  recruit in
-                    self.deleteRecruit.onNext(recruit)
+                    self?.deleteRecruit.onNext(recruit)
                 }
                 
                 cell.onChangeComment = { (recruit, comment) in
-                    self.changeCommentRecruit.onNext((recruit, comment))
+                    self?.changeCommentRecruit.onNext((recruit, comment))
                 }
             }
             .disposed(by: disposeBag)
@@ -254,10 +252,10 @@ final class ProjectSetPostViewController: ViewController, UINavigationController
             .withUnretained(self)
             .subscribe(onNext: { this, selectedImage in
                 
-                ActionSheet.baseActionSheet(source: this, title: "TeamOne", content: ["갤러리", "카메라"], onSelect: { [self] select in
+                ActionSheet.baseActionSheet(source: this, title: "TeamOne", content: ["갤러리", "카메라"], onSelect: { select in
                     
                     if select == "갤러리" {
-                        self.presentImagePicker(
+                        this.presentImagePicker(
                             ImagePickerController(
                                 selectedAssets: [],
                                 minCount: 1,
@@ -814,7 +812,7 @@ extension ProjectSetPostViewController: UIImagePickerControllerDelegate {
             fatalError("선택된 이미지를 불러오지 못했습니다 : userPickedImage의 값이 nil입니다. ")
         }
         
-        let image = ImageWithName(name: UUID().uuidString, image: userPickedImage)
+        let image = ImageWithName(image: userPickedImage)
         
         self.selectedImage.onNext([image])
     }

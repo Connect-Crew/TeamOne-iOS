@@ -493,8 +493,8 @@ final class ProjectCreateMainViewModel: ViewModel {
                 .flatMap { this, props in
                     return this.projectCreateUseCase.create(props: props)
                         .asObservable()
-                        .catch { error in
-                            this.error.onNext(error)
+                        .catch { [weak self] error in
+                            self?.error.onNext(error)
                             
                             return .empty()
                         }
@@ -509,6 +509,8 @@ final class ProjectCreateMainViewModel: ViewModel {
     
     // MARK: - Modify
     func transformModify(input: Input) {
+        
+        var removeBannerCount = 0
         
         transformStartFromLastPage()
         transformTitle()
@@ -708,7 +710,10 @@ final class ProjectCreateMainViewModel: ViewModel {
                 .withLatestFrom(projectCreateProps) { image, before -> ProjectCreateProps in
                     var props = before
                     
-                    props.removeBanners.append(image.name)
+                    if removeBannerCount > 0 {
+                        props.removeBanners.append(image.name)
+                        removeBannerCount -= 1
+                    }
                     
                     if let index = props.banner.firstIndex(where: { $0 == image }) {
                         props.banner.remove(at: index)
@@ -863,8 +868,6 @@ final class ProjectCreateMainViewModel: ViewModel {
                 }
                 .bind(to: projectCreateProps)
                 .disposed(by: disposeBag)
-            
-           
         }
         
         func transformModifyFetchProjectIfo(input: Input) {
@@ -878,8 +881,8 @@ final class ProjectCreateMainViewModel: ViewModel {
                 .withUnretained(self)
                 .flatMap { this, target in
                     this.projectInfoUseCase.project(projectId: target)
-                        .catch { error in
-                            this.error.onNext(error)
+                        .catch { [weak self] error in
+                            self?.error.onNext(error)
                             return .empty()
                         }
                 }
@@ -889,6 +892,7 @@ final class ProjectCreateMainViewModel: ViewModel {
                     project.toProps(completion: { props in
                         this.projectCreateProps.accept(props)
                         this.isModify.accept(())
+                        removeBannerCount = props.banner.count
                     })
                 })
                 .disposed(by: disposeBag)
@@ -901,8 +905,8 @@ final class ProjectCreateMainViewModel: ViewModel {
                 .flatMap { this, props in
                     return this.projectModifyUseCase.modify(props: props, projectId: this.modifyTarget!)
                         .asObservable()
-                        .catch { error in
-                            this.error.onNext(error)
+                        .catch { [weak self] error in
+                            self?.error.onNext(error)
                             
                             return .empty()
                         }
