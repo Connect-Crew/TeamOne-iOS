@@ -103,6 +103,43 @@ final class HomeViewModel: ViewModel {
 
     func transformLoadProjects(input: Input) {
 
+        refresh
+            .map { [weak self] in
+                self?.isEmpty.onNext(false)
+                self?.lastID.onNext(nil)
+                self?.isEnd.onNext(false)
+                return $0
+            }
+            .withLatestFrom(
+                Observable.combineLatest(lastID.asObservable(), input.parts)
+            )
+            .withUnretained(self)
+            .flatMapLatest { viewModel, params in
+                return viewModel.projectListUseCase.list(lastId: params.0, size: 30, goal: nil,
+                                                         career: nil, region: nil, online: nil,
+                                                         part: params.1, skills: nil, states: nil,
+                                                         category: nil, search: nil)
+                    .withLatestFrom(viewModel.projects) { newProjects, currentProjects in
+                        return [] + newProjects
+                    }
+            }
+            .subscribe(onNext: { [weak self] updateProjects in
+                self?.projects.onNext(updateProjects)
+                self?.lastID.onNext(updateProjects.last?.id)
+
+                if updateProjects.isEmpty {
+                    self?.isEmpty.onNext(true)
+                } else {
+                    self?.isEmpty.onNext(false)
+                }
+
+                if updateProjects.count < 30 {
+                    self?.isEnd.onNext(true)
+                }
+            })
+            .disposed(by: disposeBag)
+        
+        
         input.parts
             .distinctUntilChanged()
             .map { [weak self] in
