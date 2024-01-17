@@ -111,7 +111,7 @@ final class ManageProjectMainVC: ViewController {
             .subscribe(onNext: { this, alert in
                 this.mainView.dismissBottomSheet(completion: { _ in 
                     this.presentResultAlertView_Image_Title_Content(
-                        source: self,
+                        source: this,
                         alert: alert,
                         darkbackground: false
                     )

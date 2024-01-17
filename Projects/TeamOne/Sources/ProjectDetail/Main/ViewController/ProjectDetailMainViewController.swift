@@ -189,15 +189,16 @@ final class ProjectDetailMainViewController: ViewController {
     
     func bindReport() {
         reportButtonTabSubject
-            .map { _ in
+            .withUnretained(self)
+            .map { this, _ in
                 let alert = AlertView_Title_TextView_Item(
                     title: "이 프로젝트를 신고하시겠습니까?", 
                     placeHolder: "신고 사유를 최대 100자 까지 작성해주세요",
                     okButtonTitle: "신고하기",
                     maxTextCount: 100,
-                    callBack: { [weak self] bool, content in
+                    callBack: { bool, content in
                         if bool == true {
-                            self?.reportedContentSubject.onNext(content)
+                            this.reportedContentSubject.onNext(content)
                         }
                     }
                 )
@@ -206,7 +207,7 @@ final class ProjectDetailMainViewController: ViewController {
             }
             .withUnretained(self)
             .subscribe(onNext: { this, alert in
-                self.presentAlert_Title_TextView(
+                this.presentAlert_Title_TextView(
                     source: this,
                     alert: alert
                 )
@@ -231,7 +232,7 @@ final class ProjectDetailMainViewController: ViewController {
             }
             .withUnretained(self)
             .emit(onNext: { this, alert in
-                self.presentResultAlertView_Image_Title_Content(
+                this.presentResultAlertView_Image_Title_Content(
                     source: this,
                     alert: alert
                 )

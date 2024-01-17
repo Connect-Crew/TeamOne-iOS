@@ -53,13 +53,7 @@ final class ApplyViewController: ViewController {
             close: mainView.closeSubject.asObservable(),
             applyPartTap: mainView.applyBottomSheet.selectedPartSubject
                 .throttle(.seconds(1), latest: true, scheduler: MainScheduler.instance),
-            applicationText: mainView.writeApplicationView.textView.rx.text.orEmpty.map { [weak self] in
-                if $0 == self?.mainView.writeApplicationView.textView.placeholder {
-                    return ""
-                } else {
-                    return $0
-                }
-            },
+            applicationText: mainView.writeApplicationView.textView.rxTextObservable,
             applyButtonTap: mainView.writeApplicationView.applyButton.rx.tap
                 .throttle(.seconds(1), latest: true, scheduler: MainScheduler.instance)
         )
@@ -100,7 +94,7 @@ final class ApplyViewController: ViewController {
                 
                 this.mainView.hideWriteApplicationView()
                 this.presentResultAlertView_Image_Title_Content(
-                    source: self,
+                    source: this,
                     alert: alert
                 )
                 

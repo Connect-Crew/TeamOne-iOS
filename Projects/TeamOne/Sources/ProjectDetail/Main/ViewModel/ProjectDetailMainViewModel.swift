@@ -123,16 +123,18 @@ final class ProjectDetailMainViewModel: ViewModel {
     
     func transformIsMyProject(input: Input) {
         input.viewWillAppear
-            .map {
-                self.projectInfoUseCase.isMyProject(
-                    project: self.project
+            .withUnretained(self)
+            .map { this, _ in
+                this.projectInfoUseCase.isMyProject(
+                    project: this.project
                 )
             }
-            .subscribe(onNext: {
-                if $0 == true {
-                    self.type.onNext(.mine)
+            .withUnretained(self)
+            .subscribe(onNext: { this, bool in
+                if bool == true {
+                    this.type.onNext(.mine)
                 } else {
-                    self.type.onNext(.other)
+                    this.type.onNext(.other)
                 }
             })
             .disposed(by: disposeBag)
