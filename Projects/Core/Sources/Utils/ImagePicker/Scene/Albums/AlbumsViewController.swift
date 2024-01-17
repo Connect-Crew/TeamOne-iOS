@@ -23,7 +23,7 @@
 import UIKit
 import Photos
 
-protocol AlbumsViewControllerDelegate: class {
+protocol AlbumsViewControllerDelegate: AnyObject {
     func albumsViewController(_ albumsViewController: AlbumsViewController, didSelectAlbum album: PHAssetCollection)
     func didDismissAlbumsViewController(_ albumsViewController: AlbumsViewController)
 }
@@ -57,7 +57,7 @@ class AlbumsViewController: UIViewController {
         tableView.register(AlbumCell.self, forCellReuseIdentifier: AlbumCell.identifier)
         tableView.dataSource = dataSource
         tableView.delegate = self
-        tableView.backgroundColor = settings.theme.dropDownBackgroundColor
+        tableView.backgroundColor = .clear
         view.addSubview(tableView)
 
         let lineHeight: CGFloat = 0.5
