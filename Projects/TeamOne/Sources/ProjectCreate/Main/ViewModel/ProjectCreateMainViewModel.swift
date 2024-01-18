@@ -56,7 +56,7 @@ final class ProjectCreateMainViewModel: ViewModel {
         let onlineTap: Observable<Void>
         let onOfflineTap: Observable<Void>
         let offlineTap: Observable<Void>
-        let selectedRegion: Observable<String>
+        let selectedRegion: Observable<String?>
         
         let goalStartUpTap: Observable<Void>
         let goalPortfolioTap: Observable<Void>
