@@ -12,6 +12,8 @@ import RxSwift
 import RxCocoa
 import Then
 import DSKit
+import Domain
+import Inject
 
 final class ProjectDetailMainViewController: ViewController {
 
@@ -125,8 +127,12 @@ final class ProjectDetailMainViewController: ViewController {
     let dropDownResultSubject = PublishSubject<String>()
     let reportButtonTabSubject = PublishSubject<Void>()
     
-    // 신고하기를 누르면 해당 서브젝트로 전달
+    /// 프로젝트 신고하기
     let reportedContentSubject = PublishSubject<String>()
+    /// 유저 내보내기
+    let expelProps = PublishRelay<UserExpelProps>()
+    let expelSuccess = PublishRelay<Void>()
+    let expelFailure = PublishRelay<Error>()
     
     // MARK: - Bind
     
@@ -146,7 +152,8 @@ final class ProjectDetailMainViewController: ViewController {
             applyButtonTap: introduceVC.mainView.viewBottom.buttonApply.rx.tap
                 .throttle(.seconds(1), latest: true, scheduler: MainScheduler.instance),
             manageButtonTap: introduceVC.mainView.viewBottom.buttonProjectManagement.rx.tap
-                .throttle(.seconds(1), latest: true, scheduler: MainScheduler.instance)
+                .throttle(.seconds(1), latest: true, scheduler: MainScheduler.instance), 
+            expelProps: expelProps
         )
 
         let output = viewModel.transform(input: input)
@@ -156,6 +163,7 @@ final class ProjectDetailMainViewController: ViewController {
         bindDropDown()
         bindReport()
         bindAlert(output: output)
+        bindExpel(output: output)
         
         introduceVC.bind(output: output)
         memberListVC.bind(output: output)
@@ -242,6 +250,41 @@ final class ProjectDetailMainViewController: ViewController {
                     source: this,
                     alert: alert
                 )
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    func bindExpel(output: ProjectDetailMainViewModel.Output) {
+        
+        output.expelSuccess
+            .bind(to: expelSuccess)
+            .disposed(by: disposeBag)
+        
+        output.expelFailure
+            .bind(to: expelFailure)
+            .disposed(by: disposeBag)
+        
+        memberListVC.expelMemberSelected
+            .withLatestFrom(output.project) { member, project in
+                return (member, project)
+            }
+            .withUnretained(self)
+            .subscribe(on: MainScheduler.instance)
+            .subscribe(onNext: { this, content in
+                
+                let member = content.0
+                let project = content.1
+                
+                let expelVC = Inject.ViewControllerHost(UserExpelViewController(
+                    project: project,
+                    target: member,
+                    expelProps: this.expelProps,
+                    expelSuccess: this.expelSuccess,
+                    expelFailure: this.expelFailure
+                ))
+                
+                expelVC.modalPresentationStyle = .overFullScreen
+                this.present(expelVC, animated: false)
             })
             .disposed(by: disposeBag)
     }

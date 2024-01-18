@@ -14,4 +14,14 @@ public struct ErrorEntity: Codable {
     let status: Int
     let error: String
     let message: String
+    
+    public static func testError() -> ErrorEntity {
+        return ErrorEntity(
+            timestamp: "TEST",
+            path: "TEST",
+            status: 999,
+            error: "TEST",
+            message: "TEST Error"
+        )
+    }
 }

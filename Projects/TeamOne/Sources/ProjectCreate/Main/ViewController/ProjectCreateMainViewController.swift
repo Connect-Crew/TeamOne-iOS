@@ -182,7 +182,7 @@ final class ProjectCreateMainViewController: ViewController {
     
     let closeSubject = PublishSubject<Bool>()
     let createSubject = PublishSubject<Bool>()
-    let errorSubject = PublishSubject<Void>()
+    let errorSubject = PublishSubject<Bool>()
 
     func bindNavigation(output: ProjectCreateMainViewModel.Output) {
         

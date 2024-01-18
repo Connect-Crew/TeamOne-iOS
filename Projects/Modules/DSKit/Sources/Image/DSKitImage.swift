@@ -119,6 +119,7 @@ public enum DSKitImage {
     case write
     case CheckBoxChecked
     case CheckBoxNotChecked
+    case checkBoxCheckedBlue
     case reset
     case up
     case down
@@ -302,6 +303,7 @@ public enum DSKitImage {
         case .checkNONOE: return "checkNONOE"
         case .rightButton: return "rightButton"
         case .checkOK: return "checkOK"
+        case .checkBoxCheckedBlue: return "checkBoxCheckedBlue"
             
             // MARK: - Common
         case .complete: return "complete"

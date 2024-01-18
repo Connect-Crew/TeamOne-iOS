@@ -62,6 +62,7 @@ final class ProjectDetailMainViewModel: ViewModel {
         let likeButtonTap: Observable<Void>
         let applyButtonTap: Observable<Void>
         let manageButtonTap: Observable<Void>
+        let expelProps: PublishRelay<UserExpelProps>
     }
 
     struct Output {
@@ -70,18 +71,28 @@ final class ProjectDetailMainViewModel: ViewModel {
         let isMyProject: Driver<Bool>
         let reportResult: Signal<Bool>
         let error: PublishSubject<Error>
+        let expelSuccess: PublishRelay<Void>
+        let expelFailure: PublishRelay<Error>
     }
 
     let type = BehaviorSubject<ProjectIsMine>(value: .other)
 
     let refresh = PublishSubject<Void>()
     let navigation = PublishSubject<ProjectDetailMainNavigation>()
+
+    var disposeBag: DisposeBag = .init()
+    
+    let refresh = PublishSubject<Void>()
+
     let projectSubject = BehaviorSubject<Project>(value: Project.noneInfoProject)
     let projectMembers = BehaviorSubject<[ProjectMember]>(value: [])
     let reportResult = PublishSubject<Bool>()
     let error = PublishSubject<Error>()
-    
+
     let changedProject = PublishSubject<Project>()
+
+    let expelSuccess = PublishRelay<Void>()
+    let expelFailure = PublishRelay<Error>()
 
     func transform(input: Input) -> Output {
         
@@ -91,6 +102,7 @@ final class ProjectDetailMainViewModel: ViewModel {
         transformLike(likeButtonTap: input.likeButtonTap)
         transformReport(input: input)
         transformMemberList(input: input)
+        transformUserExple(input: input.expelProps)
         
         return Output(
             project: projectSubject.asDriver(
@@ -103,12 +115,21 @@ final class ProjectDetailMainViewModel: ViewModel {
             reportResult: reportResult.asSignal(
                 onErrorJustReturn: true
             ),
-            error: error
+            error: error,
+            expelSuccess: expelSuccess,
+            expelFailure: expelFailure
         )
     }
     
     func transformRefreshProject() {
         let getProjectResult = Observable.merge(refresh)
+    }
+  
+    func transformProject(input: Observable<Void>) {
+        let getProjectResult = Observable.merge(
+            input.take(1),
+            refresh
+        )
             .withUnretained(self)
             .map { this, _ in
                 return this.project.id
@@ -242,7 +263,7 @@ final class ProjectDetailMainViewModel: ViewModel {
     }
     
     func transformGetMembers(input: Observable<Void>) {
-        let getmemberResult = input
+        let getmemberResult = Observable.merge(input, refresh)
             .withUnretained(self)
             .map { this, _ in
                 return this.project
@@ -314,6 +335,16 @@ final class ProjectDetailMainViewModel: ViewModel {
         
         getProjectFailure
             .bind(to: error)
+            .disposed(by: disposeBag)
+    }
+    
+    func transformUserExple(input: PublishRelay<UserExpelProps>) {
+        input
+            .withUnretained(self)
+            .subscribe(onNext: { this, props in
+                this.expelSuccess.accept(())
+                this.refresh.onNext(())
+            })
             .disposed(by: disposeBag)
     }
 }
