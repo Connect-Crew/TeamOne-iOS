@@ -8,7 +8,7 @@
 
 import UIKit
 
-public struct HashTag {
+public struct HashTag: Hashable {
     public let title: String
     public let background: HashBackground
     public let titleColor: HashTagTitleColor

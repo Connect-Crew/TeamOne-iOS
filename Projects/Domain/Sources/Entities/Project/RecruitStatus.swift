@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct RecruitStatus: Codable {
+public struct RecruitStatus: Codable, Hashable {
     public let category: String
     public let part: String
     public let partKey: String

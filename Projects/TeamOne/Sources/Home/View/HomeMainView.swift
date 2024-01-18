@@ -12,8 +12,10 @@ import DSKit
 import SnapKit
 import RxSwift
 import RxCocoa
+import Core
+import Domain
 
-final class HomeMainView: UIView {
+final class HomeMainView: View {
 
     lazy var headerMinHeight = 89.0 // 카테고리 높이(최소높이)
     lazy var headerViewWillDissmissHeight = 150.0
@@ -62,8 +64,8 @@ final class HomeMainView: UIView {
         $0.separatorStyle = .none
     }
 
-    var viewEmpty = View_EmptyImageView_Label(text: "지원할 프로젝트가 없습니다", textColor: .teamOne.grayscaleFive, typo: .body3, image: .logo).then {
-        $0.isHidden = true
+    var viewEmpty = ListEmptyView(text: "지원할 프로젝트가 없습니다", textColor: .teamOne.grayscaleFive, typo: .body3, image: .logo).then {
+        $0.isHidden = false
     }
 
     var buttonWrite = UIButton().then {
@@ -174,5 +176,14 @@ final class HomeMainView: UIView {
             $0.trailing.equalToSuperview().inset(24)
             $0.bottom.equalTo(safeAreaLayoutGuide.snp.bottom).inset(24)
         }
+    }
+    
+    func bindIsEmptyView(isEmpty: Observable<Bool>) {
+        isEmpty
+            .withUnretained(self)
+            .bind(onNext: { this, bool in
+                this.viewEmpty.isHidden = !bool
+            })
+            .disposed(by: disposeBag)
     }
 }

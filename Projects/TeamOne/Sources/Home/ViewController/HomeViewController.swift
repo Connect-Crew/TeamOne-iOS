@@ -16,6 +16,17 @@ import SnapKit
 import Then
 
 final class HomeViewController: ViewController {
+    
+    
+    private enum Section: Int, CaseIterable {
+        case list
+    }
+    
+    private enum Item: Hashable {
+        case result(SideProjectListElement)
+    }
+    
+    private var list: [SideProjectListElement] = []
 
     // MARK: - Properties
 
@@ -26,6 +37,8 @@ final class HomeViewController: ViewController {
     var tableView: UITableView {
         return mainView.tableView
     }
+    
+    private var dataSource: UITableViewDiffableDataSource<Section, Item>!
 
     let participantsButtonTap = PublishSubject<SideProjectListElement?>()
     let likeButtonTap = PublishSubject<SideProjectListElement?>()
@@ -47,6 +60,7 @@ final class HomeViewController: ViewController {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
 
+        setupTableView()
         tableView.delegate = self
     }
 
@@ -75,36 +89,60 @@ final class HomeViewController: ViewController {
 
         bindHomeTableView(output: output)
         bindError(output: output)
+        mainView.bindIsEmptyView(isEmpty: output.projects.map { $0.isEmpty }.asObservable() )
+    }
+    
+    private func setupTableView() {
+        dataSource = UITableViewDiffableDataSource<Section, Item>(tableView: tableView) { tableView, indexPath, item in
+            
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: HomeTableViewCell.identifier, for: indexPath) as? HomeTableViewCell,
+                  case .result(let item) = item else {
+                return UITableViewCell()
+            }
+            
+            cell.prepareForReuse()
+            cell.initSetting(project: item)
+            cell.selectionStyle = .none
+            cell.buttonParticipantsTap
+                .subscribe(onNext: { [weak self]  in
+                    self?.participantsButtonTap.onNext($0)
+                })
+                .disposed(by: cell.disposeBag)
+
+            cell.buttonLikeTap
+                .subscribe(onNext: { [weak self]  in
+                    self?.likeButtonTap.onNext($0)
+                })
+                .disposed(by: cell.disposeBag)
+            
+            return cell
+            
+        }
+        
+        tableView.dataSource = dataSource
+    }
+    
+    private func applySnapShot() {
+        var snapshot = NSDiffableDataSourceSnapshot<Section, Item>()
+        
+        let sectionItems = Section.list
+        
+        snapshot.appendSections([sectionItems])
+        
+        snapshot.appendItems(list.map {
+            Item.result($0)
+        }, toSection: .list)
+        
+        dataSource.apply(snapshot, animatingDifferences: true)
     }
 
     func bindHomeTableView(output: HomeViewModel.Output) {
 
         output.projects
-            .drive(tableView.rx.items) { tableView, index, project in
-                guard let cell = tableView.dequeueReusableCell(
-                    withIdentifier: HomeTableViewCell.identifier,
-                    for: IndexPath(row: index, section: 0)) as? HomeTableViewCell
-                else {
-                    return UITableViewCell()
-                }
-                
-                cell.prepareForReuse()
-                cell.initSetting(project: project)
-                cell.selectionStyle = .none
-                cell.buttonParticipantsTap
-                    .subscribe(onNext: { [weak self]  in
-                        self?.participantsButtonTap.onNext($0)
-                    })
-                    .disposed(by: cell.disposeBag)
-
-                cell.buttonLikeTap
-                    .subscribe(onNext: { [weak self]  in
-                        self?.likeButtonTap.onNext($0)
-                    })
-                    .disposed(by: cell.disposeBag)
-
-                return cell
-            }
+            .drive(onNext: { [weak self] list in
+                self?.list = list
+                self?.applySnapShot()
+            })
             .disposed(by: disposeBag)
     }
     
