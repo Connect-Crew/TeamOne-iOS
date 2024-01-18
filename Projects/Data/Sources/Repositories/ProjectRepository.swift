@@ -146,7 +146,7 @@ extension ProjectRepository {
     }
     
     func propsToModifyRequestDTO(props: ProjectCreateProps) -> ProjectModifyRequestDTO {
-        let region = props.region == nil ? "NONE" : KM.shared.key(name: props.region ?? "")
+        let region = (props.region == nil || props.region == "미설정") ? "NONE" : KM.shared.key(name: props.region ?? "")
         var recruits = [Recruit]()
         var categories = [String]()
         

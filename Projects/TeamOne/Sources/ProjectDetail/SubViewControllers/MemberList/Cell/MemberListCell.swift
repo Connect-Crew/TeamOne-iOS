@@ -181,14 +181,14 @@ final class MemberListCell: UICollectionViewCell, CellIdentifiable {
     }
     
     func setMember() {
-//        self.expelMemberStackView.isHidden = true
+        self.expelMemberStackView.isHidden = true
     }
     
     func setLeader() {
         self.expelMemberStackView.isHidden = false
         
         if member?.isLeader == true {
-//            self.expelMemberStackView.isHidden = true
+            self.expelMemberStackView.isHidden = true
         }
     }
     

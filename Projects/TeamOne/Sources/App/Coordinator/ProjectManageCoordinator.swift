@@ -22,11 +22,11 @@ final class ProjectManageCoordinator: BaseCoordinator<ProjectManageCoordinatorRe
     let finish = PublishSubject<ProjectManageCoordinatorResult>()
     
     let project: Project
-    let needRefreshSubject: PublishSubject<Void>
+    let needRefreshSubject = PublishSubject<Void>()
     
-    init(_ navigationController: UINavigationController, project: Project, needRefreshSubject: PublishSubject<Void>) {
+    init(_ navigationController: UINavigationController,
+         project: Project) {
         self.project = project
-        self.needRefreshSubject = needRefreshSubject
         super.init(navigationController)
     }
 

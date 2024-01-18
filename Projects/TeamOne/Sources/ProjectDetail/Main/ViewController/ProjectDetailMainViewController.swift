@@ -36,7 +36,7 @@ final class ProjectDetailMainViewController: ViewController {
     
     // MARK: - PageViewControllers
 
-    let introduceVC: ProjectDetailPageSubIntroduceViewController
+    let introduceVC = ProjectDetailPageSubIntroduceViewController()
 
     let memberListVC = MemberListViewController()
 
@@ -54,10 +54,8 @@ final class ProjectDetailMainViewController: ViewController {
 
     // MARK: - Inits
 
-    init(viewModel: ProjectDetailMainViewModel,
-         introduceVC: ProjectDetailPageSubIntroduceViewController) {
+    init(viewModel: ProjectDetailMainViewModel) {
         self.viewModel = viewModel
-        self.introduceVC = introduceVC
         super.init(nibName: nil, bundle: nil)
         setupDropDown()
     }
@@ -134,6 +132,7 @@ final class ProjectDetailMainViewController: ViewController {
     
     override func bind() {
         let input = ProjectDetailMainViewModel.Input(
+            viewDidLoad: rx.viewWillAppear.take(1).map { _ in return ()}.asObservable(),
             viewWillAppear: rx.viewWillAppear.map { _ in return }.asObservable(),
             backButtonTap: viewNavigation.buttonNavigationLeft.rx.tap
                 .throttle(.seconds(1), scheduler: MainScheduler.instance), 
@@ -141,6 +140,12 @@ final class ProjectDetailMainViewController: ViewController {
             profileSelected: memberListVC.profileSelected
                 .throttle(.seconds(1), latest: true, scheduler: MainScheduler.instance),
             representProjectSelected: memberListVC.representProjectSelected
+                .throttle(.seconds(1), latest: true, scheduler: MainScheduler.instance),
+            likeButtonTap: introduceVC.mainView.viewBottom.buttonLike.rx.tap
+                .throttle(.seconds(1), latest: true, scheduler: MainScheduler.instance),
+            applyButtonTap: introduceVC.mainView.viewBottom.buttonApply.rx.tap
+                .throttle(.seconds(1), latest: true, scheduler: MainScheduler.instance),
+            manageButtonTap: introduceVC.mainView.viewBottom.buttonProjectManagement.rx.tap
                 .throttle(.seconds(1), latest: true, scheduler: MainScheduler.instance)
         )
 
@@ -152,6 +157,7 @@ final class ProjectDetailMainViewController: ViewController {
         bindReport()
         bindAlert(output: output)
         
+        introduceVC.bind(output: output)
         memberListVC.bind(output: output)
     }
     

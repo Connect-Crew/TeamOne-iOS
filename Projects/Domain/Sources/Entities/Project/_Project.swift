@@ -104,10 +104,6 @@ public struct Project {
             self.isMine = false
         }
         
-        if online == true {
-            self.region = "온라인"
-        }
-        
         setHashTags()
     }
     
@@ -150,6 +146,7 @@ public struct Project {
         skills: []
     )
     
+    // 수정하기일 경우 Project -> Props 변경이 필요합니다,
     public func toProps(completion: @escaping ((ProjectCreateProps) -> ())){
         
         UIImageView.pathToImage(path: self.banners) { images in
@@ -167,6 +164,7 @@ public struct Project {
             
             let props = ProjectCreateProps(
                 banner: imageWithName,
+                removeBanners: imageWithName.map { $0.name },
                 title: self.title,
                 region: self.region,
                 isOnline: self.isOnline,

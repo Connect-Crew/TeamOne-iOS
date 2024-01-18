@@ -12,6 +12,7 @@ import RxSwift
 import Core
 import Alamofire
 import Domain
+import SDWebImage
 
 public protocol ProjectsDataSouceProtocol {
     
@@ -71,22 +72,24 @@ public struct ProjectsDataSource: ProjectsDataSouceProtocol {
         
         let header: HTTPHeaders =  [
             "Content-Type" : "multipart/form-data",
-            "Authorization" : "\(UserDefaultKeyList.Auth.appAccessToken!)"
+            "Authorization" : "Bearer \(UserDefaultKeyList.Auth.appAccessToken!)"
         ]
         
         let url = "\(NetworkConstant.projectBasedURLString)/project/"
         
         return Single.create { single in
             
+            Loading.start(stopTouch: true)
+            
             // Alamofire의 upload 함수 사용
             AF.upload(multipartFormData: { formData in
                 
                 for banner in request.banner {
-                    if let imageData = banner.image.pngData() {
-                        formData.append(imageData, withName: "banner", fileName: "\(banner.name).png", mimeType: "image/png")
-                    }
-                    else if let imageData = banner.image.jpegData(compressionQuality: 1) {
+                    if let imageData = banner.image.jpegData(compressionQuality: 1) {
                         formData.append(imageData, withName: "banner", fileName: "\(banner).jpg", mimeType: "image/jpeg")
+                    }
+                    else if let imageData = banner.image.pngData() {
+                        formData.append(imageData, withName: "banner", fileName: "\(banner.name).png", mimeType: "image/png")
                     } else {
                         
                     }
@@ -149,6 +152,8 @@ public struct ProjectsDataSource: ProjectsDataSouceProtocol {
                         }
                     }
                 }
+                
+                Loading.stop()
             }
             return Disposables.create()
         }
@@ -170,9 +175,11 @@ public struct ProjectsDataSource: ProjectsDataSouceProtocol {
         print(request)
         print("!!!!!!!!!!!!")
         
+        Loading.start(stopTouch: true)
+        
         let header: HTTPHeaders =  [
             "Content-Type" : "multipart/form-data",
-            "Authorization" : "\(UserDefaultKeyList.Auth.appAccessToken!)"
+            "Authorization" : "Bearer \(UserDefaultKeyList.Auth.appAccessToken!)"
         ]
         
         let url = "\(NetworkConstant.projectBasedURLString)/project/\(projectId)"
@@ -184,11 +191,11 @@ public struct ProjectsDataSource: ProjectsDataSouceProtocol {
                 
                 // 이미지 추가
                 for banner in request.banner {
-                    if let imageData = banner.image.pngData() {
-                        formData.append(imageData, withName: "banner", fileName: "\(banner.name).png", mimeType: "image/png")
-                    }
-                    else if let imageData = banner.image.jpegData(compressionQuality: 1) {
+                    if let imageData = banner.image.jpegData(compressionQuality: 1) {
                         formData.append(imageData, withName: "banner", fileName: "\(banner).jpg", mimeType: "image/jpeg")
+                    }
+                    else if let imageData = banner.image.pngData() {
+                        formData.append(imageData, withName: "banner", fileName: "\(banner.name).png", mimeType: "image/png")
                     } else {
                         
                     }
@@ -253,6 +260,9 @@ public struct ProjectsDataSource: ProjectsDataSouceProtocol {
                         }
                     }
                 }
+                
+                Loading.stop()
+                
             }
             return Disposables.create()
         }

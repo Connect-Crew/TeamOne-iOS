@@ -16,6 +16,8 @@ enum ProjectDetailMainNavigation {
     case profile
     // 대표 프로젝트로 이동
     case pushRepresentProejct(Project)
+    case apply(Project)
+    case manageProject(Project)
 }
 
 final class ProjectDetailMainViewModel: ViewModel {
@@ -25,18 +27,41 @@ final class ProjectDetailMainViewModel: ViewModel {
         case mine
     }
     
-    private let projectReportUseCase: ProjectReportUseCase = DIContainer.shared.resolve(ProjectReportUseCase.self)
+    var disposeBag: DisposeBag = DisposeBag()
     
-    private let memberFacade: MemberFacade = DIContainer.shared.resolve(MemberFacade.self)
-    
+    private let projectReportUseCase: ProjectReportUseCase
+    private let memberFacade: MemberFacade
+    private let projectLikeUseCase: ProjectLikeUseCaseProtocol
     private let projectInfoUseCase: ProjectInfoUseCase
+    
+    private var project: Project
+    
+    public init(
+        projectReportUseCase: ProjectReportUseCase,
+        memberFacade: MemberFacade,
+        projectLikeUseCase: ProjectLikeUseCaseProtocol,
+        projectInfoUseCase: ProjectInfoUseCase,
+        project: Project
+    ) {
+        self.projectReportUseCase = projectReportUseCase
+        self.memberFacade = memberFacade
+        self.projectLikeUseCase = projectLikeUseCase
+        self.projectInfoUseCase = projectInfoUseCase
+        self.project = project
+        
+        projectSubject.onNext(project)
+    }
 
     struct Input {
+        let viewDidLoad: Observable<Void>
         let viewWillAppear: Observable<Void>
         let backButtonTap: Observable<Void>
         let reportContent: Observable<String>
         let profileSelected: Observable<ProjectMember>
         let representProjectSelected: Observable<RepresentProject>
+        let likeButtonTap: Observable<Void>
+        let applyButtonTap: Observable<Void>
+        let manageButtonTap: Observable<Void>
     }
 
     struct Output {
@@ -47,18 +72,10 @@ final class ProjectDetailMainViewModel: ViewModel {
         let error: PublishSubject<Error>
     }
 
-    var project: Project!
-
-    public init(projectUseCase: ProjectInfoUseCase) {
-        self.projectInfoUseCase = projectUseCase
-    }
-
     let type = BehaviorSubject<ProjectIsMine>(value: .other)
 
+    let refresh = PublishSubject<Void>()
     let navigation = PublishSubject<ProjectDetailMainNavigation>()
-
-    var disposeBag: DisposeBag = .init()
-    
     let projectSubject = BehaviorSubject<Project>(value: Project.noneInfoProject)
     let projectMembers = BehaviorSubject<[ProjectMember]>(value: [])
     let reportResult = PublishSubject<Bool>()
@@ -66,14 +83,17 @@ final class ProjectDetailMainViewModel: ViewModel {
 
     func transform(input: Input) -> Output {
         
-        transformProject(input: input.viewWillAppear)
-        transformIsMyProject(input: input)
+        transformRefreshProject()
+        transformIsMyProject(viewWillAppear: input.viewWillAppear)
         transformNavigation(input: input)
+        transformLike(likeButtonTap: input.likeButtonTap)
         transformReport(input: input)
         transformMemberList(input: input)
         
         return Output(
-            project: projectSubject.asDriver(onErrorJustReturn: Project.noneInfoProject),
+            project: projectSubject.asDriver(
+                onErrorJustReturn: Project.noneInfoProject
+            ),
             projectMembers: projectMembers.asDriver(onErrorJustReturn: []),
             isMyProject: type.map { $0 == .mine }.asDriver(
                 onErrorJustReturn: false
@@ -85,9 +105,8 @@ final class ProjectDetailMainViewModel: ViewModel {
         )
     }
     
-    func transformProject(input: Observable<Void>) {
-        let getProjectResult = input
-            .take(1)
+    func transformRefreshProject() {
+        let getProjectResult = Observable.merge(refresh)
             .withUnretained(self)
             .map { this, _ in
                 return this.project.id
@@ -121,8 +140,8 @@ final class ProjectDetailMainViewModel: ViewModel {
         // TODO: - getfailure 에러처리
     }
     
-    func transformIsMyProject(input: Input) {
-        input.viewWillAppear
+    func transformIsMyProject(viewWillAppear: Observable<Void>) {
+        viewWillAppear
             .withUnretained(self)
             .map { this, _ in
                 this.projectInfoUseCase.isMyProject(
@@ -144,6 +163,40 @@ final class ProjectDetailMainViewModel: ViewModel {
         input.backButtonTap
             .map{ .back }
             .bind(to: navigation)
+            .disposed(by: disposeBag)
+        
+        input.manageButtonTap
+            .withLatestFrom(projectSubject)
+            .map { .manageProject($0) }
+            .bind(to: navigation)
+            .disposed(by: disposeBag)
+        
+        input.applyButtonTap
+            .withLatestFrom(projectSubject)
+            .map { .apply($0) }
+            .bind(to: navigation)
+            .disposed(by: disposeBag)
+    }
+    
+    func transformLike(likeButtonTap: Observable<Void>) {
+        likeButtonTap
+            .withLatestFrom(projectSubject)
+            .withUnretained(self)
+            .flatMap { this, project in
+                return this.projectLikeUseCase.like(projectId: project.id)
+                    .withLatestFrom(this.projectSubject) { like, current in
+                        
+                        var variable = current
+                        
+                        if like.project == project.id {
+                            variable.favorite = like.favorite
+                            variable.myFavorite = like.myFavorite
+                        }
+                        
+                        return variable
+                    }
+            }
+            .bind(to: projectSubject)
             .disposed(by: disposeBag)
     }
     
@@ -176,7 +229,7 @@ final class ProjectDetailMainViewModel: ViewModel {
     }
         
     func transformMemberList(input: Input) {
-        transformGetMembers(input: input.viewWillAppear)
+        transformGetMembers(input: projectSubject.map { _ in return ()}.asObservable())
         transformPushRepresentProject(input: input.representProjectSelected)
     }
     

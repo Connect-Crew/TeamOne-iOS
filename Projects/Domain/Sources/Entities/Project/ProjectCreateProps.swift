@@ -25,8 +25,9 @@ public struct ProjectCreateProps {
     public var recruits: [Recruit] = []
     public var skills: [String] = []
     
-    public init(banner: [ImageWithName], title: String, region: String, isOnline: isOnline, state: ProjectState, careerMin: Career, careerMax: Career, leaderParts: Parts, category: [String], goal: Goal, introducion: String, recruits: [Recruit], skills: [String]) {
+    public init(banner: [ImageWithName], removeBanners: [String], title: String, region: String, isOnline: isOnline, state: ProjectState, careerMin: Career, careerMax: Career, leaderParts: Parts, category: [String], goal: Goal, introducion: String, recruits: [Recruit], skills: [String]) {
         self.banner = banner
+        self.removeBanners = removeBanners
         self.title = title
         self.region = region
         self.isOnline = isOnline

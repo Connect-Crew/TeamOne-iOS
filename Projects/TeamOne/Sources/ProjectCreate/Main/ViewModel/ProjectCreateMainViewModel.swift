@@ -510,7 +510,6 @@ final class ProjectCreateMainViewModel: ViewModel {
     // MARK: - Modify
     func transformModify(input: Input) {
         
-        var removeBannerCount = 0
         
         transformStartFromLastPage()
         transformTitle()
@@ -710,10 +709,8 @@ final class ProjectCreateMainViewModel: ViewModel {
                 .withLatestFrom(projectCreateProps) { image, before -> ProjectCreateProps in
                     var props = before
                     
-                    if removeBannerCount > 0 {
-                        props.removeBanners.append(image.name)
-                        removeBannerCount -= 1
-                    }
+                    props.removeBanners.append(image.name)
+                    
                     
                     if let index = props.banner.firstIndex(where: { $0 == image }) {
                         props.banner.remove(at: index)
@@ -892,7 +889,6 @@ final class ProjectCreateMainViewModel: ViewModel {
                     project.toProps(completion: { props in
                         this.projectCreateProps.accept(props)
                         this.isModify.accept(())
-                        removeBannerCount = props.banner.count
                     })
                 })
                 .disposed(by: disposeBag)

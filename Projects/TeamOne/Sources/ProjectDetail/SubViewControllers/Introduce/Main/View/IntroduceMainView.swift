@@ -67,7 +67,9 @@ final class IntroduceMainView: View {
 
     let textView = UITextView().then {
         $0.isEditable = false
+        $0.isScrollEnabled = false
         $0.backgroundColor = .clear
+        $0.font = .setFont(font: .body3)
     }
 
     let labelTechStack = UILabel().then {

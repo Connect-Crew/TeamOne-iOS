@@ -21,6 +21,7 @@ final class ProjectDetailCoordinator: BaseCoordinator<ProjectDetailCoordinatorRe
     let finish = PublishSubject<ProjectDetailCoordinatorResult>()
     // 변동사항(좋아요변경)등을 상위 코디네이터에 전달해야하는 경우 필요한 서브젝트
     let projectChangedSubject = PublishSubject<Project>()
+    let refresh = PublishSubject<Void>()
     
     let project: Project
 
@@ -31,6 +32,7 @@ final class ProjectDetailCoordinator: BaseCoordinator<ProjectDetailCoordinatorRe
 
     override func start() -> Observable<ProjectDetailCoordinatorResult> {
         showDetail()
+        
         return finish
             .do(onNext: { [weak self] in
                 switch $0 {
@@ -41,67 +43,48 @@ final class ProjectDetailCoordinator: BaseCoordinator<ProjectDetailCoordinatorRe
     }
 
     func showDetail() {
+        
         let viewModel = ProjectDetailMainViewModel(
-            projectUseCase: DIContainer.shared.resolve(ProjectInfoUseCase.self)
+            projectReportUseCase: DIContainer.shared.resolve(ProjectReportUseCase.self),
+            memberFacade: DIContainer.shared.resolve(MemberFacade.self),
+            projectLikeUseCase: DIContainer.shared.resolve(ProjectLikeUseCaseProtocol.self),
+            projectInfoUseCase: DIContainer.shared.resolve(ProjectInfoUseCase.self),
+            project: project
         )
-
-        viewModel.project = project
-
+        
         viewModel.navigation
             .subscribe(onNext: { [weak self] in
                 switch $0 {
                 case .back:
                     self?.finish.onNext(.finish)
                 case .pushRepresentProejct(let project):
-                    self?.showProjectDetail(project: project)
+                    self?.showRepresentProject(project: project)
                 case .profile:
                     // TODO: - 프로필이 나오면 프로필로 이동
                     break
-                }
-            })
-            .disposed(by: disposeBag)
-
-        let introduceVM = ProjectDetailPageSubIntroduceViewModel(
-            projectLikeUseCase: DIContainer.shared.resolve(ProjectLikeUseCaseProtocol.self),
-            projectUseCase: DIContainer.shared.resolve(ProjectInfoUseCase.self)
-        )
-
-        introduceVM.project.onNext(project)
-
-        let reload = PublishSubject<Void>()
-
-        introduceVM.navigation
-            .subscribe(onNext: { [weak self] in
-                switch $0 {
                 case .apply(let project):
-                    self?.showApply(project: project, isReload: reload)
+                    self?.showApply(project: project)
                 case .manageProject(let project):
-                    self?.showManage(project: project, needRefreshSubject: reload)
+                    self?.showManage(project: project)
                 }
             })
             .disposed(by: disposeBag)
         
-        // 좋아요된 프로젝트를 상위 코디네이터로 전달하기 위한 부분
-        introduceVM.project
-            .compactMap { $0 }
+        refresh
+            .bind(to: viewModel.refresh)
+            .disposed(by: disposeBag)
+        
+        viewModel.projectSubject
             .bind(to: self.projectChangedSubject)
             .disposed(by: disposeBag)
 
-        reload.bind(to: introduceVM.reload)
-            .disposed(by: disposeBag)
-
-        let introduceVC = ProjectDetailPageSubIntroduceViewController(
-            viewModel: introduceVM
-        )
-
         let mainViewController = Inject.ViewControllerHost(ProjectDetailMainViewController(
-            viewModel: viewModel,
-            introduceVC: introduceVC))
+            viewModel: viewModel))
 
         pushTabbar(mainViewController, animated: true)
     }
 
-    func showApply(project: Project, isReload: PublishSubject<Void>) {
+    func showApply(project: Project) {
         let viewModel = ApplyViewModel(
             applyUseCase: DIContainer.shared.resolve(ProjectApplyUseCaseProtocol.self),
             projectUseCase: DIContainer.shared.resolve(ProjectInfoUseCase.self))
@@ -112,8 +95,8 @@ final class ProjectDetailCoordinator: BaseCoordinator<ProjectDetailCoordinatorRe
             .subscribe(onNext: { [weak self] in
                 switch $0 {
                 case .close:
+                    self?.refresh.onNext(())
                     self?.dismiss(animated: false)
-                    isReload.onNext(())
                 }
             })
             .disposed(by: disposeBag)
@@ -124,8 +107,8 @@ final class ProjectDetailCoordinator: BaseCoordinator<ProjectDetailCoordinatorRe
         present(viewController, animated: false)
     }
     
-    func showManage(project: Project, needRefreshSubject: PublishSubject<Void>) {
-        let manage = ProjectManageCoordinator(navigationController, project: project, needRefreshSubject: needRefreshSubject)
+    func showManage(project: Project) {
+        let manage = ProjectManageCoordinator(navigationController, project: project)
         
         coordinate(to: manage)
             .subscribe(onNext: { [weak self] in
@@ -150,8 +133,7 @@ final class ProjectDetailCoordinator: BaseCoordinator<ProjectDetailCoordinatorRe
             .subscribe(onNext: { [weak self] in
                 switch $0 {
                 case .created:
-                    // TODO: - 생성하기 끝난 후 detail화면 refresh 추가
-                    break
+                    self?.refresh.onNext(())
                 case .finish:
                     break
                 }
@@ -159,7 +141,7 @@ final class ProjectDetailCoordinator: BaseCoordinator<ProjectDetailCoordinatorRe
             .disposed(by: disposeBag)
     }
     
-    func showProjectDetail(project: Project) {
+    func showRepresentProject(project: Project) {
         let detail = ProjectDetailCoordinator(
             navigationController,
             project: project

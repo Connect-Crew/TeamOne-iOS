@@ -255,13 +255,14 @@ final class HomeViewModel: ViewModel {
     }
 
     func transformDidSelectCell(input: Input) {
+        
         input.didSelectedCell
-            .withLatestFrom(projects) { indexPath, projects in
-                return projects[indexPath.row]
+            .withLatestFrom(projects) { indexPath, projects -> Int in
+                return projects[indexPath.row].id
             }
             .withUnretained(self)
-            .flatMap { viewModel, project in
-                viewModel.projectUseCase.project(projectId: project.id)
+            .flatMap { viewModel, id in
+                viewModel.projectUseCase.project(projectId: id)
                     .catch { error in
                         viewModel.error.accept(error)
                         return .empty()
