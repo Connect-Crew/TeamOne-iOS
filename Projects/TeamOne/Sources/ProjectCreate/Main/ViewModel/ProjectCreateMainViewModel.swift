@@ -870,6 +870,7 @@ final class ProjectCreateMainViewModel: ViewModel {
         func transformModifyFetchProjectIfo(input: Input) {
 
             input.viewWillAppear
+                .take(1)
                 .withUnretained(self)
                 .map { this, _ in
                     return this.modifyTarget
