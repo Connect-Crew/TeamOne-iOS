@@ -74,6 +74,7 @@ final class HomeCoordinator: BaseCoordinator<HomeCoordinatorResult> {
                 switch $0 {
                 case let .detail(id):
                     projectInfoUseCase.project(projectId: id)
+                        .asObservable()
                         .withUnretained(self)
                         .subscribe(onNext: { this, project in
                             this.showDetail(project)

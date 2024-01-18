@@ -104,7 +104,6 @@ final class ProjectDetailPageSubIntroduceViewController: ViewController {
         
         project
             .map { $0.banners }
-            .filter { !$0.isEmpty }
             .drive(onNext: { [weak self] array in
                 self?.mainView.imageSlider.path = array
             })

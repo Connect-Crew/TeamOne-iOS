@@ -878,6 +878,7 @@ final class ProjectCreateMainViewModel: ViewModel {
                 .withUnretained(self)
                 .flatMap { this, target in
                     this.projectInfoUseCase.project(projectId: target)
+                        .asObservable()
                         .catch { [weak self] error in
                             self?.error.onNext(error)
                             return .empty()

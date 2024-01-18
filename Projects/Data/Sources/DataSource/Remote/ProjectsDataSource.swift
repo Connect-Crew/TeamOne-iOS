@@ -22,7 +22,7 @@ public protocol ProjectsDataSouceProtocol {
     
     func like(_ request: ProjectFavoriteRequestDTO) -> Observable<ProjectFavoriteResponseDTO>
     
-    func project(_ projectId: Int) -> Observable<ProjectResponseDTO>
+    func project(_ projectId: Int) -> Single<ProjectResponseDTO>
     
     func apply(_ request: ProjectApplyRequestDTO) -> Single<ProjectApplyResponseDTO>
     
@@ -56,7 +56,7 @@ public struct ProjectsDataSource: ProjectsDataSouceProtocol {
         return provider.request(ProjectsTarget.like(request: request))
     }
     
-    public func project(_ projectId: Int) -> Observable<ProjectResponseDTO> {
+    public func project(_ projectId: Int) -> Single<ProjectResponseDTO> {
         return provider.request(ProjectsTarget.project(projectId: projectId))
     }
     

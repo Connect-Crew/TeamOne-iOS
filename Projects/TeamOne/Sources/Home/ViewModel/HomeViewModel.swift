@@ -56,6 +56,8 @@ final class HomeViewModel: ViewModel {
 
     let isEnd = BehaviorSubject<Bool>(value: false)
     let lastID = BehaviorSubject<Int?>(value: nil)
+    
+    
 
     let navigation = PublishSubject<HomeNavigation>()
     var disposeBag = DisposeBag()
@@ -215,10 +217,12 @@ final class HomeViewModel: ViewModel {
                 return projects[indexPath.row].id
             }
             .withUnretained(self)
-            .flatMap { viewModel, id in
-                viewModel.projectUseCase.project(projectId: id)
+            .flatMapLatest { viewModel, id in
+                return viewModel.projectUseCase.project(projectId: id)
+                    .asObservable()
                     .catch { error in
                         viewModel.error.accept(error)
+                        
                         return .empty()
                     }
             }

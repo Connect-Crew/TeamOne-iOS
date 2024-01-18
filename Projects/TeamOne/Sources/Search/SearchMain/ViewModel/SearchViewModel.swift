@@ -140,7 +140,7 @@ final class SearchViewModel: ViewModel {
         // MARK: 프로젝트 선택
         input.tapProject
             .withUnretained(self)
-            .flatMap { this, project -> Observable<Project> in
+            .flatMap { this, project -> Single<Project> in
                 this.projectUseCase.project(projectId: project.id)
             }
             .map { SearchNavigation.toProject($0) }

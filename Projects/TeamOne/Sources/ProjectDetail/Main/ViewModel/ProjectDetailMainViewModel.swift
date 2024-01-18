@@ -27,8 +27,6 @@ final class ProjectDetailMainViewModel: ViewModel {
         case mine
     }
     
-    var disposeBag: DisposeBag = DisposeBag()
-    
     private let projectReportUseCase: ProjectReportUseCase
     private let memberFacade: MemberFacade
     private let projectLikeUseCase: ProjectLikeUseCaseProtocol
@@ -81,8 +79,6 @@ final class ProjectDetailMainViewModel: ViewModel {
     let navigation = PublishSubject<ProjectDetailMainNavigation>()
 
     var disposeBag: DisposeBag = .init()
-    
-    let refresh = PublishSubject<Void>()
 
     let projectSubject = BehaviorSubject<Project>(value: Project.noneInfoProject)
     let projectMembers = BehaviorSubject<[ProjectMember]>(value: [])
@@ -96,7 +92,7 @@ final class ProjectDetailMainViewModel: ViewModel {
 
     func transform(input: Input) -> Output {
         
-        transformRefreshProject()
+        transformProject(input: input.viewWillAppear)
         transformIsMyProject(viewWillAppear: input.viewWillAppear)
         transformNavigation(input: input)
         transformLike(likeButtonTap: input.likeButtonTap)
@@ -119,10 +115,6 @@ final class ProjectDetailMainViewModel: ViewModel {
             expelSuccess: expelSuccess,
             expelFailure: expelFailure
         )
-    }
-    
-    func transformRefreshProject() {
-        let getProjectResult = Observable.merge(refresh)
     }
   
     func transformProject(input: Observable<Void>) {

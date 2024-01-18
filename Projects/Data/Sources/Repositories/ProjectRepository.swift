@@ -47,7 +47,7 @@ public struct ProjectRepository: ProjectRepositoryProtocol {
             .map { $0.toDomain() }
     }
 
-    public func project(projectId: Int) -> Observable<Project> {
+    public func project(projectId: Int) -> Single<Project> {
         return projectDataSource.project(projectId)
             .map { $0.toDomain() }
     }

@@ -269,7 +269,6 @@ final class ProjectDetailMainViewController: ViewController {
                 return (member, project)
             }
             .withUnretained(self)
-            .subscribe(on: MainScheduler.instance)
             .subscribe(onNext: { this, content in
                 
                 let member = content.0
