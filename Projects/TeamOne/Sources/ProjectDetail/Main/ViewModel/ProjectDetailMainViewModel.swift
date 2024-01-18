@@ -80,6 +80,8 @@ final class ProjectDetailMainViewModel: ViewModel {
     let projectMembers = BehaviorSubject<[ProjectMember]>(value: [])
     let reportResult = PublishSubject<Bool>()
     let error = PublishSubject<Error>()
+    
+    let changedProject = PublishSubject<Project>()
 
     func transform(input: Input) -> Output {
         
@@ -134,10 +136,15 @@ final class ProjectDetailMainViewModel: ViewModel {
             }
         
         getSuceess
+            .do(onNext: { [weak self] in
+                self?.changedProject.onNext($0)
+            })
             .bind(to: projectSubject)
             .disposed(by: disposeBag)
         
-        // TODO: - getfailure 에러처리
+        getFailure
+            .bind(to: error)
+            .disposed(by: disposeBag)
     }
     
     func transformIsMyProject(viewWillAppear: Observable<Void>) {
@@ -193,6 +200,7 @@ final class ProjectDetailMainViewModel: ViewModel {
                             variable.myFavorite = like.myFavorite
                         }
                         
+                        this.changedProject.onNext(variable)
                         return variable
                     }
             }

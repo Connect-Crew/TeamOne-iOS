@@ -25,15 +25,31 @@ open class ImageSlideView: UIView {
         $0.pageIndicatorTintColor = .teamOne.grayscaleTwo
     }
     
+    enum layoutTarget {
+        case image
+        case path
+        case base
+    }
+    
+    private var target: layoutTarget = .image
+    
     public var images: [UIImage?] = [] {
         didSet {
-            setupImagesInScrollView()
+            if images.isEmpty {
+                setBaseImage()
+            } else {
+                setupImagesInScrollView()
+            }
         }
     }
     
     public var path: [String] = [] {
         didSet {
-            setupPathToInScrollView()
+            if path.isEmpty {
+                setBaseImage()
+            } else {
+                setupPathToInScrollView()
+            }
         }
     }
  
@@ -70,8 +86,32 @@ open class ImageSlideView: UIView {
     public func configure(with images: [UIImage?]) {
         self.images = images
     }
+    
+    private func setBaseImage() {
+        
+        target = .base
+        
+        scrollView.subviews.forEach { $0.removeFromSuperview() }
+        
+        let imageView = UIImageView(image: .image(dsimage: .defaultIntroduceImage))
+        imageView.contentMode = ImageSlideView.contentMode
+        imageView.frame = CGRect(
+            x: CGFloat(0) * scrollView.frame.width,
+            y: 0,
+            width: scrollView.frame.width,
+            height: scrollView.frame.height
+        )
+        
+        scrollView.addSubview(imageView)
+        
+        
+        scrollView.contentSize = CGSize(width: scrollView.frame.width * CGFloat(images.count), height: scrollView.frame.height)
+        pageControl.numberOfPages = images.count
+    }
 
     private func setupImagesInScrollView() {
+        
+        target = .image
 
         scrollView.subviews.forEach { $0.removeFromSuperview() }
 
@@ -93,6 +133,9 @@ open class ImageSlideView: UIView {
     }
     
     private func setupPathToInScrollView() {
+        
+        target = .path
+        
         scrollView.subviews.forEach { $0.removeFromSuperview() }
         
         for (index, path) in path.enumerated() {
@@ -117,8 +160,14 @@ open class ImageSlideView: UIView {
     open override func layoutSubviews() {
         super.layoutSubviews()
 
-        setupImagesInScrollView()
-        setupPathToInScrollView()
+        switch target {
+        case .image:
+            setupImagesInScrollView()
+        case .path:
+            setupPathToInScrollView()
+        case .base:
+            setBaseImage()
+        }
     }
 
     required public init?(coder: NSCoder) {

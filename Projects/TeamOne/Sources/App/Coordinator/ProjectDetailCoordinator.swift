@@ -20,7 +20,7 @@ final class ProjectDetailCoordinator: BaseCoordinator<ProjectDetailCoordinatorRe
 
     let finish = PublishSubject<ProjectDetailCoordinatorResult>()
     // 변동사항(좋아요변경)등을 상위 코디네이터에 전달해야하는 경우 필요한 서브젝트
-    let projectChangedSubject = PublishSubject<Project>()
+    let changedProject = PublishSubject<Project>()
     let refresh = PublishSubject<Void>()
     
     let project: Project
@@ -74,8 +74,8 @@ final class ProjectDetailCoordinator: BaseCoordinator<ProjectDetailCoordinatorRe
             .bind(to: viewModel.refresh)
             .disposed(by: disposeBag)
         
-        viewModel.projectSubject
-            .bind(to: self.projectChangedSubject)
+        viewModel.changedProject
+            .bind(to: changedProject)
             .disposed(by: disposeBag)
 
         let mainViewController = Inject.ViewControllerHost(ProjectDetailMainViewController(

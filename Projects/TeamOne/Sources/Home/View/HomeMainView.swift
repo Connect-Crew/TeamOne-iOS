@@ -55,6 +55,7 @@ final class HomeMainView: UIView {
 
     lazy var tableView = UITableView().then {
         // sticky를 구현하기 위해 Top에 max만큼 inset을 생성
+        $0.scrollIndicatorInsets = .init(top: self.headerMaxHeight, left: 0, bottom: 0, right: 0)
         $0.contentInset = .init(top: self.headerMaxHeight, left: 0, bottom: 0, right: 0)
         $0.register(HomeTableViewCell.self, forCellReuseIdentifier: HomeTableViewCell.identifier)
         $0.backgroundColor = .teamOne.background

@@ -19,7 +19,7 @@ enum HomeCoordinatorResult {
 final class HomeCoordinator: BaseCoordinator<HomeCoordinatorResult> {
 
     let finish = PublishSubject<HomeCoordinatorResult>()
-    let projectChangedSubject = PublishSubject<Project>()
+    let changedProject = PublishSubject<Project>()
     let refreshHome = PublishSubject<Void>()
 
     override func start() -> Observable<HomeCoordinatorResult> {
@@ -52,8 +52,8 @@ final class HomeCoordinator: BaseCoordinator<HomeCoordinatorResult> {
             })
             .disposed(by: disposeBag)
         
-        projectChangedSubject
-            .bind(to: viewModel.projectChangedSubject)
+        changedProject
+            .bind(to: viewModel.changedProject)
             .disposed(by: disposeBag)
 
        let viewController = Inject.ViewControllerHost(HomeViewController(viewModel: viewModel))
@@ -96,8 +96,8 @@ final class HomeCoordinator: BaseCoordinator<HomeCoordinatorResult> {
             .disposed(by: disposeBag)
         
         projectDetail
-            .projectChangedSubject
-            .bind(to: projectChangedSubject)
+            .changedProject
+            .bind(to: changedProject)
             .disposed(by: disposeBag)
     }
     

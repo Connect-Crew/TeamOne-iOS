@@ -54,7 +54,6 @@ final class HomeViewModel: ViewModel {
 
     lazy var projects = BehaviorSubject<[SideProjectListElement]>(value: [])
 
-    let isEmpty = BehaviorSubject<Bool>(value: false)
     let isEnd = BehaviorSubject<Bool>(value: false)
     let lastID = BehaviorSubject<Int?>(value: nil)
 
@@ -64,7 +63,7 @@ final class HomeViewModel: ViewModel {
     
     var refresh = PublishSubject<Void>()
     // 하위 코디네이터에서 프로젝트의 정보가 변경된 경우 변경된 사항을 반영하기위한 서브젝트
-    var projectChangedSubject = PublishSubject<Project>()
+    var changedProject = PublishSubject<Project>()
 
     func transform(input: Input) -> Output {
 
@@ -102,80 +101,28 @@ final class HomeViewModel: ViewModel {
     }
 
     func transformLoadProjects(input: Input) {
-
-        refresh
-            .map { [weak self] in
-                self?.isEmpty.onNext(false)
-                self?.lastID.onNext(nil)
-                self?.isEnd.onNext(false)
-                return $0
-            }
-            .withLatestFrom(
-                Observable.combineLatest(lastID.asObservable(), input.parts)
-            )
-            .withUnretained(self)
-            .flatMapLatest { viewModel, params in
-                return viewModel.projectListUseCase.list(lastId: params.0, size: 30, goal: nil,
-                                                         career: nil, region: nil, online: nil,
-                                                         part: params.1, skills: nil, states: nil,
-                                                         category: nil, search: nil)
-                    .withLatestFrom(viewModel.projects) { newProjects, currentProjects in
-                        return [] + newProjects
-                    }
-            }
-            .subscribe(onNext: { [weak self] updateProjects in
-                self?.projects.onNext(updateProjects)
-                self?.lastID.onNext(updateProjects.last?.id)
-
-                if updateProjects.isEmpty {
-                    self?.isEmpty.onNext(true)
-                } else {
-                    self?.isEmpty.onNext(false)
-                }
-
-                if updateProjects.count < 30 {
-                    self?.isEnd.onNext(true)
-                }
-            })
-            .disposed(by: disposeBag)
-        
-        
-        input.parts
-            .distinctUntilChanged()
-            .map { [weak self] in
-                self?.isEmpty.onNext(false)
-                self?.lastID.onNext(nil)
-                self?.isEnd.onNext(false)
-                return $0
-            }
-            .withLatestFrom(
-                Observable.combineLatest(lastID.asObservable(), input.parts)
-            )
-            .withUnretained(self)
-            .flatMapLatest { viewModel, params in
-                return viewModel.projectListUseCase.list(lastId: params.0, size: 30, goal: nil,
-                                                         career: nil, region: nil, online: nil,
-                                                         part: params.1, skills: nil, states: nil,
-                                                         category: nil, search: nil)
-                    .withLatestFrom(viewModel.projects) { newProjects, currentProjects in
-                        return [] + newProjects
-                    }
-            }
-            .subscribe(onNext: { [weak self] updateProjects in
-                self?.projects.onNext(updateProjects)
-                self?.lastID.onNext(updateProjects.last?.id)
-
-                if updateProjects.isEmpty {
-                    self?.isEmpty.onNext(true)
-                } else {
-                    self?.isEmpty.onNext(false)
-                }
-
-                if updateProjects.count < 30 {
-                    self?.isEnd.onNext(true)
-                }
-            })
-            .disposed(by: disposeBag)
+        Observable.merge(
+            input.parts.map { _ in return () },
+            refresh
+        )
+        .withLatestFrom(input.parts)
+        .map { [weak self] in
+            self?.lastID.onNext(nil)
+            self?.isEnd.onNext(false)
+            return $0
+        }
+        .withUnretained(self)
+        .flatMap { viewModel, part in
+            return viewModel.projectListUseCase.list(lastId: nil, size: 30, goal: nil,
+                                                     career: nil, region: nil, online: nil,
+                                                     part: part, skills: nil, states: nil,
+                                                     category: nil, search: nil)
+        }
+        .do(onNext: { [weak self] list in
+            self?.setPagingInformation(list: list)
+        })
+        .bind(to: projects)
+        .disposed(by: disposeBag)
 
         input
             .didScrolledEnd
@@ -208,6 +155,13 @@ final class HomeViewModel: ViewModel {
             })
             .disposed(by: disposeBag)
 
+    }
+    
+    func setPagingInformation(list: [SideProjectListElement]) {
+        let isEnd = list.count < 30
+        
+        self.isEnd.onNext(isEnd)
+        self.lastID.onNext(list.last?.id)
     }
 
     func transformParticipantsButton(input: Input) {
@@ -274,7 +228,7 @@ final class HomeViewModel: ViewModel {
     }
     
     func transformChanged(input: Input) {
-        projectChangedSubject
+        changedProject
             .withLatestFrom(projects) { changed, current in
                 
                 var newProjects = current
