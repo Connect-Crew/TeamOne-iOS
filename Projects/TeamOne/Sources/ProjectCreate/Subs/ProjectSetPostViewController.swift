@@ -179,7 +179,7 @@ final class ProjectSetPostViewController: ViewController, UINavigationController
     lazy var plusRecruit = PublishSubject<Recruit>()
     lazy var deleteRecruit = PublishSubject<Recruit>()
     lazy var changeCommentRecruit = PublishSubject<(Recruit, String)>()
-    lazy var selectedLeaderPart = PublishSubject<Parts>()
+    lazy var selectedLeaderPart = PublishSubject<Parts?>()
     private lazy var selectedLeaderMajorJobClass = PublishSubject<(String, Int)>()
     private lazy var selectedLeaderMajorSubClass = PublishSubject<(String, Int)>()
     private lazy var selectedRecruitMajorPart = PublishSubject<(String, Int)>()
@@ -395,6 +395,8 @@ final class ProjectSetPostViewController: ViewController, UINavigationController
                 
                 sub.isDropDownOpend = false
                 sub.isSelected = false
+                
+                this.selectedLeaderPart.onNext(nil)
             })
             .disposed(by: disposeBag)
         

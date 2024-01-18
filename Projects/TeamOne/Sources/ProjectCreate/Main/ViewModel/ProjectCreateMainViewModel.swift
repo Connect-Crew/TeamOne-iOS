@@ -75,7 +75,7 @@ final class ProjectCreateMainViewModel: ViewModel {
         let changeCommentRecruit: Observable<(Recruit, String)>
         
         let introduce: Observable<String>
-        let leaderPart: Observable<Parts>
+        let leaderPart: Observable<Parts?>
         
         let selectedSkillTap: Observable<String>
         let deleteSkillTap: Observable<String>
