@@ -162,11 +162,21 @@ public struct Project {
                 )
             }
             
+            var region: String = ""
+            
+            if self.isOnline == .online {
+                region = ""
+            } else if isOnline == .onOffline {
+                region = self.region
+            } else {
+                region = ""
+            }
+            
             let props = ProjectCreateProps(
                 banner: imageWithName,
                 removeBanners: imageWithName.map { $0.name },
                 title: self.title,
-                region: self.region,
+                region: region,
                 isOnline: self.isOnline,
                 state: self.state,
                 careerMin: self.careerMin,

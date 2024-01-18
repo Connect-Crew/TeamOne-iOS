@@ -72,7 +72,7 @@ public struct SideProjectListElement: Hashable {
         
         if online == true {
             self.isOnline = .online
-        } else if online == true && region != "미설정" {
+        } else if online == false && region != "미설정" {
             self.isOnline = .onOffline
         } else {
             self.isOnline = .offline
