@@ -53,7 +53,7 @@ public final class CellListStackView: UIView {
     }
 
     public func addTags(_ tags: [String]) {
-        self.tags = tags
+        self.tags = tags.filter { !$0.isEmpty }
         layoutSubviews()
     }
 

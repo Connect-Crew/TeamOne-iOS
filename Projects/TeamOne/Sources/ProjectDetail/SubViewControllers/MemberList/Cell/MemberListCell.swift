@@ -141,7 +141,7 @@ final class MemberListCell: UICollectionViewCell, CellIdentifiable {
     private var member: ProjectMember?
     
     var representProjectTap = PublishRelay<RepresentProject>()
-    var expleMemberTap = PublishRelay<RepresentProject>()
+    var expelMemberSelected = PublishRelay<ProjectMember>()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -157,6 +157,7 @@ final class MemberListCell: UICollectionViewCell, CellIdentifiable {
         self.member = member
         
         initSettingLayout()
+        bind()
     }
     
     private func initSettingLayout() {
@@ -179,12 +180,12 @@ final class MemberListCell: UICollectionViewCell, CellIdentifiable {
             setLeader()
         }
     }
-    
-    func setMember() {
+
+    private func setMember() {
         self.expelMemberStackView.isHidden = true
     }
     
-    func setLeader() {
+    private func setLeader() {
         self.expelMemberStackView.isHidden = false
         
         if member?.isLeader == true {
@@ -192,26 +193,26 @@ final class MemberListCell: UICollectionViewCell, CellIdentifiable {
         }
     }
     
-    func layout() {
+    private func layout() {
         layoutProfile()
         layoutContentView()
         layoutStackView()
         layoutRepresentProject()
     }
     
-    func layoutProfile() {
+    private func layoutProfile() {
         imageViewProfile.snp.makeConstraints {
             $0.width.height.equalTo(48)
         }
     }
     
-    func layoutContentView() {
+    private func layoutContentView() {
         self.contentView.backgroundColor = .white
         self.contentView.setBaseShadow(radius: 8)
         self.contentView.setRound(radius: 8)
     }
     
-    func layoutStackView() {
+    private func layoutStackView() {
         
         self.contentView.addSubview(containerStackView)
         
@@ -220,7 +221,7 @@ final class MemberListCell: UICollectionViewCell, CellIdentifiable {
         }
     }
     
-    func layoutRepresentProject() {
+    private func layoutRepresentProject() {
         collectionViewRepresentProject.snp.makeConstraints {
             $0.height.equalTo(60)
         }
@@ -232,7 +233,22 @@ final class MemberListCell: UICollectionViewCell, CellIdentifiable {
         }
     }
     
-    func createCollectionViewLayout() -> UICollectionViewCompositionalLayout {
+    private func bind() {
+        bindExpelButton()
+    }
+    
+    private func bindExpelButton() {
+        expelMemberButton.rx.tap
+            .withUnretained(self)
+            .map { this, _ in
+                return this.member
+            }
+            .compactMap { $0 }
+            .bind(to: expelMemberSelected)
+            .disposed(by: disposeBag)
+    }
+    
+    private func createCollectionViewLayout() -> UICollectionViewCompositionalLayout {
         let layout = UICollectionViewCompositionalLayout { (sectionIndex, layoutEnvironment) -> NSCollectionLayoutSection? in
             
             let itemSize = NSCollectionLayoutSize(
@@ -266,7 +282,7 @@ final class MemberListCell: UICollectionViewCell, CellIdentifiable {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func makeHorizontalStackView(subviews: [UIView]) -> UIStackView {
+    private func makeHorizontalStackView(subviews: [UIView]) -> UIStackView {
         return UIStackView(arrangedSubviews: subviews)
             .then {
                 $0.spacing = 5

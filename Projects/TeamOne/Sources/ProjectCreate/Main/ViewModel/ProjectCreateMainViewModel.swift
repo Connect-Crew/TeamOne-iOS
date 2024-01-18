@@ -81,7 +81,7 @@ final class ProjectCreateMainViewModel: ViewModel {
         let deleteSkillTap: Observable<String>
         
         let createButtonTap: Observable<Void>
-        let errorOKTap: Observable<Void>
+        let errorOKTap: Observable<Bool>
     }
     
     struct Output {
@@ -941,9 +941,11 @@ final class ProjectCreateMainViewModel: ViewModel {
             .disposed(by: disposeBag)
     }
     
-    func transformError(input: Observable<Void>) {
+    func transformError(input: Observable<Bool>) {
         input
-            .map { ProjectCreateMainNavigation.close }
+            .map { _ in
+                ProjectCreateMainNavigation.close
+            }
             .bind(to: navigation)
             .disposed(by: disposeBag)
     }

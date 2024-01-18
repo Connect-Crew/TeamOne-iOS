@@ -100,9 +100,9 @@ final class ChatInputBottomView: UIView {
         addSubview(sendButton)
         
         sendButton.snp.makeConstraints {
+            $0.width.height.equalTo(40)
             $0.leading.equalTo(inputTextView.snp.trailing).offset(8)
             $0.trailing.equalToSuperview().inset(24)
-            $0.width.height.equalTo(40)
             $0.bottom.equalTo(safeAreaLayoutGuide.snp.bottom).inset(12)
         }
     }
