@@ -9,10 +9,22 @@
 import UIKit
 import SnapKit
 
-public final class View_EmptyImageView_Label: UIView {
+public final class ListEmptyView: UIView {
 
     let imageView = UIImageView()
-    let label = UILabel()
+    
+    let label = UILabel().then {
+        $0.textAlignment = .center
+    }
+    
+    lazy var contentView = UIStackView(arrangedSubviews: [
+        imageView,
+        label
+    ]).then {
+        $0.spacing = 20
+        $0.axis = .vertical
+        $0.alignment = .center
+    }
 
     public init(text: String, textColor: UIColor, typo: SansNeo,
                 image: DSKitImage) {
@@ -31,17 +43,14 @@ public final class View_EmptyImageView_Label: UIView {
 
         self.backgroundColor = .clear
 
-        addSubview(imageView)
-        addSubview(label)
+        addSubview(contentView)
 
         imageView.snp.makeConstraints {
-            $0.top.equalToSuperview()
-            $0.centerX.equalToSuperview()
+            $0.width.height.equalTo(150)
         }
 
-        label.snp.makeConstraints {
-            $0.top.equalTo(imageView.snp.bottom).offset(24)
-            $0.leading.trailing.bottom.equalToSuperview()
+        contentView.snp.makeConstraints {
+            $0.edges.equalToSuperview()
         }
     }
 
