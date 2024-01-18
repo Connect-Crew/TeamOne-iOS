@@ -18,16 +18,25 @@ public extension UIImageView {
     /// path: api통신 후 가져온 이미지 주소
     func setTeamOneImage(path: String?) {
         
+        self.sd_imageIndicator = SDWebImageActivityIndicator.gray
+        self.sd_imageIndicator?.startAnimatingIndicator()
+        
         if path != "",
            let urlString = path,
            let url = URL(string: Self.baseNetworkURL + urlString) {
-            self.sd_setImage(with: url)
+            self.sd_setImage(with: url, completed: { _,_,_,_  in
+                
+                self.sd_imageIndicator?.stopAnimatingIndicator()
+                
+            })
+        } else {
+            self.sd_imageIndicator?.stopAnimatingIndicator()
         }
     }
     
     static func pathToImage(path: [String?], completion: @escaping ([UIImage?]) -> Void) {
         
-        Loading.start()
+        Loading.start(stopTouch: false)
         
         var images: [UIImage?] = Array(repeating: nil, count: path.count)
             let group = DispatchGroup()

@@ -35,8 +35,6 @@ public class Provider: ProviderProtocol {
 
     public func request<T: Decodable>(_ urlConvertible: URLRequestConvertible) -> Observable<T> {
 
-        Loading.start()
-
         return Observable.create { emitter in
             let request = self.session
                 .request(urlConvertible,
@@ -50,8 +48,6 @@ public class Provider: ProviderProtocol {
                     case let .failure(error):
                         emitter.onError(error)
                     }
-
-                    Loading.stop()
                 }
             return Disposables.create {
                 request.cancel()
@@ -81,6 +77,9 @@ public class Provider: ProviderProtocol {
 
     public func request<T: Decodable>(_ urlConvertible: URLRequestConvertible) -> Single<T> {
         return Single.create { single in
+            
+            Loading.start()
+
             let request = self.session
                 .request(urlConvertible,
                          interceptor: self.authInterceptor)
@@ -104,6 +103,9 @@ public class Provider: ProviderProtocol {
                             single(.failure(error))
                         }
                     }
+                    
+                    Loading.stop()
+
                 }
             return Disposables.create {
                 request.cancel()
