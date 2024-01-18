@@ -9,8 +9,11 @@
 import UIKit
 import Then
 import SnapKit
+import SDWebImage
 
 open class ImageSlideView: UIView {
+    
+    static var contentMode: UIImageView.ContentMode = .scaleAspectFill
     
     public let scrollView = UIScrollView()
     
@@ -21,12 +24,19 @@ open class ImageSlideView: UIView {
         $0.currentPageIndicatorTintColor = .teamOne.mainColor
         $0.pageIndicatorTintColor = .teamOne.grayscaleTwo
     }
+    
     public var images: [UIImage?] = [] {
         didSet {
             setupImagesInScrollView()
         }
     }
     
+    public var path: [String] = [] {
+        didSet {
+            setupPathToInScrollView()
+        }
+    }
+ 
     public override init(frame: CGRect) {
         super.init(frame: frame)
         
@@ -67,7 +77,7 @@ open class ImageSlideView: UIView {
 
         for (index, image) in images.enumerated() {
             let imageView = UIImageView(image: image)
-            imageView.contentMode = .scaleAspectFill
+            imageView.contentMode = ImageSlideView.contentMode
             imageView.frame = CGRect(
                 x: CGFloat(index) * scrollView.frame.width,
                 y: 0,
@@ -81,11 +91,34 @@ open class ImageSlideView: UIView {
         pageControl.numberOfPages = images.count
 
     }
+    
+    private func setupPathToInScrollView() {
+        scrollView.subviews.forEach { $0.removeFromSuperview() }
+        
+        for (index, path) in path.enumerated() {
+            let imageView = UIImageView()
+            imageView.contentMode = ImageSlideView.contentMode
+            imageView.frame = CGRect(
+                x: CGFloat(index) * scrollView.frame.width,
+                y: 0,
+                width: scrollView.frame.width,
+                height: scrollView.frame.height
+            )
+            
+            scrollView.addSubview(imageView)
+            
+            imageView.setTeamOneImage(path: path)
+        }
+        
+        scrollView.contentSize = CGSize(width: scrollView.frame.width * CGFloat(path.count), height: scrollView.frame.height)
+        pageControl.numberOfPages = path.count
+    }
 
     open override func layoutSubviews() {
         super.layoutSubviews()
 
         setupImagesInScrollView()
+        setupPathToInScrollView()
     }
 
     required public init?(coder: NSCoder) {
