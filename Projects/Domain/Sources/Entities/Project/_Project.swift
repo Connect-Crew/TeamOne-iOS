@@ -22,7 +22,7 @@ public struct Project {
     public let category: [String]
     public let goal: Goal
     public let leader: Leader
-    public let leaderParts: [Parts]
+    public let leaderParts: Parts
     public let introduction: String
     public var favorite: Int
     public var myFavorite: Bool
@@ -32,10 +32,10 @@ public struct Project {
     public var isAppliable: Bool
     public var recruitTarget: Int
     public var recruitNow: Int
-
+    
     public var hashTags: [HashTag] = []
-
-    public init(id: Int, 
+    
+    public init(id: Int,
                 title: String,
                 banners: [String],
                 region: String,
@@ -47,7 +47,7 @@ public struct Project {
                 category: [String],
                 goal: String,
                 leader: Leader,
-                leaderParts: [Parts],
+                leaderParts: Parts,
                 introduction: String,
                 favorite: Int,
                 myFavorite: Bool,
@@ -84,16 +84,16 @@ public struct Project {
         self.isAppliable = true
         self.recruitNow = 0
         self.recruitTarget = 0
-
+        
         for status in recruitStatus {
             self.recruitNow += status.current
             self.recruitTarget += status.max
         }
-
+        
         if recruitNow >= recruitTarget {
             self.isAppliable = false
         }
-
+        
         if let Myid = UserDefaultKeyList.User.id {
             if Myid == leader.id {
                 self.isMine = true
@@ -102,10 +102,6 @@ public struct Project {
             }
         } else {
             self.isMine = false
-        }
-
-        if online == true {
-            self.region = "온라인"
         }
         
         setHashTags()
@@ -141,8 +137,8 @@ public struct Project {
             responseRate: 0,
             parts: [],
             representProjects: []
-        ), 
-        leaderParts: [],
+        ),
+        leaderParts: Parts(key: "", part: "", category: ""),
         introduction: "",
         favorite: 0,
         myFavorite: false,
@@ -150,25 +146,51 @@ public struct Project {
         skills: []
     )
     
-    public func toProps() -> ProjectCreateProps {
-
-        return ProjectCreateProps(
-            banner: [],
-            title: self.title,
-            region: self.region,
-            isOnline: self.isOnline,
-            state: self.state,
-            careerMin: self.careerMin,
-            careerMax: self.careerMax,
-            leaderParts: "리더파트정보필요",
-            category: self.category,
-            goal: self.goal,
-            introducion: self.introduction,
-            recruits: self.recruitStatus.map {
-                return Recruit(part: $0.part, comment: $0.comment, max: $0.max)
-            },
-            skills: self.skills
-        )
+    // 수정하기일 경우 Project -> Props 변경이 필요합니다,
+    public func toProps(completion: @escaping ((ProjectCreateProps) -> ())){
+        
+        UIImageView.pathToImage(path: self.banners) { images in
+            
+            let nonOptionalImage = images.compactMap { $0 }
+            
+            var imageWithName = [ImageWithName]()
+            
+            for seq in 0..<nonOptionalImage.count {
+                imageWithName.append(ImageWithName(
+                    name: banners[seq].bannerUrlToName(),
+                    image: nonOptionalImage[seq])
+                )
+            }
+            
+            var region: String = ""
+            
+            if self.isOnline == .online {
+                region = ""
+            } else if isOnline == .onOffline {
+                region = self.region
+            } else {
+                region = ""
+            }
+            
+            let props = ProjectCreateProps(
+                banner: imageWithName,
+                removeBanners: imageWithName.map { $0.name },
+                title: self.title,
+                region: region,
+                isOnline: self.isOnline,
+                state: self.state,
+                careerMin: self.careerMin,
+                careerMax: self.careerMax,
+                leaderParts: self.leaderParts,
+                category: self.category,
+                goal: self.goal,
+                introducion: self.introduction,
+                recruits: self.recruitStatus.map { $0.toRecruit() },
+                skills: self.skills
+            )
+            
+            completion(props)
+        }
     }
     
     public func toListElement() -> SideProjectListElement {

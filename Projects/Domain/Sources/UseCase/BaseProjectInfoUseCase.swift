@@ -18,7 +18,7 @@ public protocol ProjectInfoUseCase {
         - projectId: 프로젝트 ID
      - returns: Observable<Project>
      */
-    func project(projectId: Int) -> Observable<Project>
+    func project(projectId: Int) -> Single<Project>
     
     func isMyProject(project: Project) -> Bool
 }
@@ -31,7 +31,7 @@ public struct BaseProjectInfoUseCase: ProjectInfoUseCase {
         self.projectRepository = projectRepository
     }
 
-    public func project(projectId: Int) -> Observable<Project> {
+    public func project(projectId: Int) -> Single<Project> {
         return projectRepository.project(projectId: projectId)
     }
 

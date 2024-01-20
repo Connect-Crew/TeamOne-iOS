@@ -27,7 +27,7 @@ import Photos
 import UIKit
 
 class VideoPreviewViewController: PreviewViewController {
-    private let playerView = PlayerView()
+    private let playerView = DoWhatPlayerView()
     private var pauseBarButton: UIBarButtonItem!
     private var playBarButton: UIBarButtonItem!
     private let imageManager = PHCachingImageManager.default()
@@ -92,7 +92,7 @@ class VideoPreviewViewController: PreviewViewController {
     }
     
     override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
+        super.viewWillAppear(animated)
         updateState(.paused, animated: false)
         playerView.isHidden = true
         

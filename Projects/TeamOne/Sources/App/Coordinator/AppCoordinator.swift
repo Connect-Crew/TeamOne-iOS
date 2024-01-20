@@ -36,7 +36,7 @@ final class AppCoordinator: BaseCoordinator<Void> {
 
     private func showSplash() {
         let viewModel = DIContainer.shared.resolve(SplashViewModel.self)
-
+        
         viewModel.navigation
             .do(onNext: { [weak self] _ in
                 self?.pop(animated: false)

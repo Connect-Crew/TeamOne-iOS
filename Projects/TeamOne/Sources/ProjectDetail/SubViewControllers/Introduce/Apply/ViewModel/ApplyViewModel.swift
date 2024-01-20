@@ -93,27 +93,15 @@ final class ApplyViewModel: ViewModel {
             .withUnretained(self)
             .flatMap { viewModel, apply in
                 viewModel.applyUseCase.apply(projectId: apply.projectid, part: KM.shared.key(name: apply.part), message: apply.message)
+                // TODO: - Error처리
+//                    .catch {
+//                        self.showError.onne
+//                        return .empty()
+//                    }
             }
             .withUnretained(self)
             .subscribe(onNext: { this, _ in
                 this.showResult.onNext(true)
-            }, onError: { [weak self] error in
-                
-                guard let self = self else { return }
-                
-                let error = error as? APIError
-                switch error {
-                case .network(_, let message):
-                    self.errorAlert.title = message
-                case .notToken:
-                    break
-                case .unknown:
-                    self.errorAlert.title = "알수없는 에러"
-                case .none:
-                    break
-                }
-                
-                self.showError.onNext(self.errorAlert)
             })
             .disposed(by: disposeBag)
 

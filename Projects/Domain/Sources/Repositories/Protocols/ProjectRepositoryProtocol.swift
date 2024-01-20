@@ -17,7 +17,7 @@ public protocol ProjectRepositoryProtocol {
 
     func like(projectId: Int) -> Observable<Like>
 
-    func project(projectId: Int) -> Observable<Project>
+    func project(projectId: Int) -> Single<Project>
 
     func apply(projectId: Int, part: String, message: String) -> Single<Bool>
     
@@ -26,4 +26,6 @@ public protocol ProjectRepositoryProtocol {
     func report(projectId: Int, reason: String) -> Single<Bool>
     
     func member(projectId: Int) -> Single<[ProjectMember]>
+    
+    func modify(props: ProjectCreateProps, projectId: Int) -> Single<ProjectCreateResponse>
 }

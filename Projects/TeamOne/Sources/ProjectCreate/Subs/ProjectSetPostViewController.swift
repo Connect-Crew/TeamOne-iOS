@@ -16,39 +16,47 @@ import Domain
 import RxKeyboard
 
 final class ProjectSetPostViewController: ViewController, UINavigationControllerDelegate {
-
+    
+    private enum Section: Int {
+        case recruit
+    }
+    
+    private enum Item: Hashable {
+        case recuirt(Recruit)
+    }
+    
     let scrollView = BaseScrollView(frame: .zero)
-
+    
     let labelImageUploadTitle = UILabel().then {
         $0.setLabel(text: "대표 이미지 업로드", typo: .body2, color: .teamOne.grayscaleEight)
     }
-
+    
     let labelImageUploadContent = UILabel().then {
         $0.setLabel(text: "최대 3장까지 가능합니다.", typo: .caption2, color: .teamOne.grayscaleSeven)
     }
-
+    
     let collectionViewSelectPhoto = PhotoSelectCollectionView(height: 60, maxCount: 3)
-
+    
     let labelIntroduceProjectPoint = UILabel().then {
         $0.setLabel(text: "* ", typo: .body2, color: .teamOne.point)
     }
-
+    
     let labelIntroduceProjectTitle = UILabel().then {
         $0.setLabel(text: "프로젝트 소개", typo: .body2, color: .teamOne.grayscaleEight)
     }
-
+    
     let labelSetLeaderPartPoint = UILabel().then {
         $0.setLabel(text: "* ", typo: .body2, color: .teamOne.point)
     }
-
+    
     let labelSetLeaderPartTitle = UILabel().then {
         $0.setLabel(text: "리더의 역할", typo: .body2, color: .teamOne.grayscaleEight)
     }
-
+    
     let labelSetLeaderPartContent = UILabel().then {
         $0.setLabel(text: "  자신이 맡을 역할을 알려주세요.", typo: .caption2, color: .teamOne.grayscaleSeven)
     }
-
+    
     let textViewIntroduce = TextView_PlaceHolder().then {
         $0.placeholder = "어떤 아이디어에서 시작됐는지, 어떤 프로젝트인지 등 자유롭게 알려주세요! (글자수 공백포함 1000자)"
         $0.placeholderTextColor = .teamOne.grayscaleFive
@@ -58,21 +66,21 @@ final class ProjectSetPostViewController: ViewController, UINavigationController
         $0.setLayer(width: 1, color: .teamOne.grayscaleFive)
         $0.maxTextCount = 999
     }
-
+    
     let buttonLeaderJobMajorClass = Button_DropBoxResult(frame: .zero).then {
         $0.noneSelectedText = "직무 대분류 선택"
     }
-
+    
     let buttonLeaderJobSubClass = Button_DropBoxResult(frame: .zero).then {
         $0.noneSelectedText = "직무 소분류 선택"
     }
-
+    
     let leaderJobClassDropBox = BaseDropBox()
-
+    
     let labelSetRecuritTeamOnePoint = UILabel().then {
         $0.setLabel(text: "* ", typo: .body2, color: .teamOne.point)
     }
-
+    
     let labelSetRecuritTeamOneTitle = UILabel().then {
         $0.setLabel(text: "팀원 모집", typo: .body2, color: .teamOne.grayscaleEight)
     }
@@ -87,27 +95,27 @@ final class ProjectSetPostViewController: ViewController, UINavigationController
         $0.numberOfLines = 0
         $0.setLabel(text: "한 번 설정한 파트 별 인원은 확정된 인원이 한 명이라도 있을 시 인원수를 그보다 줄이거나 삭제할 수 없습니다.", typo: .caption2, color: .teamOne.point)
     }
-
+    
     let labelSetRecuritTeamOneContent = UILabel().then {
         $0.setLabel(text: "  리더 포함 최대 30인까지 모집 가능합니다.", typo: .caption2, color: .teamOne.grayscaleSeven)
     }
-
+    
     let buttonRecuritTeamOneMajorPart = Button_DropBoxResult(frame: .zero).then {
         $0.noneSelectedText = "직무 대분류 선택"
     }
-
+    
     let buttonRecuritTeamOneSubPart = Button_DropBoxResult(frame: .zero).then {
         $0.noneSelectedText = "직무 소분류 선택"
     }
-
+    
     let leaderRecuritTeamOneDropBox = BaseDropBox()
-
-    let viewSetPart = RecruitSetPartView()
+    
+    var tableViewRecruit: IntrinsicContentHeightTableView!
     
     let labelSetStackTitle = UILabel().then {
         $0.setLabel(text: "기술 스택", typo: .body2, color: .teamOne.grayscaleEight)
     }
-
+    
     let textFieldSetStack = TextField(frame: .zero).then {
         $0.placeholder = "프로젝트에 사용할 기술을 선택해주세요"
         $0.setLayer(width: 1, color: .teamOne.grayscaleFive)
@@ -118,11 +126,11 @@ final class ProjectSetPostViewController: ViewController, UINavigationController
             $0.height.equalTo(40)
         }
     }
-
+    
     let viewSelectedStack = DeletableCellListStackView()
-
+    
     let viewSelectSkill = SelectSkillView()
-
+    
     lazy var contentView = UIStackView(arrangedSubviews: [
         createFirstStackView(),
         createSecondStackView(),
@@ -136,7 +144,7 @@ final class ProjectSetPostViewController: ViewController, UINavigationController
         $0.layoutMargins = UIEdgeInsets(top: 30, left: 24, bottom: 0, right: 24)
         $0.isLayoutMarginsRelativeArrangement = true
     }
-
+    
     let buttonBefore = UIButton().then {
         $0.backgroundColor = .teamOne.white
         $0.setButton(text: "이전", typo: .button1, color: .teamOne.mainColor)
@@ -146,13 +154,13 @@ final class ProjectSetPostViewController: ViewController, UINavigationController
         }
         $0.setRound(radius: 8)
     }
-
+    
     let buttonCreateProject = Button_IsEnabled(enabledString: "프로젝트 생성", disabledString: "프로젝트 생성").then {
         $0.setRound(radius: 8)
         $0.isEnabled = false
         $0.setFont(typo: .button1)
     }
-
+    
     lazy var buttonStackView = UIStackView(arrangedSubviews: [
         buttonBefore,
         buttonCreateProject
@@ -163,49 +171,114 @@ final class ProjectSetPostViewController: ViewController, UINavigationController
         $0.spacing = 20
         $0.backgroundColor = .white
     }
-
-    lazy var selectedImage = PublishSubject<[UIImage]>()
-    lazy var deleteImage = PublishSubject<UIImage>()
-    lazy var seledtedLeaderMajorJobClass = PublishSubject<(String, Int)>()
-    lazy var seledtedLeaderMajorSubClass = PublishSubject<(String, Int)>()
-    lazy var seledtedRecruitMajorPart = PublishSubject<(String, Int)>()
-    lazy var seledtedRecruitSubClass = PublishSubject<(String, Int)>()
+    
+    lazy var selectedImage = PublishSubject<[ImageWithName]>()
+    lazy var deleteImage = PublishSubject<ImageWithName>()
+    lazy var addedRecruit = PublishSubject<Recruit>()
+    lazy var minusRecruit = PublishSubject<Recruit>()
+    lazy var plusRecruit = PublishSubject<Recruit>()
+    lazy var deleteRecruit = PublishSubject<Recruit>()
+    lazy var changeCommentRecruit = PublishSubject<(Recruit, String)>()
+    lazy var selectedLeaderPart = PublishSubject<Parts?>()
+    private lazy var selectedLeaderMajorJobClass = PublishSubject<(String, Int)>()
+    private lazy var selectedLeaderMajorSubClass = PublishSubject<(String, Int)>()
+    private lazy var selectedRecruitMajorPart = PublishSubject<(String, Int)>()
+    private lazy var selectedRecruitSubClass = PublishSubject<(String, Int)>()
     
     var imagePickerController = UIImagePickerController()
     
     var isLayoutFirst = true
-
+    
     // MARK: - LifeCycle
-
+    
+    init() {
+        super.init(nibName: nil, bundle: nil)
+        setupRecruitTableView()
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
-
+        
         setKeyboardInset()
     }
-
+    
+    func setupRecruitTableView() {
+        tableViewRecruit = IntrinsicContentHeightTableView()
+        
+        tableViewRecruit.register(RecruitSetPartCell.self, forCellReuseIdentifier: RecruitSetPartCell.identifier)
+        
+        tableViewRecruit.separatorStyle = .none
+        
+        tableViewRecruit.setLayer(width: 1, color: .teamOne.grayscaleFive)
+        
+        tableViewRecruit.setRound(radius: 8)
+    }
+    
     public func bind(output: ProjectCreateMainViewModel.Output) {
+        
+        output.projectCreateProps
+            .asObservable()
+            .map { $0.recruits }
+            .bind(to: tableViewRecruit.rx.items(cellIdentifier: RecruitSetPartCell.identifier, cellType: RecruitSetPartCell.self)) { [weak self] _, recruit, cell in
+                
+                cell.initSetting(recruit: recruit)
+                
+                cell.onPlus = { recruit in
+                    self?.plusRecruit.onNext(recruit)
+                }
+                
+                cell.onMinus = { recruit in
+                    self?.minusRecruit.onNext(recruit)
+                }
+                
+                cell.onDelete = {  recruit in
+                    self?.deleteRecruit.onNext(recruit)
+                }
+                
+                cell.onChangeComment = { (recruit, comment) in
+                    self?.changeCommentRecruit.onNext((recruit, comment))
+                }
+            }
+            .disposed(by: disposeBag)
+        
         collectionViewSelectPhoto.onClickAddPhoto
             .withLatestFrom(output.projectCreateProps)
             .map { $0.banner }
             .withUnretained(self)
             .subscribe(onNext: { this, selectedImage in
-
-                ActionSheet.baseActionSheet(source: this, title: "TeamOne", content: ["갤러리", "카메라"], onSelect: { [self] select in
-
+                
+                ActionSheet.baseActionSheet(source: this, title: "TeamOne", content: ["갤러리", "카메라"], onSelect: { select in
+                    
                     if select == "갤러리" {
-                        self.presentImagePicker(
+                        this.presentImagePicker(
                             ImagePickerController(
                                 selectedAssets: [],
                                 minCount: 1,
                                 maxCount: 3 - selectedImage.count,
                                 type: [.image]
-                            ), animated: true, select: nil, deselect: nil, cancel: nil, finish: { url in
-                                let images = url.map { $0.getAssetThumbnail() }
-
-                                this.selectedImage.onNext(images)
-
-                        }, completion: nil)
+                            ), animated: true, select: nil, deselect: nil, cancel: nil, finish: { assets in
+                                
+                                var withName: [ImageWithName] = []
+                                
+                                assets.map { url -> UIImage? in
+                                    return url.toUIImage()
+                                }
+                                    .compactMap { $0 }
+                                    .forEach { image in
+                                        withName.append(
+                                            ImageWithName(
+                                                image: image
+                                            ))
+                                    }
+                                
+                                this.selectedImage.onNext(withName)
+                                
+                            }, completion: nil)
                     } else if select == "카메라" {
                         this.imagePickerController.delegate = this
                         this.imagePickerController.sourceType = .camera
@@ -214,11 +287,14 @@ final class ProjectSetPostViewController: ViewController, UINavigationController
                 })
             })
             .disposed(by: disposeBag)
-
+        
         output.projectCreateProps
             .map { $0.banner }
             .drive(onNext: { [weak self] images in
-                self?.collectionViewSelectPhoto.setImage(images: images)
+                self?.collectionViewSelectPhoto.setImage(images: images.map { DSImageWithName(
+                    name: $0.name,
+                    Image: $0.image)}
+                )
             })
             .disposed(by: disposeBag)
         
@@ -227,17 +303,17 @@ final class ProjectSetPostViewController: ViewController, UINavigationController
             .compactMap { $0 }
             .drive(textViewIntroduce.rx.text)
             .disposed(by: disposeBag)
-
+        
         collectionViewSelectPhoto.onClickDeletePhoto
+            .map { ImageWithName(name: $0.name, image: $0.Image) }
             .bind(to: deleteImage)
             .disposed(by: disposeBag)
-
+        
         output.projectCreateProps
             .map { $0.skills }
             .drive(viewSelectedStack.rx.list)
             .disposed(by: disposeBag)
         
-
         output.canCreate
             .drive(buttonCreateProject.rx.isEnabled)
             .disposed(by: disposeBag)
@@ -247,209 +323,224 @@ final class ProjectSetPostViewController: ViewController, UINavigationController
     
     func bindModify(output: ProjectCreateMainViewModel.Output) {
         
-//         TODO: - API에 리더의 역할 대분류/소분류가 추가되면 아래처럼 리더의 역할도 바인딩
-        
         output.isModify
             .withLatestFrom(output.projectCreateProps)
-            .map { return $0.recruits }
-            .subscribe(on: MainScheduler.instance)
+            .map { $0.leaderParts }
+            .compactMap { $0 }
             .withUnretained(self)
-            .subscribe(onNext: { this, recruit in
-                this.viewSetPart.setRecruits(recruits: recruit.map { DSRecurit(
-                    partMajor: "",
-                    partSub: $0.part,
-                    comment: $0.comment,
-                    max: $0.max)
-                })
+            .bind(onNext: { this, partData in
+                let category = this.buttonLeaderJobMajorClass
+                let part = this.buttonLeaderJobSubClass
+                
+                category.selectedText = partData.category
+                part.selectedText = partData.part
+                
+                category.isSelected = true
+                part.isSelected = true
             })
             .disposed(by: disposeBag)
         
         output.isModify
             .withUnretained(self)
             .subscribe(onNext: { this, _ in
-                this.buttonCreateProject.setTitle("수정하기", for: .normal)
+                this.buttonCreateProject.enabledString = "수정 완료"
+                this.buttonCreateProject.disabledString = "수정 완료"
             })
             .disposed(by: disposeBag)
     }
-
+    
     public override func bind() {
         bindSetLeaderPosition()
         bindSetRecruitTeamOne()
         bindSkill()
     }
-
+    
     func bindSetLeaderPosition() {
+        
         buttonLeaderJobMajorClass.button.rx.tap
             .throttle(.seconds(1), latest: true, scheduler: MainScheduler.instance)
             .withUnretained(self)
             .bind(onNext: { this, _ in
-
+                
                 let major = this.buttonLeaderJobMajorClass
                 let sub = this.buttonLeaderJobSubClass
-
+                
+                sub.isDropDownOpend = false
+                sub.isSelected = false
+                
                 if major.isDropDownOpend == false {
-
+                    
                     this.leaderJobClassDropBox.openDropBox(
                         dataSource: KM.shared.jobMajorCategory,
-                        onSelectSubject: this.seledtedLeaderMajorJobClass)
-
+                        onSelectSubject: this.selectedLeaderMajorJobClass)
+                    
                     major.isDropDownOpend = true
-
-                    sub.isDropDownOpend = false
-                    sub.isSelected = false
-
+                    
                 } else if major.isDropDownOpend == true {
                     this.leaderJobClassDropBox.closeDropBox()
                     major.isDropDownOpend = false
                 }
             })
             .disposed(by: disposeBag)
-
-        seledtedLeaderMajorJobClass
+        
+        selectedLeaderMajorJobClass
             .withUnretained(self)
             .subscribe(onNext: { this, result in
                 let major = this.buttonLeaderJobMajorClass
                 let sub = this.buttonLeaderJobSubClass
-
+                
                 major.isDropDownOpend = false
                 major.isSelected = true
                 major.selectedText = result.0
-
+                
                 sub.isDropDownOpend = false
                 sub.isSelected = false
-                sub.selectedText = ""
-                this.seledtedLeaderMajorSubClass.onNext(("초기화", 0))
-
+                
+                this.selectedLeaderPart.onNext(nil)
             })
             .disposed(by: disposeBag)
-
+        
         buttonLeaderJobSubClass.button.rx.tap
             .throttle(.seconds(1), latest: true, scheduler: MainScheduler.instance)
             .withUnretained(self)
             .bind(onNext: { this, _ in
-
+                
                 let first = this.buttonLeaderJobMajorClass
                 let sub = this.buttonLeaderJobSubClass
-
+                
                 if first.isSelected == true && sub.isDropDownOpend == false {
-
+                    
                     this.leaderJobClassDropBox.openDropBox(
                         dataSource: KM.shared.jobSubCategory[first.selectedText ?? ""] ?? [],
-                        onSelectSubject: this.seledtedLeaderMajorSubClass
+                        onSelectSubject: this.selectedLeaderMajorSubClass
                     )
-
+                    
                     sub.isDropDownOpend = true
-
+                    
                 } else if first.isSelected == true && sub.isDropDownOpend == true {
                     this.leaderJobClassDropBox.closeDropBox()
                     sub.isDropDownOpend = false
                 }
             })
             .disposed(by: disposeBag)
-
-        seledtedLeaderMajorSubClass
+        
+        selectedLeaderMajorSubClass
             .withUnretained(self)
             .subscribe(onNext: { this, result in
-
-                if result.0 != "초기화" {
-                    let sub = this.buttonLeaderJobSubClass
-
-                    sub.isDropDownOpend = false
-                    sub.isSelected = true
-                    sub.selectedText = result.0
-                }
-
+                
+                let major = this.buttonLeaderJobMajorClass
+                let sub = this.buttonLeaderJobSubClass
+                
+                sub.isDropDownOpend = false
+                sub.isSelected = true
+                sub.selectedText = result.0
+                
+                guard let majorPart = this.buttonLeaderJobMajorClass.selectedText,
+                      let subPart = this.buttonLeaderJobSubClass.selectedText else { return }
+                
+                let key = KM.shared.key(name: subPart)
+                
+                let part = Parts(key: key, part: subPart, category: majorPart)
+                
+                this.selectedLeaderPart.onNext(part)
             })
             .disposed(by: disposeBag)
     }
-
+    
     func bindSetRecruitTeamOne() {
         buttonRecuritTeamOneMajorPart.button.rx.tap
             .throttle(.seconds(1), latest: true, scheduler: MainScheduler.instance)
             .withUnretained(self)
             .bind(onNext: { this, _ in
-
+                
                 let major = this.buttonRecuritTeamOneMajorPart
                 let sub = this.buttonRecuritTeamOneSubPart
-
+                
                 if major.isDropDownOpend == false {
-
+                    
                     this.leaderRecuritTeamOneDropBox.openDropBox(
                         dataSource: KM.shared.jobMajorCategory,
-                        onSelectSubject: this.seledtedRecruitMajorPart)
-
+                        onSelectSubject: this.selectedRecruitMajorPart)
+                    
                     major.isDropDownOpend = true
-
+                    
                     sub.isDropDownOpend = false
                     sub.isSelected = false
-
+                    
                 } else if major.isDropDownOpend == true {
                     this.leaderRecuritTeamOneDropBox.closeDropBox()
                     major.isDropDownOpend = false
                 }
             })
             .disposed(by: disposeBag)
-
-        seledtedRecruitMajorPart
+        
+        selectedRecruitMajorPart
             .withUnretained(self)
             .subscribe(onNext: { this, result in
                 let major = this.buttonRecuritTeamOneMajorPart
                 let sub = this.buttonRecuritTeamOneSubPart
-
+                
                 major.isDropDownOpend = false
                 major.isSelected = true
                 major.selectedText = result.0
-
+                
                 sub.isDropDownOpend = false
                 sub.isSelected = false
                 sub.selectedText = ""
             })
             .disposed(by: disposeBag)
-
+        
         buttonRecuritTeamOneSubPart.button.rx.tap
             .throttle(.seconds(1), latest: true, scheduler: MainScheduler.instance)
             .withUnretained(self)
             .bind(onNext: { this, _ in
-
+                
                 let first = this.buttonRecuritTeamOneMajorPart
                 let sub = this.buttonRecuritTeamOneSubPart
-
+                
                 if first.isSelected == true && sub.isDropDownOpend == false {
-
+                    
                     this.leaderRecuritTeamOneDropBox.openDropBox(
-                        dataSource: KM.shared.jobSubCategory[first.selectedText ?? ""]?.filter({ category in
-                            !this.viewSetPart.recruits.contains(where: { selected in
-                                selected.partSub == category })} ) ?? [],
-                        onSelectSubject: this.seledtedRecruitSubClass
+                        dataSource: KM.shared.jobSubCategory[first.selectedText ?? ""] ?? [],
+                        onSelectSubject: this.selectedRecruitSubClass
                     )
-
+                    
                     sub.isDropDownOpend = true
-
+                    
                 } else if first.isSelected == true && sub.isDropDownOpend == true {
                     this.leaderJobClassDropBox.closeDropBox()
                     sub.isDropDownOpend = false
                 }
             })
             .disposed(by: disposeBag)
-
-        seledtedRecruitSubClass
+        
+        selectedRecruitSubClass
             .withUnretained(self)
             .subscribe(onNext: { this, result in
-
+                
                 let major = this.buttonRecuritTeamOneMajorPart
                 let sub = this.buttonRecuritTeamOneSubPart
-
+                
                 sub.isDropDownOpend = false
                 sub.isSelected = true
                 sub.selectedText = result.0
-
-                this.viewSetPart.addRecruits(major: major.selectedText ?? "", sub: result.0)
+                
+                if let major = major.selectedText,
+                   let sub = sub.selectedText {
+                    this.addedRecruit.onNext(
+                        Recruit(
+                            category: major,
+                            part: sub,
+                            comment: "",
+                            max: 1)
+                    )
+                }
+                
             })
             .disposed(by: disposeBag)
         
-        
     }
-
+    
     func bindSkill() {
         textFieldSetStack.rx.text.orEmpty
             .withUnretained(self)
@@ -459,43 +550,43 @@ final class ProjectSetPostViewController: ViewController, UINavigationController
                 } else {
                     this.viewSelectSkill.isHidden = false
                 }
-
+                
                 if !text.isEmpty {
                     var skills: [String] = []
                     skills.append(text)
-
+                    
                     for skill in KM.shared.skills {
                         if skill.contains(text) {
                             skills.append(skill)
                         }
                     }
-
+                    
                     this.viewSelectSkill.setSkills(skills: skills)
                 }
             })
             .disposed(by: disposeBag)
     }
-
+    
     override func layout() {
-
+        
         self.view.addSubview(scrollView)
-
+        
         scrollView.snp.makeConstraints {
             $0.edges.equalToSuperview()
         }
-
+        
         scrollView.contentView.addSubview(contentView)
-
+        
         contentView.snp.makeConstraints {
             $0.edges.equalToSuperview()
         }
-
+        
         self.view.addSubview(buttonStackView)
-
+        
         buttonStackView.snp.makeConstraints {
             $0.leading.trailing.bottom.equalToSuperview()
         }
-
+        
         textViewIntroduce.snp.makeConstraints {
             $0.height.equalTo(200)
         }
@@ -506,7 +597,7 @@ final class ProjectSetPostViewController: ViewController, UINavigationController
             }
         }
     }
-
+    
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         
@@ -515,7 +606,7 @@ final class ProjectSetPostViewController: ViewController, UINavigationController
             self.scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: buttonStackView.frame.height, right: 0)
         }
     }
-
+    
     func createFirstStackView() -> UIStackView {
         return UIStackView(arrangedSubviews: [
             labelStackView(),
@@ -524,7 +615,7 @@ final class ProjectSetPostViewController: ViewController, UINavigationController
             $0.axis = .vertical
             $0.spacing = 10
         }
-
+        
         func labelStackView() -> UIStackView {
             return UIStackView(arrangedSubviews: [
                 labelImageUploadTitle,
@@ -537,7 +628,7 @@ final class ProjectSetPostViewController: ViewController, UINavigationController
             }
         }
     }
-
+    
     func createSecondStackView() -> UIStackView {
         return UIStackView(arrangedSubviews: [
             labelStackView(),
@@ -546,7 +637,7 @@ final class ProjectSetPostViewController: ViewController, UINavigationController
             $0.axis = .vertical
             $0.spacing = 10
         }
-
+        
         func labelStackView() -> UIStackView {
             return UIStackView(arrangedSubviews: [
                 labelIntroduceProjectPoint,
@@ -558,9 +649,9 @@ final class ProjectSetPostViewController: ViewController, UINavigationController
             }
         }
     }
-
+    
     func createThirdStackView() -> UIStackView {
-
+        
         let categoryButtonStackView = categoryButtonStackView()
         return UIStackView(arrangedSubviews: [
             labelStackView(),
@@ -571,7 +662,7 @@ final class ProjectSetPostViewController: ViewController, UINavigationController
             $0.spacing = 10
             $0.setCustomSpacing(5, after: categoryButtonStackView)
         }
-
+        
         func labelStackView() -> UIStackView {
             return UIStackView(arrangedSubviews: [
                 labelSetLeaderPartPoint,
@@ -584,7 +675,7 @@ final class ProjectSetPostViewController: ViewController, UINavigationController
                 $0.alignment = .bottom
             }
         }
-
+        
         func categoryButtonStackView() -> UIStackView {
             return UIStackView(arrangedSubviews: [
                 buttonLeaderJobMajorClass,
@@ -596,9 +687,9 @@ final class ProjectSetPostViewController: ViewController, UINavigationController
             }
         }
     }
-
+    
     func createFourthStackView() -> UIStackView {
-
+        
         let labelStackView = makeLabelStackView()
         let categoryButtonStackView = categoryButtonStackView()
         let partWarnning = makeWarnningStackView(subViews: [imageViewPartWarnning, labelPartWarnning])
@@ -609,14 +700,15 @@ final class ProjectSetPostViewController: ViewController, UINavigationController
             modifyWarnning,
             categoryButtonStackView,
             leaderRecuritTeamOneDropBox,
-            viewSetPart
+            tableViewRecruit
         ]).then {
             $0.axis = .vertical
             $0.spacing = 10
+            $0.distribution = .fill
             $0.setCustomSpacing(5, after: categoryButtonStackView)
             $0.setCustomSpacing(5, after: partWarnning)
         }
-
+        
         func makeLabelStackView() -> UIStackView {
             return UIStackView(arrangedSubviews: [
                 labelSetRecuritTeamOnePoint,
@@ -629,7 +721,7 @@ final class ProjectSetPostViewController: ViewController, UINavigationController
                 $0.alignment = .bottom
             }
         }
-
+        
         func categoryButtonStackView() -> UIStackView {
             return UIStackView(arrangedSubviews: [
                 buttonRecuritTeamOneMajorPart,
@@ -641,9 +733,9 @@ final class ProjectSetPostViewController: ViewController, UINavigationController
             }
         }
     }
-
+    
     func createFifthStackView() -> UIStackView {
-
+        
         return UIStackView(arrangedSubviews: [
             labelStackView(),
             textFieldSetStack,
@@ -654,7 +746,7 @@ final class ProjectSetPostViewController: ViewController, UINavigationController
             $0.spacing = 10
             $0.setCustomSpacing(5, after: textFieldSetStack)
         }
-
+        
         func labelStackView() -> UIStackView {
             return UIStackView(arrangedSubviews: [
                 labelSetStackTitle
@@ -664,15 +756,14 @@ final class ProjectSetPostViewController: ViewController, UINavigationController
             }
         }
     }
-
+    
     func setKeyboardInset() {
         RxKeyboard.instance.visibleHeight
             .distinctUntilChanged()
             .drive(onNext: { [weak self] height in
-
+                
                 guard let self = self else { return }
                 
-
                 if height == 0 {
                     self.scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: buttonStackView.frame.height, right: 0)
                 } else {
@@ -697,7 +788,7 @@ final class ProjectSetPostViewController: ViewController, UINavigationController
             if subview.isFirstResponder {
                 return subview
             }
-
+            
             if let recursiveSubview = findFirstResponder(in: subview) {
                 return recursiveSubview
             }
@@ -723,6 +814,8 @@ extension ProjectSetPostViewController: UIImagePickerControllerDelegate {
             fatalError("선택된 이미지를 불러오지 못했습니다 : userPickedImage의 값이 nil입니다. ")
         }
         
-        self.selectedImage.onNext([userPickedImage])
+        let image = ImageWithName(image: userPickedImage)
+        
+        self.selectedImage.onNext([image])
     }
 }

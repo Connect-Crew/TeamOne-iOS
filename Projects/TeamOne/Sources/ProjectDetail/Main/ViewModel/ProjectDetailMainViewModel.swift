@@ -16,6 +16,8 @@ enum ProjectDetailMainNavigation {
     case profile
     // 대표 프로젝트로 이동
     case pushRepresentProejct(Project)
+    case apply(Project)
+    case manageProject(Project)
 }
 
 final class ProjectDetailMainViewModel: ViewModel {
@@ -25,18 +27,39 @@ final class ProjectDetailMainViewModel: ViewModel {
         case mine
     }
     
-    private let projectReportUseCase: ProjectReportUseCase = DIContainer.shared.resolve(ProjectReportUseCase.self)
-    
-    private let memberFacade: MemberFacade = DIContainer.shared.resolve(MemberFacade.self)
-    
+    private let projectReportUseCase: ProjectReportUseCase
+    private let memberFacade: MemberFacade
+    private let projectLikeUseCase: ProjectLikeUseCaseProtocol
     private let projectInfoUseCase: ProjectInfoUseCase
+    
+    private var project: Project
+    
+    public init(
+        projectReportUseCase: ProjectReportUseCase,
+        memberFacade: MemberFacade,
+        projectLikeUseCase: ProjectLikeUseCaseProtocol,
+        projectInfoUseCase: ProjectInfoUseCase,
+        project: Project
+    ) {
+        self.projectReportUseCase = projectReportUseCase
+        self.memberFacade = memberFacade
+        self.projectLikeUseCase = projectLikeUseCase
+        self.projectInfoUseCase = projectInfoUseCase
+        self.project = project
+        
+        projectSubject.onNext(project)
+    }
 
     struct Input {
+        let viewDidLoad: Observable<Void>
         let viewWillAppear: Observable<Void>
         let backButtonTap: Observable<Void>
         let reportContent: Observable<String>
         let profileSelected: Observable<ProjectMember>
         let representProjectSelected: Observable<RepresentProject>
+        let likeButtonTap: Observable<Void>
+        let applyButtonTap: Observable<Void>
+        let manageButtonTap: Observable<Void>
         let expelProps: PublishRelay<UserExpelProps>
     }
 
@@ -50,37 +73,37 @@ final class ProjectDetailMainViewModel: ViewModel {
         let expelFailure: PublishRelay<Error>
     }
 
-    var project: Project!
-
-    public init(projectUseCase: ProjectInfoUseCase) {
-        self.projectInfoUseCase = projectUseCase
-    }
-
     let type = BehaviorSubject<ProjectIsMine>(value: .other)
 
+    let refresh = PublishSubject<Void>()
     let navigation = PublishSubject<ProjectDetailMainNavigation>()
 
     var disposeBag: DisposeBag = .init()
-    
-    let refresh = PublishSubject<Void>()
+
     let projectSubject = BehaviorSubject<Project>(value: Project.noneInfoProject)
     let projectMembers = BehaviorSubject<[ProjectMember]>(value: [])
     let reportResult = PublishSubject<Bool>()
     let error = PublishSubject<Error>()
+
+    let changedProject = PublishSubject<Project>()
+
     let expelSuccess = PublishRelay<Void>()
     let expelFailure = PublishRelay<Error>()
 
     func transform(input: Input) -> Output {
         
         transformProject(input: input.viewWillAppear)
-        transformIsMyProject(input: input)
+        transformIsMyProject(viewWillAppear: input.viewWillAppear)
         transformNavigation(input: input)
+        transformLike(likeButtonTap: input.likeButtonTap)
         transformReport(input: input)
         transformMemberList(input: input)
         transformUserExple(input: input.expelProps)
         
         return Output(
-            project: projectSubject.asDriver(onErrorJustReturn: Project.noneInfoProject),
+            project: projectSubject.asDriver(
+                onErrorJustReturn: Project.noneInfoProject
+            ),
             projectMembers: projectMembers.asDriver(onErrorJustReturn: []),
             isMyProject: type.map { $0 == .mine }.asDriver(
                 onErrorJustReturn: false
@@ -93,7 +116,7 @@ final class ProjectDetailMainViewModel: ViewModel {
             expelFailure: expelFailure
         )
     }
-    
+  
     func transformProject(input: Observable<Void>) {
         let getProjectResult = Observable.merge(
             input.take(1),
@@ -126,24 +149,31 @@ final class ProjectDetailMainViewModel: ViewModel {
             }
         
         getSuceess
+            .do(onNext: { [weak self] in
+                self?.changedProject.onNext($0)
+            })
             .bind(to: projectSubject)
             .disposed(by: disposeBag)
         
-        // TODO: - getfailure 에러처리
+        getFailure
+            .bind(to: error)
+            .disposed(by: disposeBag)
     }
     
-    func transformIsMyProject(input: Input) {
-        input.viewWillAppear
-            .map {
-                self.projectInfoUseCase.isMyProject(
-                    project: self.project
+    func transformIsMyProject(viewWillAppear: Observable<Void>) {
+        viewWillAppear
+            .withUnretained(self)
+            .map { this, _ in
+                this.projectInfoUseCase.isMyProject(
+                    project: this.project
                 )
             }
-            .subscribe(onNext: {
-                if $0 == true {
-                    self.type.onNext(.mine)
+            .withUnretained(self)
+            .subscribe(onNext: { this, bool in
+                if bool == true {
+                    this.type.onNext(.mine)
                 } else {
-                    self.type.onNext(.other)
+                    this.type.onNext(.other)
                 }
             })
             .disposed(by: disposeBag)
@@ -153,6 +183,41 @@ final class ProjectDetailMainViewModel: ViewModel {
         input.backButtonTap
             .map{ .back }
             .bind(to: navigation)
+            .disposed(by: disposeBag)
+        
+        input.manageButtonTap
+            .withLatestFrom(projectSubject)
+            .map { .manageProject($0) }
+            .bind(to: navigation)
+            .disposed(by: disposeBag)
+        
+        input.applyButtonTap
+            .withLatestFrom(projectSubject)
+            .map { .apply($0) }
+            .bind(to: navigation)
+            .disposed(by: disposeBag)
+    }
+    
+    func transformLike(likeButtonTap: Observable<Void>) {
+        likeButtonTap
+            .withLatestFrom(projectSubject)
+            .withUnretained(self)
+            .flatMap { this, project in
+                return this.projectLikeUseCase.like(projectId: project.id)
+                    .withLatestFrom(this.projectSubject) { like, current in
+                        
+                        var variable = current
+                        
+                        if like.project == project.id {
+                            variable.favorite = like.favorite
+                            variable.myFavorite = like.myFavorite
+                        }
+                        
+                        this.changedProject.onNext(variable)
+                        return variable
+                    }
+            }
+            .bind(to: projectSubject)
             .disposed(by: disposeBag)
     }
     
@@ -185,7 +250,7 @@ final class ProjectDetailMainViewModel: ViewModel {
     }
         
     func transformMemberList(input: Input) {
-        transformGetMembers(input: input.viewWillAppear)
+        transformGetMembers(input: projectSubject.map { _ in return ()}.asObservable())
         transformPushRepresentProject(input: input.representProjectSelected)
     }
     

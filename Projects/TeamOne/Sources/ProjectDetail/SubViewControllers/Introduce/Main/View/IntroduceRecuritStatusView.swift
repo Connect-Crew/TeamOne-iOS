@@ -108,7 +108,7 @@ final class IntroduceRecuritStatusView: View {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func bind(output: ProjectDetailPageSubIntroduceViewModel.Output) {
+    func bind(output: ProjectDetailMainViewModel.Output) {
         let project = output
             .project
             .compactMap { $0 }

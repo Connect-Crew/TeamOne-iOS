@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct Parts: Codable {
+public struct Parts: Codable, Hashable {
     public var key: String
     public var part: String
     public var category: String

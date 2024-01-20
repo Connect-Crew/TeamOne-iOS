@@ -212,6 +212,12 @@ extension AppDelegate {
                 getProjectMemberUseCase: res.resolve(GetProjectMemberUseCase.self)!
             )
         })
+        
+        container.register(interface: ProjectModifyUseCase.self, implement: { res in
+            return DefaultProjectModifyUseCase(
+                projectRepository: res.resolve(ProjectRepositoryProtocol.self)!
+            )
+        })
 
         // MARK: - ViewModel
 

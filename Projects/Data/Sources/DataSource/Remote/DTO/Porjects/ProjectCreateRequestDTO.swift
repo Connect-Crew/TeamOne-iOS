@@ -8,9 +8,9 @@
 
 import Foundation
 
-public struct ProjectCreateRequestDTO: Codable {
+public struct ProjectCreateRequestDTO {
     /// 프로젝트 배너 이미지
-    let banner: [Data?]
+    let banner: [ImageUploadRequestDTO]
     let title: String
     let region: String
     let online: Bool
@@ -24,7 +24,7 @@ public struct ProjectCreateRequestDTO: Codable {
     let recruits: [ProjectRecruitDTO]
     let skills: [String]
     
-    init(banner: [Data?], title: String, region: String, online: Bool, state: String, careerMin: String, careerMax: String, leaderParts: String, category: [String], goal: String, introduction: String, recruits: [ProjectRecruitDTO], skills: [String]) {
+    init(banner: [ImageUploadRequestDTO], title: String, region: String, online: Bool, state: String, careerMin: String, careerMax: String, leaderParts: String, category: [String], goal: String, introduction: String, recruits: [ProjectRecruitDTO], skills: [String]) {
         self.banner = banner
         self.title = title
         self.region = region

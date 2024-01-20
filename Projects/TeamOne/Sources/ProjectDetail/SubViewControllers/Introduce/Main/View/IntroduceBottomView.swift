@@ -46,6 +46,9 @@ final class IntroduceBottomView: View {
     
     func layout() {
         self.addSubview(contentView)
+        contentView.addArrangedSubview(buttonLike)
+        contentView.addArrangedSubview(buttonProjectManagement)
+        contentView.addArrangedSubview(buttonApply)
         
         contentView.snp.makeConstraints {
             $0.edges.equalToSuperview()
@@ -61,8 +64,8 @@ final class IntroduceBottomView: View {
         }
     }
     
-    func bind(output: ProjectDetailPageSubIntroduceViewModel.Output) {
-        output.isMyproject
+    func bind(output: ProjectDetailMainViewModel.Output) {
+        output.isMyProject
             .drive(onNext: { [weak self] isMyproject in
                 self?.setButton(isMyproject: isMyproject)
             })
@@ -71,12 +74,12 @@ final class IntroduceBottomView: View {
     
     func setButton(isMyproject: Bool) {
         
-        contentView.addArrangedSubview(buttonLike)
-        
         if isMyproject == true {
-            contentView.addArrangedSubview(buttonProjectManagement)
+            buttonApply.isHidden = true
+            buttonProjectManagement.isHidden = false
         } else {
-            contentView.addArrangedSubview(buttonApply)
+            buttonApply.isHidden = false
+            buttonProjectManagement.isHidden = true
         }
     }
     

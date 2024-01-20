@@ -124,7 +124,7 @@ final class HomeTableViewCell: UITableViewCell, CellIdentifiable {
         if project.isOnline == .online {
             self.labelLocation.text = "온라인"
         } else if project.isOnline == .onOffline {
-            self.labelLocation.text = "온라인, \(project.region)"
+            self.labelLocation.text = "온라인 + \(project.region)"
         } else {
             self.labelLocation.text = project.region
         }
