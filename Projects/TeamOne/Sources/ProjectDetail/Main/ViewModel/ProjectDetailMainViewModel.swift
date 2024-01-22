@@ -73,17 +73,26 @@ final class ProjectDetailMainViewModel: ViewModel {
         let expelFailure: PublishRelay<Error>
     }
 
+    var project: Project!
+
+    public init(projectUseCase: ProjectInfoUseCase) {
+        self.projectInfoUseCase = projectUseCase
+    }
+
     let type = BehaviorSubject<ProjectIsMine>(value: .other)
 
     let refresh = PublishSubject<Void>()
     let navigation = PublishSubject<ProjectDetailMainNavigation>()
 
     var disposeBag: DisposeBag = .init()
-
+    
+    let refresh = PublishSubject<Void>()
     let projectSubject = BehaviorSubject<Project>(value: Project.noneInfoProject)
     let projectMembers = BehaviorSubject<[ProjectMember]>(value: [])
     let reportResult = PublishSubject<Bool>()
     let error = PublishSubject<Error>()
+    let expelSuccess = PublishRelay<Void>()
+    let expelFailure = PublishRelay<Error>()
 
     let changedProject = PublishSubject<Project>()
 

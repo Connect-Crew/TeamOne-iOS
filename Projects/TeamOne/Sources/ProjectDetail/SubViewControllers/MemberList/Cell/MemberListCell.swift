@@ -180,7 +180,7 @@ final class MemberListCell: UICollectionViewCell, CellIdentifiable {
             setLeader()
         }
     }
-
+  
     private func setMember() {
         self.expelMemberStackView.isHidden = true
     }
