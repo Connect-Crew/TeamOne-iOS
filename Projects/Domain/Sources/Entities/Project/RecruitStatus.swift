@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct RecruitStatus: Codable {
+public struct RecruitStatus: Codable, Hashable {
     public let category: String
     public let part: String
     public let partKey: String
@@ -31,5 +31,14 @@ public struct RecruitStatus: Codable {
         if current >= max {
             self.isAppliable = false
         }
+    }
+    
+    public func toRecruit() -> Recruit {
+        return Recruit(
+            category: self.category,
+            part: self.part,
+            comment: self.comment,
+            max: self.max
+        )
     }
 }

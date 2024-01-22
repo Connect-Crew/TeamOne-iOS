@@ -18,9 +18,9 @@ public final class PhotoCell: UICollectionViewCell, CellIdentifiable {
 
     public var disposeBag: RxSwift.DisposeBag = .init()
 
-    private var image: UIImage?
+    private var image: DSImageWithName?
 
-    public var deleteButtonTapSubject = PublishSubject<UIImage>()
+    public var deleteButtonTapSubject = PublishSubject<DSImageWithName>()
 
     let imageView = UIImageView().then {
         $0.backgroundColor = .systemGray2
@@ -50,8 +50,8 @@ public final class PhotoCell: UICollectionViewCell, CellIdentifiable {
         bind()
     }
 
-    func setImage(image: UIImage) {
-        self.imageView.image = image
+    func setImage(image: DSImageWithName) {
+        self.imageView.image = image.Image
         self.image = image
     }
 

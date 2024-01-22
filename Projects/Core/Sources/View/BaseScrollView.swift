@@ -32,4 +32,8 @@ open class BaseScrollView: UIScrollView {
             $0.width.equalTo(self.frameLayoutGuide)
         }
     }
+    
+    open override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        self.endEditing(true)
+    }
 }

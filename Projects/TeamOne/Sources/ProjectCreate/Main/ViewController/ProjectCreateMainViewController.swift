@@ -13,8 +13,25 @@ import RxCocoa
 import Then
 import DSKit
 import Domain
+import Inject
 
 final class ProjectCreateMainViewController: ViewController {
+    
+    lazy var createAlert = ResultAlertView_Image_Title_Content_Alert(
+        image: .warnning,
+        title: "프로젝트를 생성하시겠습니까?",
+        content: "확인을 누르시면 프로젝트가 생성됩니다.",
+        availableCancle: true,
+        resultSubject: self.createSubject
+    )
+    
+    lazy var cancleAlert = ResultAlertView_Image_Title_Content_Alert(
+        image: .warnning,
+        title: "생성을 중단하시겠습니까?",
+        content: "확인을 누르시면 모든 내용이 삭제됩니다.",
+        availableCancle: true,
+        resultSubject: self.closeSubject
+    )
 
     private let viewModel: ProjectCreateMainViewModel
 
@@ -47,6 +64,7 @@ final class ProjectCreateMainViewController: ViewController {
     init(viewModel: ProjectCreateMainViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
+        
         initPages()
     }
 
@@ -121,15 +139,22 @@ final class ProjectCreateMainViewController: ViewController {
             
             selectedImage: postVC.selectedImage,
             deleteImageTap: postVC.deleteImage,
-            recruitTeamOne: postVC.viewSetPart.rxRecruits.map { $0.map { Recruit(part: $0.partSub, comment: $0.comment, max: $0.max)} },
+            
+            addRecruit: postVC.addedRecruit,
+            minusRecruit: postVC.minusRecruit,
+            plusRecruit: postVC.plusRecruit,
+            deleteRecruit: postVC.deleteRecruit,
+            changeCommentRecruit: postVC.changeCommentRecruit,
 
-            introduce: postVC.textViewIntroduce.rx.text.orEmpty.asObservable(),
-
-            leaderPart: postVC.seledtedLeaderMajorSubClass.map { $0.0 },
+            introduce: postVC.textViewIntroduce.rxTextObservable,
+            
+            leaderPart: postVC.selectedLeaderPart,
 
             selectedSkillTap: postVC.viewSelectSkill.selectedSkillSubject,
             deleteSkillTap: postVC.viewSelectedStack.deleteButtonTapSubject,
-            createButtonTap: createSubject.filter { $0 == true }.map { _ in return () },
+            createButtonTap: createSubject.filter { $0 == true }
+                .map { _ in return () }
+                .throttle(.seconds(1), latest: true, scheduler: MainScheduler.instance),
             errorOKTap: errorSubject
         )
 
@@ -137,6 +162,7 @@ final class ProjectCreateMainViewController: ViewController {
 
         bindPage(output: output)
         bindNavigation(output: output)
+        bindModify(output: output)
 
         nameVC.bind(output: output)
         stateRegionVC.bind(output: output)
@@ -160,23 +186,10 @@ final class ProjectCreateMainViewController: ViewController {
 
     func bindNavigation(output: ProjectCreateMainViewModel.Output) {
         
-        var alert = ResultAlertView_Image_Title_Content_Alert(
-            image: .warnning,
-            title: "",
-            content: "",
-            availableCancle: true,
-            resultSubject: nil
-        )
-        
         mainView.buttonClose.rx.tap
             .withUnretained(self)
             .map { this, _ in
-                
-                alert.image = .warnning
-                alert.title = "생성을 중단하시겠습니까?"
-                alert.content = "확인을 누르시면 모든 내용이 삭제됩니다."
-                alert.resultSubject = this.closeSubject
-                return alert
+                return this.cancleAlert
             }
             .subscribe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] alert in
@@ -192,12 +205,7 @@ final class ProjectCreateMainViewController: ViewController {
         postVC.buttonCreateProject.rx.tap
             .withUnretained(self)
             .map { this, _ in
-                alert.image = .write
-                alert.title = "프로젝트를 생성하시겠습니까?"
-                alert.content = "확인을 누르시면 프로젝트가 생성됩니다."
-                alert.resultSubject = this.createSubject
-                
-                return alert
+                return this.createAlert
             }
             .subscribe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] alert in
@@ -218,5 +226,20 @@ final class ProjectCreateMainViewController: ViewController {
                 )
             })
             .disposed(by: disposeBag)
+    }
+    
+    func bindModify(output: ProjectCreateMainViewModel.Output) {
+        
+        output.isModify
+            .withUnretained(self)
+            .subscribe(onNext: { this, _ in
+                this.createAlert.title = "프로젝트 수정을 완료하시겠습니까?"
+                this.createAlert.content = "확잉늘 누르시면 프로젝트가 수정됩니다."
+                
+                this.cancleAlert.title = "수정을 중단하시겠습니까?"
+                this.cancleAlert.content = "확인을 누르시면 모든 내용이 삭제됩니다."
+            })
+            .disposed(by: disposeBag)
+        
     }
 }

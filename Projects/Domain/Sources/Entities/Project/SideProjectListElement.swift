@@ -10,12 +10,41 @@ import UIKit
 
 public struct SideProjectListElement: Hashable {
     public static func == (lhs: SideProjectListElement, rhs: SideProjectListElement) -> Bool {
-        return lhs.identifier == rhs.identifier
+        return lhs.identifier == rhs.identifier &&
+                 lhs.id == rhs.id &&
+                 lhs.title == rhs.title &&
+                 lhs.thumbnail == rhs.thumbnail &&
+                 lhs.region == rhs.region &&
+                 lhs.isOnline == rhs.isOnline &&
+                 lhs.careerMin == rhs.careerMin &&
+                 lhs.careerMax == rhs.careerMax &&
+                 lhs.createdAt == rhs.createdAt &&
+                 lhs.state == rhs.state &&
+                 lhs.favorite == rhs.favorite &&
+                 lhs.myFavorite == rhs.myFavorite &&
+                 lhs.category == rhs.category &&
+                 lhs.goal == rhs.goal &&
+                 lhs.leaderParts == rhs.leaderParts &&
+                 lhs.recruitStatus == rhs.recruitStatus &&
+                 lhs.HashTags == rhs.HashTags
     }
     
     public func hash(into hasher: inout Hasher) {
         hasher.combine(identifier)
         hasher.combine(favorite)
+        hasher.combine(title)
+        hasher.combine(thumbnail)
+        hasher.combine(region)
+        hasher.combine(isOnline)
+        hasher.combine(careerMin)
+        hasher.combine(careerMax)
+        hasher.combine(state)
+        hasher.combine(favorite)
+        hasher.combine(category)
+        hasher.combine(goal)
+        hasher.combine(leaderParts)
+        hasher.combine(recruitStatus)
+        hasher.combine(HashTags)
     }
     
     public let identifier = UUID()
@@ -31,11 +60,11 @@ public struct SideProjectListElement: Hashable {
     public var myFavorite: Bool
     public let category: [String]
     public let goal: Goal
-    public let leaderParts: [Parts]
+    public let leaderParts: Parts
     public let recruitStatus: [RecruitStatus]
     public var HashTags: [HashTag] = []
 
-    public init(id: Int, title: String, thumbnail: String?, region: String, online: Bool, careerMin: String, careerMax: String, createdAt: String, state: String, favorite: Int, myFavorite: Bool, category: [String], goal: String, leaderParts: [Parts], recruitStatus: [RecruitStatus]) {
+    public init(id: Int, title: String, thumbnail: String?, region: String, online: Bool, careerMin: String, careerMax: String, createdAt: String, state: String, favorite: Int, myFavorite: Bool, category: [String], goal: String, leaderParts: Parts, recruitStatus: [RecruitStatus]) {
         self.id = id
         self.title = title
         self.thumbnail = thumbnail
@@ -43,7 +72,7 @@ public struct SideProjectListElement: Hashable {
         
         if online == true {
             self.isOnline = .online
-        } else if online == true && region != "미설정" {
+        } else if online == false && region != "미설정" {
             self.isOnline = .onOffline
         } else {
             self.isOnline = .offline

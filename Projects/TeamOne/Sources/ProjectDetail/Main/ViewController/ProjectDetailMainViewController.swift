@@ -38,7 +38,7 @@ final class ProjectDetailMainViewController: ViewController {
     
     // MARK: - PageViewControllers
 
-    let introduceVC: ProjectDetailPageSubIntroduceViewController
+    let introduceVC = ProjectDetailPageSubIntroduceViewController()
 
     let memberListVC = MemberListViewController()
 
@@ -56,10 +56,8 @@ final class ProjectDetailMainViewController: ViewController {
 
     // MARK: - Inits
 
-    init(viewModel: ProjectDetailMainViewModel,
-         introduceVC: ProjectDetailPageSubIntroduceViewController) {
+    init(viewModel: ProjectDetailMainViewModel) {
         self.viewModel = viewModel
-        self.introduceVC = introduceVC
         super.init(nibName: nil, bundle: nil)
         setupDropDown()
     }
@@ -140,6 +138,7 @@ final class ProjectDetailMainViewController: ViewController {
     
     override func bind() {
         let input = ProjectDetailMainViewModel.Input(
+            viewDidLoad: rx.viewWillAppear.take(1).map { _ in return ()}.asObservable(),
             viewWillAppear: rx.viewWillAppear.map { _ in return }.asObservable(),
             backButtonTap: viewNavigation.buttonNavigationLeft.rx.tap
                 .throttle(.seconds(1), scheduler: MainScheduler.instance), 
@@ -147,6 +146,12 @@ final class ProjectDetailMainViewController: ViewController {
             profileSelected: memberListVC.profileSelected
                 .throttle(.seconds(1), latest: true, scheduler: MainScheduler.instance),
             representProjectSelected: memberListVC.representProjectSelected
+                .throttle(.seconds(1), latest: true, scheduler: MainScheduler.instance),
+            likeButtonTap: introduceVC.mainView.viewBottom.buttonLike.rx.tap
+                .throttle(.seconds(1), latest: true, scheduler: MainScheduler.instance),
+            applyButtonTap: introduceVC.mainView.viewBottom.buttonApply.rx.tap
+                .throttle(.seconds(1), latest: true, scheduler: MainScheduler.instance),
+            manageButtonTap: introduceVC.mainView.viewBottom.buttonProjectManagement.rx.tap
                 .throttle(.seconds(1), latest: true, scheduler: MainScheduler.instance), 
             expelProps: expelProps
         )
@@ -160,6 +165,7 @@ final class ProjectDetailMainViewController: ViewController {
         bindAlert(output: output)
         bindExpel(output: output)
         
+        introduceVC.bind(output: output)
         memberListVC.bind(output: output)
     }
     
@@ -197,15 +203,16 @@ final class ProjectDetailMainViewController: ViewController {
     
     func bindReport() {
         reportButtonTabSubject
-            .map { _ in
+            .withUnretained(self)
+            .map { this, _ in
                 let alert = AlertView_Title_TextView_Item(
                     title: "이 프로젝트를 신고하시겠습니까?", 
                     placeHolder: "신고 사유를 최대 100자 까지 작성해주세요",
                     okButtonTitle: "신고하기",
                     maxTextCount: 100,
-                    callBack: { [weak self] bool, content in
+                    callBack: { bool, content in
                         if bool == true {
-                            self?.reportedContentSubject.onNext(content)
+                            this.reportedContentSubject.onNext(content)
                         }
                     }
                 )
@@ -214,7 +221,7 @@ final class ProjectDetailMainViewController: ViewController {
             }
             .withUnretained(self)
             .subscribe(onNext: { this, alert in
-                self.presentAlert_Title_TextView(
+                this.presentAlert_Title_TextView(
                     source: this,
                     alert: alert
                 )
@@ -239,7 +246,7 @@ final class ProjectDetailMainViewController: ViewController {
             }
             .withUnretained(self)
             .emit(onNext: { this, alert in
-                self.presentResultAlertView_Image_Title_Content(
+                this.presentResultAlertView_Image_Title_Content(
                     source: this,
                     alert: alert
                 )

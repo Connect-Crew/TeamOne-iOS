@@ -34,6 +34,6 @@ extension ImagePickerController: UIAdaptivePresentationControllerDelegate {
     // - its `isModalInPresentation` property is set to false.
     @available(iOS 13, *)
     public func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
-        imagePickerDelegate?.imagePicker(self, didCancelWithAssets: assetStore.assets)
+   
     }
 }

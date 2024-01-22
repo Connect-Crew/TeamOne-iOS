@@ -15,9 +15,7 @@ import SDWebImage
 
 final class ProjectDetailPageSubIntroduceViewController: ViewController {
 
-    private let viewModel: ProjectDetailPageSubIntroduceViewModel
-
-    private let mainView = IntroduceMainView(frame: .zero)
+    let mainView = IntroduceMainView(frame: .zero)
 
     // MARK: - LifeCycle
 
@@ -32,8 +30,7 @@ final class ProjectDetailPageSubIntroduceViewController: ViewController {
 
     // MARK: - Inits
 
-    init(viewModel: ProjectDetailPageSubIntroduceViewModel) {
-        self.viewModel = viewModel
+    init() {
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -41,25 +38,14 @@ final class ProjectDetailPageSubIntroduceViewController: ViewController {
         fatalError("init(coder:) has not been implemented")
     }
 
-    override func bind() {
-        let input = ProjectDetailPageSubIntroduceViewModel.Input(
-            likeButtonTap: mainView.viewBottom.buttonLike.rx.tap
-                .throttle(.seconds(1), scheduler: MainScheduler.instance),
-            applyButtonTap: mainView.viewBottom.buttonApply.rx.tap
-                .throttle(.seconds(1), scheduler: MainScheduler.instance),
-            manageButtonTap: mainView.viewBottom.buttonProjectManagement.rx.tap
-                .throttle(.seconds(1), latest: true, scheduler: MainScheduler.instance)
-        )
-
-        let output = viewModel.transform(input: input)
-
+    func bind(output: ProjectDetailMainViewModel.Output) {
+     
         bindProject(output: output)
-        
         mainView.viewBottom.bind(output: output)
         mainView.viewRecuritStatus.bind(output: output)
     }
 
-    func bindProject(output: ProjectDetailPageSubIntroduceViewModel.Output) {
+    private func bindProject(output: ProjectDetailMainViewModel.Output) {
         let project = output.project
             .compactMap { $0 }
 
@@ -118,18 +104,15 @@ final class ProjectDetailPageSubIntroduceViewController: ViewController {
         
         project
             .map { $0.banners }
-            .filter { !$0.isEmpty }
             .drive(onNext: { [weak self] array in
-                UIImageView.pathToImage(path: array) { images in
-                    self?.mainView.imageSlider.configure(with: images)
-                }
+                self?.mainView.imageSlider.path = array
             })
             .disposed(by: disposeBag)
         
         // 내 프로젝트가 아니면서, 지원이 마감되었을 때 처리
         Observable.combineLatest(
-            output.project.map { $0?.isAppliable }.asObservable(),
-            output.isMyproject.asObservable()
+            output.project.map { $0.isAppliable }.asObservable(),
+            output.isMyProject.asObservable()
         )
         .map { result in
             let isAppliable = result.0

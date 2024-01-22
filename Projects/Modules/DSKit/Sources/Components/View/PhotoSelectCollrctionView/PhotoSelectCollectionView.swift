@@ -11,9 +11,19 @@ import SnapKit
 import RxSwift
 import RxCocoa
 
+public struct DSImageWithName {
+    public let name: String
+    public let Image: UIImage
+    
+    public init(name: String, Image: UIImage) {
+        self.name = name
+        self.Image = Image
+    }
+}
+
 public final class PhotoSelectCollectionView: UICollectionView {
 
-    public var photos: [UIImage] = [] {
+    public var photos: [DSImageWithName] = [] {
         didSet {
             self.reloadData()
         }
@@ -25,7 +35,7 @@ public final class PhotoSelectCollectionView: UICollectionView {
 
     public var onClickAddPhoto = PublishRelay<Void>()
 
-    public var onClickDeletePhoto = PublishRelay<UIImage>()
+    public var onClickDeletePhoto = PublishRelay<DSImageWithName>()
 
     private let disposeBag = DisposeBag()
 
@@ -63,7 +73,7 @@ public final class PhotoSelectCollectionView: UICollectionView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    public func setImage(images: [UIImage]) {
+    public func setImage(images: [DSImageWithName]) {
         self.photos = images
     }
 }

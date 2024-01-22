@@ -14,6 +14,7 @@ let project = Project.makeModule(
     targets: [.staticFramework],
     internalDependencies: [
         .Modules.thirdPartyLibs
-    ]
+    ],
+    hasResources: true
 )
 
