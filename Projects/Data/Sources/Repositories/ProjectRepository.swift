@@ -97,6 +97,12 @@ public struct ProjectRepository: ProjectRepositoryProtocol {
         return projectDataSource.modify(request, projectId: projectId)
             .map { $0.toDomain() }
     }
+    
+    public func listAllApplicationsForProject(projectId: Int) -> Single<[ApplyStatus]> {
+        
+        return projectDataSource.listAllApplicationsForProject(projectId: projectId)
+            .map { $0.toDomain() }
+    }
 }
 
 extension ProjectRepository {
@@ -146,7 +152,7 @@ extension ProjectRepository {
     }
     
     func propsToModifyRequestDTO(props: ProjectCreateProps) -> ProjectModifyRequestDTO {
-        let region = (props.region == nil || props.region == "미설정") ? "NONE" : KM.shared.key(name: props.region ?? "")
+        let region = (props.region == nil || props.region == "미설정" || props.region == "") ? "NONE" : KM.shared.key(name: props.region ?? "")
         var recruits = [Recruit]()
         var categories = [String]()
         

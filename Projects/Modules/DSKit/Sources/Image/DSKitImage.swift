@@ -166,6 +166,13 @@ public enum DSKitImage {
     
     case rightsmall
     
+    // MARK: - arrow
+    
+    case arrowRightGray
+    case arrowRightBlue
+    
+    case duplicate
+    
     var toName: String {
         switch self {
         case .homeSolid:
@@ -358,7 +365,12 @@ public enum DSKitImage {
         case .honeySmall3: return "honey.small.3"
         case .honeySmall4: return "honey.small.4"
             
+            // MARK: - Arrow
         case .rightsmall: return "right.small"
+        case .arrowRightGray: return "arrow.right.gray"
+        case .arrowRightBlue: return "arrow.right.blue"
+            
+        case .duplicate: return "duplicate"
         }
     }
 }

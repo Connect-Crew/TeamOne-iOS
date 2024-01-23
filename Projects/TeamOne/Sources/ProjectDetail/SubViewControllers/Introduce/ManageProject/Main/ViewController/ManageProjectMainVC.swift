@@ -16,9 +16,9 @@ import DSKit
 
 final class ManageProjectMainVC: ViewController {
     
-    private let viewModel: ManageProjectMainViewModel
+//    private let viewModel: ManageProjectMainViewModel
     
-    private let mainView = ManageProjectMainView(frame: .zero)
+    let mainView = ManageProjectMainView(frame: .zero)
     
     // MARK: - LifeCycle
     
@@ -33,8 +33,8 @@ final class ManageProjectMainVC: ViewController {
     
     // MARK: - Inits
     
-    init(viewModel: ManageProjectMainViewModel) {
-        self.viewModel = viewModel
+    init() {
+
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -42,35 +42,16 @@ final class ManageProjectMainVC: ViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
-    // MARK: - Subject
+    // MARK: - Relay
     
-    let finishSubject = PublishSubject<Void>()
-    let modifySubject = PublishSubject<Void>()
+    let modifySubject = PublishRelay<Void>()
+    let manageApplicantsSubject = PublishRelay<Void>()
     
     override func bind() {
-        let input = ManageProjectMainViewModel.Input(
-            viewDidLoad: rx.viewWillAppear.take(1).map { _ in () },
-            viewWillAppear: rx.viewWillAppear.map { _ in () },
-            closeManageProjectButtonTap: mainView.bottomSheet.buttonClose.rx.tap
-                .throttle(.seconds(1), latest: true, scheduler: MainScheduler.instance),
-            modifyButtonTap: modifySubject,
-            deleteButtonTap: mainView.bottomSheet.buttonDelete.rx.tap
-                .throttle(.seconds(1), latest: true, scheduler: MainScheduler.instance),
-            completeButtonTap: mainView.bottomSheet.buttonComplete.rx.tap
-                .throttle(.seconds(1), latest: true, scheduler: MainScheduler.instance),
-            finishSubject: finishSubject
-        )
-        
-        let output = viewModel.transform(input: input)
-        
-        bindBottomSheet(output: output)
-        bindAlert(output: output)
-        
-        
-        mainView.bottomSheet.bind(output: output)
+        bindBottomSheet()
     }
     
-    func bindBottomSheet(output: ManageProjectMainViewModel.Output) {
+    func bindBottomSheet() {
         
         // bottomSheet를 띄움
         rx.viewWillAppear
@@ -82,13 +63,13 @@ final class ManageProjectMainVC: ViewController {
             })
             .disposed(by: disposeBag)
         
-        // closebutton을 눌렀을 때 바텀시트를 내린 후 Coordinator 종료
+        // closebutton을 눌렀을 때 바텀시트 dismiss
         mainView.bottomSheet.buttonClose.rx.tap
             .subscribe(on: MainScheduler.instance)
             .withUnretained(self)
             .subscribe(onNext: { this, _ in
                 this.mainView.dismissBottomSheet(completion: { _ in
-                    this.finishSubject.onNext(())
+                    this.dismiss(animated: false)
                 })
             })
             .disposed(by: disposeBag)
@@ -99,25 +80,23 @@ final class ManageProjectMainVC: ViewController {
             .withUnretained(self)
             .subscribe(onNext: { this, _ in
                 this.mainView.dismissBottomSheet(completion: { _ in
-                    this.modifySubject.onNext(())
+                    this.dismiss(animated: false, completion: {
+                        this.modifySubject.accept(())
+                    })
+                })
+            })
+            .disposed(by: disposeBag)
+        
+        mainView.bottomSheet.buttonManageApplicants.rx.tap
+            .withUnretained(self)
+            .bind(onNext: { this, _ in
+                this.mainView.dismissBottomSheet(completion: { _ in
+                    this.dismiss(animated: false, completion: {
+                        this.manageApplicantsSubject.accept(())
+                    })
                 })
             })
             .disposed(by: disposeBag)
     }
     
-    func bindAlert(output: ManageProjectMainViewModel.Output) {
-        output.showCompleteAlert
-            .withUnretained(self)
-            .subscribe(onNext: { this, alert in
-                this.mainView.dismissBottomSheet(completion: { _ in 
-                    this.presentResultAlertView_Image_Title_Content(
-                        source: this,
-                        alert: alert,
-                        darkbackground: false
-                    )
-                })
-            })
-            .disposed(by: disposeBag)
-            
-    }
 }

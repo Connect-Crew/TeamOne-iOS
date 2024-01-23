@@ -56,7 +56,7 @@ final class ProjectCreateMainViewModel: ViewModel {
         let onlineTap: Observable<Void>
         let onOfflineTap: Observable<Void>
         let offlineTap: Observable<Void>
-        let selectedRegion: Observable<String?>
+        let selectedRegion: Observable<String>
         
         let goalStartUpTap: Observable<Void>
         let goalPortfolioTap: Observable<Void>
@@ -510,7 +510,6 @@ final class ProjectCreateMainViewModel: ViewModel {
     // MARK: - Modify
     func transformModify(input: Input) {
         
-        
         transformStartFromLastPage()
         transformTitle()
         transformstateRegion(input: input)
@@ -592,12 +591,12 @@ final class ProjectCreateMainViewModel: ViewModel {
                 .map {
                     return ($0.state, $0.isOnline, $0.region)
                 }
-                .map { value in
+                .map { value -> Bool in
                     let state = value.0
                     let isOnline = value.1
                     let region = value.2
                     
-                    if state != nil && isOnline == .online {
+                    if isOnline == .online {
                         return true
                     } else if state != nil && (isOnline == .onOffline || isOnline == .offline) && region != nil {
                         return true

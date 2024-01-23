@@ -19,9 +19,9 @@ enum ProjectDetailCoordinatorResult {
 final class ProjectDetailCoordinator: BaseCoordinator<ProjectDetailCoordinatorResult> {
 
     let finish = PublishSubject<ProjectDetailCoordinatorResult>()
-    // 변동사항(좋아요변경)등을 상위 코디네이터에 전달해야하는 경우 필요한 서브젝트
-    let changedProject = PublishSubject<Project>()
-    let refresh = PublishSubject<Void>()
+    
+    // 디테일의 depth에서 변경이 일어나서 하위 디테일에 변경사항을 알려야 할 경우 사용
+    static let refresh = PublishSubject<Void>()
     
     let project: Project
 
@@ -64,18 +64,12 @@ final class ProjectDetailCoordinator: BaseCoordinator<ProjectDetailCoordinatorRe
                     break
                 case .apply(let project):
                     self?.showApply(project: project)
-                case .manageProject(let project):
-                    self?.showManage(project: project)
+                case .modify(let projectId):
+                    self?.showModify(projectId: projectId)
+                case .manageApplicants(let project):
+                    self?.showManageApplicant(project: project)
                 }
             })
-            .disposed(by: disposeBag)
-        
-        refresh
-            .bind(to: viewModel.refresh)
-            .disposed(by: disposeBag)
-        
-        viewModel.changedProject
-            .bind(to: changedProject)
             .disposed(by: disposeBag)
 
         let mainViewController = Inject.ViewControllerHost(ProjectDetailMainViewController(
@@ -95,7 +89,7 @@ final class ProjectDetailCoordinator: BaseCoordinator<ProjectDetailCoordinatorRe
             .subscribe(onNext: { [weak self] in
                 switch $0 {
                 case .close:
-                    self?.refresh.onNext(())
+                    Self.refresh.onNext(())
                     self?.dismiss(animated: false)
                 }
             })
@@ -107,22 +101,7 @@ final class ProjectDetailCoordinator: BaseCoordinator<ProjectDetailCoordinatorRe
         present(viewController, animated: false)
     }
     
-    func showManage(project: Project) {
-        let manage = ProjectManageCoordinator(navigationController, project: project)
-        
-        coordinate(to: manage)
-            .subscribe(onNext: { [weak self] in
-                switch $0 {
-                case .finish:
-                    break
-                case .modify:
-                    self?.showModify(projectId: self?.project.id)
-                }
-            })
-            .disposed(by: disposeBag)
-    }
-    
-    func showModify(projectId: Int?) {
+    func showModify(projectId: Int) {
         let modify = ProjectCreateCoordinator(
             type: .modify,
             projectId: projectId,
@@ -133,11 +112,19 @@ final class ProjectDetailCoordinator: BaseCoordinator<ProjectDetailCoordinatorRe
             .subscribe(onNext: { [weak self] in
                 switch $0 {
                 case .created:
-                    self?.refresh.onNext(())
+                    Self.refresh.onNext(())
                 case .finish:
                     break
                 }
             })
+            .disposed(by: disposeBag)
+    }
+    
+    func showManageApplicant(project: Project) {
+        let manageApplicant = ManageApplicantCoordinator(project: project, navigationController)
+        
+        coordinate(to: manageApplicant)
+            .subscribe(onNext: { _ in })
             .disposed(by: disposeBag)
     }
     

@@ -176,12 +176,15 @@ final class ManageProjecBottomSheet: View {
     
     // MARK: - Bind
     
-    func bind(output: ManageProjectMainViewModel.Output) {
+    func bind(
+        isDeletable: Driver<Bool>,
+        isCompletable: Driver<Bool>
+    ) {
                 
-        let isDeletable = output.isDeletable
+        let isDeletable = isDeletable
             .filter { $0 == true }
         
-        let isUnDeletable = output.isDeletable
+        let isUnDeletable = isDeletable
             .filter { $0 == false }
         
         isDeletable
@@ -207,10 +210,10 @@ final class ManageProjecBottomSheet: View {
             .disposed(by: disposeBag)
         
 
-        let isCompletable = output.isCompletable
+        let isCompletable = isCompletable
             .filter { $0 == true }
         
-        let isUnCompletable = output.isCompletable
+        let isUnCompletable = isCompletable
             .filter { $0 == false }
         
         isCompletable

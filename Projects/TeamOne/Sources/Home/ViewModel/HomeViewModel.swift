@@ -65,7 +65,7 @@ final class HomeViewModel: ViewModel {
     
     var refresh = PublishSubject<Void>()
     // 하위 코디네이터에서 프로젝트의 정보가 변경된 경우 변경된 사항을 반영하기위한 서브젝트
-    var changedProject = PublishSubject<Project>()
+    var changedProject = HomeCoordinator.commonChangedProject
 
     func transform(input: Input) -> Output {
 

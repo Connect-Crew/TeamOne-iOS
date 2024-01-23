@@ -99,6 +99,8 @@ public final class ImageView_Honey: UIImageView {
     public init(type: HoneyType) {
         self.type = type
         super.init(frame: .zero)
+        
+        setHoney(temparature: 36.5)
     }
     
     public func setHoney(temparature: Double?) {
@@ -113,12 +115,12 @@ public final class ImageView_Honey: UIImageView {
         }
     }
     
-    func setSmallImage() {
+    private func setSmallImage() {
         let type = HoneySmallType.init(temparature: temparature)
         self.image = type.honeyImage
     }
     
-    func setLargeImage() {
+    private func setLargeImage() {
         let type = HoneyLargeType.init(temparature: temparature)
         self.image = type.honeyImage
     }

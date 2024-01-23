@@ -116,36 +116,6 @@ public struct Project {
         }
     }
     
-    public static let noneInfoProject = Project(
-        id: Int.max,
-        title: "",
-        banners: [],
-        region: "",
-        online: true,
-        createdAt: "",
-        state: ProjectState.before.toString(),
-        careerMin: "경력무관",
-        careerMax: "경력무관",
-        category: [],
-        goal: "NONE",
-        leader: Leader(
-            id: Int.max,
-            nickname: "",
-            profile: "",
-            introduction: "",
-            temperature: 0.0,
-            responseRate: 0,
-            parts: [],
-            representProjects: []
-        ),
-        leaderParts: Parts(key: "", part: "", category: ""),
-        introduction: "",
-        favorite: 0,
-        myFavorite: false,
-        recruitStatus: [],
-        skills: []
-    )
-    
     // 수정하기일 경우 Project -> Props 변경이 필요합니다,
     public func toProps(completion: @escaping ((ProjectCreateProps) -> ())){
         

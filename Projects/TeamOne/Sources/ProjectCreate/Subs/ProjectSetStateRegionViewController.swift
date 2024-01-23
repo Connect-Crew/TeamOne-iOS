@@ -121,7 +121,7 @@ final class ProjectSetStateRegionViewController: ViewController {
             .map { $0.isOnline }
             .drive(onNext: { [weak self] isOnline in
                 switch isOnline {
-                case nil, .none:
+                case .none:
                     self?.buttonRegionOnline.isSelected = false
                     self?.buttonRegionOffline.isSelected = false
                     self?.buttonRegionOnOffline.isSelected = false
@@ -143,8 +143,6 @@ final class ProjectSetStateRegionViewController: ViewController {
                     self?.buttonRegionOnOffline.isSelected = false
                     self?.locaionListStackView.isUserInteractionEnabled = false
                     self?.locaionListStackView.resetSelect()
-                default:
-                    break
                 }
             })
             .disposed(by: disposeBag)

@@ -45,6 +45,10 @@ final class ProjectDetailMainViewController: ViewController {
     let chatVC = ChatViewController()
 
     lazy var pageViewController = BasePageViewController(transitionStyle: .scroll, navigationOrientation: .horizontal)
+    
+    // MARK: - SubViewControllers
+    
+    lazy var manageProjectVC = ManageProjectMainVC()
 
     // MARK: - LifeCycle
 
@@ -151,9 +155,9 @@ final class ProjectDetailMainViewController: ViewController {
                 .throttle(.seconds(1), latest: true, scheduler: MainScheduler.instance),
             applyButtonTap: introduceVC.mainView.viewBottom.buttonApply.rx.tap
                 .throttle(.seconds(1), latest: true, scheduler: MainScheduler.instance),
-            manageButtonTap: introduceVC.mainView.viewBottom.buttonProjectManagement.rx.tap
-                .throttle(.seconds(1), latest: true, scheduler: MainScheduler.instance), 
-            expelProps: expelProps
+            expelProps: expelProps,
+            modifyButtonTap: manageProjectVC.modifySubject,
+            manageApplicantsButtonTap: manageProjectVC.manageApplicantsSubject
         )
 
         let output = viewModel.transform(input: input)
@@ -164,6 +168,7 @@ final class ProjectDetailMainViewController: ViewController {
         bindReport()
         bindAlert(output: output)
         bindExpel(output: output)
+        bindManage(output: output)
         
         introduceVC.bind(output: output)
         memberListVC.bind(output: output)
@@ -287,5 +292,29 @@ final class ProjectDetailMainViewController: ViewController {
                 this.present(expelVC, animated: false)
             })
             .disposed(by: disposeBag)
+    }
+    
+    func bindManage(output: ProjectDetailMainViewModel.Output) {
+        
+        let manageTap = introduceVC.mainView.viewBottom.buttonProjectManagement.rx.tap
+            .throttle(.seconds(1), latest: true, scheduler: MainScheduler.instance)
+        
+        manageTap
+            .withUnretained(self)
+            .bind(onNext: { this, _ in
+                
+                this.manageProjectVC.mainView.bottomSheet.bind(
+                    isDeletable: output.isCompletable,
+                    isCompletable: output.isDeletable
+                )
+                
+                this.manageProjectVC.modalPresentationStyle = .overFullScreen
+                
+                this.present(this.manageProjectVC, animated: false)
+                
+            })
+            .disposed(by: disposeBag)
+        
+        
     }
 }

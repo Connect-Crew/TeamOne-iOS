@@ -19,8 +19,10 @@ enum HomeCoordinatorResult {
 final class HomeCoordinator: BaseCoordinator<HomeCoordinatorResult> {
 
     let finish = PublishSubject<HomeCoordinatorResult>()
-    let changedProject = PublishSubject<Project>()
     let refreshHome = PublishSubject<Void>()
+    
+    // 프로젝트가 변경되어 새로운 프로젝트의 전달이 필요한 경우
+    static let commonChangedProject = PublishSubject<Project>()
 
     override func start() -> Observable<HomeCoordinatorResult> {
         showHome()
@@ -50,10 +52,6 @@ final class HomeCoordinator: BaseCoordinator<HomeCoordinatorResult> {
                     self?.pushToSearch()
                 }
             })
-            .disposed(by: disposeBag)
-        
-        changedProject
-            .bind(to: viewModel.changedProject)
             .disposed(by: disposeBag)
 
        let viewController = Inject.ViewControllerHost(HomeViewController(viewModel: viewModel))
@@ -94,11 +92,6 @@ final class HomeCoordinator: BaseCoordinator<HomeCoordinatorResult> {
 
         coordinate(to: projectDetail)
             .subscribe(onNext: { _ in })
-            .disposed(by: disposeBag)
-        
-        projectDetail
-            .changedProject
-            .bind(to: changedProject)
             .disposed(by: disposeBag)
     }
     

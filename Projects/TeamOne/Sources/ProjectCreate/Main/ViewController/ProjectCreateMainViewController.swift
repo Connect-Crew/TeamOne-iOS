@@ -112,7 +112,7 @@ final class ProjectCreateMainViewController: ViewController {
                 categoryVC.buttonBefore.rx.tap.map { _ in return () },
                 postVC.buttonBefore.rx.tap.map { _ in () }
             ).throttle(.seconds(1), latest: true, scheduler: MainScheduler.instance), 
-            title: nameVC.textFieldName.rx.text.orEmpty.asObservable()
+            title: nameVC.textFieldName.rx.text.orEmpty.asObservable().skip(1)
             ,
             stateBeforeTap: stateRegionVC.buttonStateBefore.rx.tap
                 .throttle(.seconds(1), scheduler: MainScheduler.instance),

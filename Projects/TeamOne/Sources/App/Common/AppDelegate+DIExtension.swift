@@ -218,6 +218,13 @@ extension AppDelegate {
                 projectRepository: res.resolve(ProjectRepositoryProtocol.self)!
             )
         })
+        
+        container.register(interface: GetApplyStatusUseCase.self, implement: {
+            res in
+            return GetApplyStatus(
+                projectRepository: res.resolve(ProjectRepositoryProtocol.self)!
+            )
+        })
 
         // MARK: - ViewModel
 

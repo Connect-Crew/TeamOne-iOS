@@ -12,7 +12,6 @@ public enum isOnline {
     case online
     case onOffline
     case offline
-    case none
     
     func toString() -> String {
         switch self {
@@ -22,8 +21,6 @@ public enum isOnline {
             return "onOffline"
         case .offline:
             return "offline"
-        case .none:
-            return "nil"
         }
     }
     
@@ -34,8 +31,6 @@ public enum isOnline {
         case .onOffline:
             return false
         case .offline:
-            return false
-        case .none:
             return false
         }
     }

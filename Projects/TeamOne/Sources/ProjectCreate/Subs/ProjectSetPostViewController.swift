@@ -224,7 +224,9 @@ final class ProjectSetPostViewController: ViewController, UINavigationController
         output.projectCreateProps
             .asObservable()
             .map { $0.recruits }
-            .bind(to: tableViewRecruit.rx.items(cellIdentifier: RecruitSetPartCell.identifier, cellType: RecruitSetPartCell.self)) { [weak self] _, recruit, cell in
+            .bind(to: tableViewRecruit.rx.items(
+                cellIdentifier: RecruitSetPartCell.identifier,
+                cellType: RecruitSetPartCell.self)) { [weak self] _, recruit, cell in
                 
                 cell.initSetting(recruit: recruit)
                 

@@ -13,9 +13,9 @@ public struct RecruitStatus: Codable, Hashable {
     public let part: String
     public let partKey: String
     public let comment: String
-    public let current, max: Int
+    public var current, max: Int
     public var applied: Bool
-    public var isAppliable: Bool
+    public var isQuotaFull: Bool
 
     public init(category: String, part: String, partKey: String, comment: String, current: Int, max: Int, applied: Bool) {
         self.category = category
@@ -26,11 +26,7 @@ public struct RecruitStatus: Codable, Hashable {
         self.max = max
         self.applied = applied
 
-        self.isAppliable = true
-
-        if current >= max {
-            self.isAppliable = false
-        }
+        self.isQuotaFull = current >= max ? true : false
     }
     
     public func toRecruit() -> Recruit {

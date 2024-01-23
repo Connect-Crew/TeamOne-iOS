@@ -218,13 +218,13 @@ final class ApplyBottomSheetView: UIView {
         guard !recruit.isEmpty else { return }
         
         recruit.forEach { data in
-            let isEnable = data.isAppliable
+            let isEnable = !data.isQuotaFull
             
             var state = ApplyState.appliable
             
             if data.applied == true { state = .applied }
             
-            if data.isAppliable == false { state = .isQuotaFull }
+            if data.isQuotaFull == false { state = .isQuotaFull }
             
             let labelPart = UILabel().then {
                 $0.setLabel(text: data.part, typo: .button2, color: state.partTextColor)

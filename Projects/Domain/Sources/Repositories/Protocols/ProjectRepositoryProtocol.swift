@@ -28,4 +28,6 @@ public protocol ProjectRepositoryProtocol {
     func member(projectId: Int) -> Single<[ProjectMember]>
     
     func modify(props: ProjectCreateProps, projectId: Int) -> Single<ProjectCreateResponse>
+    
+    func listAllApplicationsForProject(projectId: Int) -> Single<[ApplyStatus]>
 }
