@@ -8,7 +8,7 @@
 
 import Foundation
 
-public enum isOnline {
+public enum IsOnline {
     case online
     case onOffline
     case offline
@@ -32,6 +32,16 @@ public enum isOnline {
             return false
         case .offline:
             return false
+        }
+    }
+    
+    public init(isOnline: Bool, region: String) {
+        if isOnline == true {
+            self = .online
+        } else if isOnline == false && region == "미설정" {
+            self = .onOffline
+        } else {
+            self = .offline
         }
     }
 }

@@ -15,7 +15,7 @@ public struct Project {
     public let title: String
     public let banners: [String]
     public var region: String
-    public let isOnline: isOnline
+    public let isOnline: IsOnline
     public let createdAt: String
     public let state: ProjectState
     public let careerMin, careerMax: Career
@@ -58,15 +58,7 @@ public struct Project {
         self.title = title
         self.banners = banners
         self.region = region
-        
-        if online == true {
-            self.isOnline = .online
-        } else if online == true && region != "미설정" {
-            self.isOnline = .onOffline
-        } else {
-            self.isOnline = .offline
-        }
-        
+        self.isOnline = .init(isOnline: online, region: region)
         self.createdAt = createdAt
         self.state = ProjectState.findState(string: state)
         self.careerMin = Career.findCareer(string: careerMin)
@@ -164,22 +156,6 @@ public struct Project {
     }
     
     public func toListElement() -> SideProjectListElement {
-        return SideProjectListElement(
-            id: self.id,
-            title: self.title,
-            thumbnail: self.banners.first,
-            region: self.region,
-            online: self.isOnline.toBool(),
-            careerMin: self.careerMin.toString(),
-            careerMax: self.careerMax.toString(),
-            createdAt: self.createdAt,
-            state: self.state.toString(),
-            favorite: self.favorite,
-            myFavorite: self.myFavorite,
-            category: self.category,
-            goal: self.goal.toCellString(),
-            leaderParts: self.leaderParts,
-            recruitStatus: self.recruitStatus
-        )
+        return SideProjectListElement(id: self.id, title: self.title, thumbnail: self.banners.first, region: self.region, isOnline: self.isOnline, careerMin: self.careerMin, careerMax: self.careerMax, createdAt: self.createdAt, state: self.state, favorite: self.favorite, myFavorite: self.myFavorite, category: self.category, goal: self.goal, leaderParts: self.leaderParts, recruitStatus: self.recruitStatus)
     }
 }

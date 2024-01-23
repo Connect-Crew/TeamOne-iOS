@@ -23,3 +23,4 @@ public enum HashBackground {
 public enum HashTagTitleColor {
     case gray
 }
+

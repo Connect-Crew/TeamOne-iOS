@@ -121,6 +121,11 @@ public enum Career: CaseIterable {
     }
     
     public static func findCareer(string: String) -> Career {
-        return Self.allCases.first { $0.toString() == string }!
+        if let career = Self.allCases.first(where: { $0.toString() == string }) {
+            return career
+        } else {
+            assert(true)
+            return .none
+        }
     }
 }

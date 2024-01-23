@@ -205,9 +205,9 @@ final class ProjectCreateMainViewModel: ViewModel {
             .disposed(by: disposeBag)
             
             Observable.merge(
-                input.onlineTap.map { isOnline.online },
-                input.onOfflineTap.map { isOnline.onOffline },
-                input.offlineTap.map { isOnline.offline }
+                input.onlineTap.map { IsOnline.online },
+                input.onOfflineTap.map { IsOnline.onOffline },
+                input.offlineTap.map { IsOnline.offline }
             ).withLatestFrom(projectCreateProps) { isOnline, before -> ProjectCreateProps in
                 var props = before
                 props.isOnline = isOnline
@@ -561,9 +561,9 @@ final class ProjectCreateMainViewModel: ViewModel {
             .disposed(by: disposeBag)
             
             Observable.merge(
-                input.onlineTap.map { isOnline.online },
-                input.onOfflineTap.map { isOnline.onOffline },
-                input.offlineTap.map { isOnline.offline }
+                input.onlineTap.map { IsOnline.online },
+                input.onOfflineTap.map { IsOnline.onOffline },
+                input.offlineTap.map { IsOnline.offline }
             ).withLatestFrom(projectCreateProps) { isOnline, before -> ProjectCreateProps in
                 var props = before
                 props.isOnline = isOnline

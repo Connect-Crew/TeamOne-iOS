@@ -18,7 +18,8 @@ public extension UIViewController {
     func presentResultAlertView_Image_Title_Content(
         source: UIViewController?,
         alert: ResultAlertView_Image_Title_Content_Alert,
-        darkbackground: Bool = true
+        darkbackground: Bool = true,
+        okButtonTitle: String? = nil
         ) {
 
         let viewController = ResultAlertView_Image_Title_ContentVC(
@@ -107,11 +108,16 @@ open class ResultAlertView_Image_Title_ContentVC: ViewController {
 
     public init(
         alert: ResultAlertView_Image_Title_Content_Alert,
-        darkbackground: Bool
+        darkbackground: Bool,
+        okButtonTitle: String? = nil
     ) {
         self.darkBackground = darkbackground
         
         super.init(nibName: nil, bundle: nil)
+        
+        if okButtonTitle != nil {
+            self.okButton.setTitle(okButtonTitle, for: .normal)
+        }
 
         initSetting()
         self.bind(alert)
@@ -134,16 +140,16 @@ open class ResultAlertView_Image_Title_ContentVC: ViewController {
         self.cancleButton.isHidden = !alert.availableCancle
 
         self.cancleButton.rx.tap
-            .subscribe(onNext: { _ in
-                self.dismiss(animated: false) {
+            .subscribe(onNext: { [weak self] _ in
+                self?.dismiss(animated: false) {
                     alert.resultSubject?.onNext(false)
                 }
             })
             .disposed(by: disposeBag)
 
         self.okButton.rx.tap
-            .subscribe(onNext: { _ in
-                self.dismiss(animated: false) {
+            .subscribe(onNext: { [weak self] _ in
+                self?.dismiss(animated: false) {
                     alert.resultSubject?.onNext(true)
                 }
             })

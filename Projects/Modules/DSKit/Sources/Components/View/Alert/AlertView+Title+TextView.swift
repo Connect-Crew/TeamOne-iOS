@@ -77,8 +77,16 @@ public final class AlertView_Title_TextView: ViewController {
         $0.contentInset = UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16)
         $0.placeholder = ""
         $0.setRound(radius: 8)
-        $0.setFont(typo: .caption1)
+        $0.setFont(typo: .button2)
         $0.setLayer(width: 1, color: .teamOne.grayscaleFive)
+    }
+    
+    private let imageViewWarnning = UIImageView().then {
+        $0.image = .image(dsimage: .warinning)
+    }
+    
+    private let labelWarnning = UILabel().then {
+        $0.setLabel(text: "내용을 입력해주세요", typo: .caption2, color: .teamOne.point)
     }
 
     public let cancleButton = UIButton().then {
@@ -89,9 +97,19 @@ public final class AlertView_Title_TextView: ViewController {
     public let okButton = UIButton().then {
         $0.backgroundColor = .teamOne.mainColor
         $0.setButton(text: "지원하기", typo: .button2, color: .teamOne.white)
+        $0.isEnabled = false
+    }
+    
+    private lazy var warnningStackView = UIStackView(arrangedSubviews: [
+        imageViewWarnning,
+        labelWarnning
+    ]).then {
+        $0.spacing = 2
+        $0.alignment = .leading
+        $0.isHidden = true
     }
 
-    lazy var contentView = UIStackView(arrangedSubviews: [
+    private lazy var contentView = UIStackView(arrangedSubviews: [
         makeContentStackView(),
         makeButtonStackView()
     ]).then {
@@ -122,9 +140,24 @@ public final class AlertView_Title_TextView: ViewController {
     func initSetting() {
         
         textView.maxTextCount = maxTextCount
-        
+        textView.placeholderTextColor = .teamOne.grayscaleFive
         layout()
         addtarget()
+        
+        textView.rxTextObservable
+            .skip(1)
+            .map { $0.count }
+            .withUnretained(self)
+            .bind(onNext: { this, cnt in
+                if cnt > 0 {
+                    this.warnningStackView.isHidden = true
+                    this.okButton.isEnabled = true
+                } else {
+                    this.warnningStackView.isHidden = false
+                    this.okButton.isEnabled = false
+                }
+            })
+            .disposed(by: disposeBag)
     }
 
     public override func layout() {
@@ -147,6 +180,10 @@ public final class AlertView_Title_TextView: ViewController {
             $0.leading.equalToSuperview().offset(45)
             $0.trailing.equalToSuperview().inset(45)
             $0.center.equalToSuperview()
+        }
+        
+        imageViewWarnning.snp.makeConstraints {
+            $0.width.height.equalTo(16)
         }
 
         self.contentView.setRound(radius: 8)
@@ -180,7 +217,8 @@ public final class AlertView_Title_TextView: ViewController {
 
         return UIStackView(arrangedSubviews: [
             labelTitle,
-            textView
+            textView,
+            warnningStackView
         ]).then {
             $0.layoutMargins = UIEdgeInsets(top: 20, left: 24, bottom: 24, right: 20)
             $0.isLayoutMarginsRelativeArrangement = true

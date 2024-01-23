@@ -67,7 +67,7 @@ open class TextView_PlaceHolder: UITextView {
             .subscribe(onNext: { [weak self] in
                 if $0 == true {
                     self?.text = nil
-                    self?.textColor = .black
+                    self?.textColor = self?.textColor
                 }
             })
             .disposed(by: disposeBag)

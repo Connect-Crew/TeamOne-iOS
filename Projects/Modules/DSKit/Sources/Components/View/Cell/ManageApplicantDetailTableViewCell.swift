@@ -73,17 +73,12 @@ public final class ManageApplicantDetailTableViewCell: UITableViewCell, CellIden
         $0.setLabel(text: "가세요라", typo: .caption1, color: .teamOne.grayscaleSeven)
     }
     
-    private let labelWhosContact = PaddingLabel().then {
-        $0.textInsets = UIEdgeInsets(top: 0, left: 14, bottom: 0, right: 0)
-        $0.setLabel(text: "김찬호 님의 연락처입니다.", typo: .button1, color: .teamOne.mainColor)
-    }
-    
-    private let duplicateButton = UIButton().then {
-        $0.setButton(image: .duplicate)
+    private let copyButton = UIButton().then {
+        $0.setButton(image: .copy)
     }
     
     private let labelContact = UILabel().then {
-        $0.setLabel(text: "010-2400-2400", typo: .button1, color: .teamOne.white)
+        $0.setLabel(text: "010-2400-2400", typo: .button2, color: .teamOne.mainColor)
     }
     
     private let textViewIntroduction = UITextView().then {
@@ -129,9 +124,7 @@ public final class ManageApplicantDetailTableViewCell: UITableViewCell, CellIden
         $0.setRound(radius: 8)
     }
      
-    private lazy var contactStackView = UIStackView(arrangedSubviews: [
-        labelWhosContact,
-        makeContactInfoStackView()
+    private lazy var contactStackView = UIStackView(arrangedSubviews: [        makeContactInfoStackView()
     ]).then {
         $0.axis = .vertical
         $0.spacing = 10
@@ -166,9 +159,16 @@ public final class ManageApplicantDetailTableViewCell: UITableViewCell, CellIden
         $0.spacing = 8
     }
     
+    private let profileContainerButton = UIButton()
+    
     public var disposeBag = DisposeBag()
     
-    public lazy var applcationStatus: ApplicationStatus = .pending
+    private lazy var applcationStatus: ApplicationStatus = .pending
+    
+    public let rejectTap = PublishRelay<Void>()
+    public let approveTap = PublishRelay<Void>()
+    public let profileTap = PublishRelay<Void>()
+    public let copyButtonTap = PublishRelay<Void>()
     
     public override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -176,7 +176,7 @@ public final class ManageApplicantDetailTableViewCell: UITableViewCell, CellIden
         layout()
     }
     
-    func layout() {
+    private func layout() {
         
         self.selectionStyle = .none
         
@@ -192,8 +192,8 @@ public final class ManageApplicantDetailTableViewCell: UITableViewCell, CellIden
             $0.edges.equalToSuperview()
         }
         
-        // duplicateButton
-        duplicateButton.snp.makeConstraints {
+        // copyButton
+        copyButton.snp.makeConstraints {
             $0.width.height.equalTo(24)
         }
         
@@ -204,10 +204,33 @@ public final class ManageApplicantDetailTableViewCell: UITableViewCell, CellIden
                 $0.height.equalTo(52)
             }
         }
+
         
+        contentView.addSubview(profileContainerButton)
+        
+        profileContainerButton.snp.makeConstraints {
+            $0.edges.equalTo(profileStackView)
+        }
     }
     
-    func bind() {
+    public func bind() {
+        
+        rejectButton.rx.tap
+            .bind(to: rejectTap)
+            .disposed(by: disposeBag)
+        
+        approveButton.rx.tap
+            .bind(to: approveTap)
+            .disposed(by: disposeBag)
+        
+        copyButton.rx.tap
+            .bind(to: copyButtonTap)
+            .disposed(by: disposeBag)
+        
+        profileContainerButton.rx.tap
+            .bind(to: profileTap)
+            .disposed(by: disposeBag)
+        
         
     }
     
@@ -248,16 +271,17 @@ public final class ManageApplicantDetailTableViewCell: UITableViewCell, CellIden
     
     func makeContactInfoStackView() -> UIStackView {
         return UIStackView(arrangedSubviews: [
-            duplicateButton,
-            labelContact
+            labelContact,
+                    copyButton
         ]).then {
-            $0.layoutMargins = UIEdgeInsets(top: 20, left: 24, bottom: 20, right: 24)
+            $0.layoutMargins = UIEdgeInsets(top: 16, left: 20, bottom: 16, right: 20)
             $0.isLayoutMarginsRelativeArrangement = true
             $0.alignment = .center
             $0.distribution = .fill
             $0.spacing = 10
             $0.setRound(radius: 8)
-            $0.backgroundColor = .teamOne.mainColor
+            $0.backgroundColor = .teamOne.mainlightColor
+            $0.setLayer(width: 1, color: .teamOne.mainColor)
         }
     }
 }

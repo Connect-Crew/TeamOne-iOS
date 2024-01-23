@@ -14,7 +14,7 @@ public struct ProjectCreateProps {
     public var removeBanners: [String] = []
     public var title: String? = nil
     public var region: String? = nil
-    public var isOnline: isOnline? = nil
+    public var isOnline: IsOnline? = nil
     public var state: ProjectState? = nil
     public var careerMin: Career? = nil
     public var careerMax: Career? = nil
@@ -25,7 +25,7 @@ public struct ProjectCreateProps {
     public var recruits: [Recruit] = []
     public var skills: [String] = []
     
-    public init(banner: [ImageWithName], removeBanners: [String], title: String, region: String, isOnline: isOnline, state: ProjectState?, careerMin: Career, careerMax: Career, leaderParts: Parts, category: [String], goal: Goal, introducion: String, recruits: [Recruit], skills: [String]) {
+    public init(banner: [ImageWithName], removeBanners: [String], title: String, region: String, isOnline: IsOnline, state: ProjectState?, careerMin: Career, careerMax: Career, leaderParts: Parts, category: [String], goal: Goal, introducion: String, recruits: [Recruit], skills: [String]) {
         self.banner = banner
         self.removeBanners = removeBanners
         self.title = title

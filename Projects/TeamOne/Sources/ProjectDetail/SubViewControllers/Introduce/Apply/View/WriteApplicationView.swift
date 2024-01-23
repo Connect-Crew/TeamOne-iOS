@@ -13,7 +13,7 @@ import RxCocoa
 import Domain
 import Core
 
-final class WriteApplicationView: UIView {
+final class WriteApplicationView: View {
 
     let labelPart = UILabel().then {
         $0.textAlignment = .center
@@ -25,8 +25,18 @@ final class WriteApplicationView: UIView {
         $0.contentInset = UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16)
         $0.placeholder = "지원 이유 및 강점 (최대 1,000자 입력 가능합니다.)"
         $0.setRound(radius: 8)
-        $0.setFont(typo: .caption1)
+        $0.setFont(typo: .button2)
         $0.setLayer(width: 1, color: .teamOne.grayscaleFive)
+        $0.textColor = .black
+        $0.placeholderTextColor = .teamOne.grayscaleFive
+    }
+    
+    private let imageViewWarnning = UIImageView().then {
+        $0.image = .image(dsimage: .warinning)
+    }
+    
+    private let labelWarnning = UILabel().then {
+        $0.setLabel(text: "내용을 입력해주세요", typo: .caption2, color: .teamOne.point)
     }
 
     let cancleButton = UIButton().then {
@@ -37,6 +47,16 @@ final class WriteApplicationView: UIView {
     let applyButton = UIButton().then {
         $0.backgroundColor = .teamOne.mainColor
         $0.setButton(text: "지원하기", typo: .button2, color: .teamOne.white)
+        $0.isEnabled = false
+    }
+    
+    private lazy var warnningStackView = UIStackView(arrangedSubviews: [
+        imageViewWarnning,
+        labelWarnning
+    ]).then {
+        $0.spacing = 2
+        $0.alignment = .leading
+        $0.isHidden = true
     }
 
     lazy var contentView = UIStackView(arrangedSubviews: [
@@ -55,6 +75,20 @@ final class WriteApplicationView: UIView {
 
     func initSetting() {
         layout()
+        
+        textView.rxTextObservable
+            .map { $0.count }
+            .withUnretained(self)
+            .bind(onNext: { this, cnt in
+                if cnt > 0 {
+                    this.warnningStackView.isHidden = true
+                    this.applyButton.isEnabled = true
+                } else {
+                    this.warnningStackView.isHidden = false
+                    this.applyButton.isEnabled = false
+                }
+            })
+            .disposed(by: disposeBag)
     }
 
     func layout() {
@@ -66,6 +100,11 @@ final class WriteApplicationView: UIView {
 
         self.setRound(radius: 8)
         self.clipsToBounds = true
+        
+        
+        imageViewWarnning.snp.makeConstraints {
+            $0.width.height.equalTo(16)
+        }
     }
 
     func setContent(status: RecruitStatus) {
@@ -80,7 +119,8 @@ final class WriteApplicationView: UIView {
 
         return UIStackView(arrangedSubviews: [
             labelPart,
-            textView
+            textView,
+            warnningStackView
         ]).then {
             $0.layoutMargins = UIEdgeInsets(top: 20, left: 24, bottom: 24, right: 20)
             $0.isLayoutMarginsRelativeArrangement = true

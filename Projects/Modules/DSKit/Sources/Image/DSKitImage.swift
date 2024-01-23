@@ -171,7 +171,7 @@ public enum DSKitImage {
     case arrowRightGray
     case arrowRightBlue
     
-    case duplicate
+    case copy
     
     var toName: String {
         switch self {
@@ -370,7 +370,7 @@ public enum DSKitImage {
         case .arrowRightGray: return "arrow.right.gray"
         case .arrowRightBlue: return "arrow.right.blue"
             
-        case .duplicate: return "duplicate"
+        case .copy: return "copy"
         }
     }
 }

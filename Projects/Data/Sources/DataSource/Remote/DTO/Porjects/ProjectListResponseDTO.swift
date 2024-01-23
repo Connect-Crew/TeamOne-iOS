@@ -41,7 +41,7 @@ public struct ProjectListResponseDTO: Decodable {
             title: self.title,
             thumbnail: self.thumbnail,
             region: self.region,
-            online: self.online,
+            isOnline: self.online,
             careerMin: self.careerMax,
             careerMax: self.careerMin,
             createdAt: self.createdAt,

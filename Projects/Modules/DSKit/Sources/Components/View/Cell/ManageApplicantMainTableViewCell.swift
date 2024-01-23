@@ -122,6 +122,7 @@ public final class ManageApplicantMainTableViewCell: UITableViewCell, CellIdenti
     
     private let manageButton = UIButton().then {
         $0.setButton(image: .arrowRightGray)
+        $0.isEnabled = false
     }
     
     private lazy var horizontalPartStackView = UIStackView(arrangedSubviews: [

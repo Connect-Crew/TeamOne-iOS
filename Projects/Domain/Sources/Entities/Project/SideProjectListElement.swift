@@ -52,7 +52,7 @@ public struct SideProjectListElement: Hashable {
     public let title: String
     public let thumbnail: String?
     public let region: String
-    public let isOnline: isOnline
+    public let isOnline: IsOnline
     public var careerMin, careerMax: Career
     public let createdAt: String
     public let state: ProjectState
@@ -64,30 +64,52 @@ public struct SideProjectListElement: Hashable {
     public let recruitStatus: [RecruitStatus]
     public var HashTags: [HashTag] = []
 
-    public init(id: Int, title: String, thumbnail: String?, region: String, online: Bool, careerMin: String, careerMax: String, createdAt: String, state: String, favorite: Int, myFavorite: Bool, category: [String], goal: String, leaderParts: Parts, recruitStatus: [RecruitStatus]) {
+    public init(
+        id: Int, title: String, thumbnail: String?,
+        region: String, isOnline: Bool, careerMin: String,
+        careerMax: String, createdAt: String, state: String,
+        favorite: Int, myFavorite: Bool, category: [String],
+        goal: String, leaderParts: Parts, recruitStatus: [RecruitStatus]
+    ) {
         self.id = id
         self.title = title
         self.thumbnail = thumbnail
         self.region = region
-        
-        if online == true {
-            self.isOnline = .online
-        } else if online == false && region != "미설정" {
-            self.isOnline = .onOffline
-        } else {
-            self.isOnline = .offline
-        }
-        
+        self.isOnline = IsOnline(isOnline: isOnline, region: region)
         self.careerMin = Career.findCareer(string: careerMin)
         self.careerMax = Career.findCareer(string: careerMax)
         self.createdAt = createdAt
         self.state = ProjectState.findState(string: state)
-        self.careerMin = Career.findCareer(string: careerMin)
-        self.careerMax = Career.findCareer(string: careerMax)
         self.favorite = favorite
         self.myFavorite = myFavorite
         self.category = category
         self.goal = Goal.findCellStringToPurpose(string: goal)
+        self.leaderParts = leaderParts
+        self.recruitStatus = recruitStatus
+        
+        setHashTags()
+    }
+    
+    public init(
+        id: Int, title: String, thumbnail: String?,
+        region: String, isOnline: IsOnline, careerMin: Career,
+        careerMax: Career, createdAt: String, state: ProjectState,
+        favorite: Int, myFavorite: Bool, category: [String],
+        goal: Goal, leaderParts: Parts, recruitStatus: [RecruitStatus]
+    ) {
+        self.id = id
+        self.title = title
+        self.thumbnail = thumbnail
+        self.region = region
+        self.isOnline = isOnline
+        self.careerMin = careerMin
+        self.careerMax = careerMax
+        self.createdAt = createdAt
+        self.state = state
+        self.favorite = favorite
+        self.myFavorite = myFavorite
+        self.category = category
+        self.goal = goal
         self.leaderParts = leaderParts
         self.recruitStatus = recruitStatus
         

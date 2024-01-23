@@ -172,7 +172,7 @@ final class ApplyBottomSheetView: UIView {
     lazy var contentView = UIStackView(arrangedSubviews: [
         grayStackView,
         labelApply,
-        contentStackView
+        scrollView
     ]).then {
         $0.layoutMargins = UIEdgeInsets(top: 8, left: 0, bottom: 0, right: 0)
         $0.roundCorners(corners: [.topLeft, .topRight], radius: 8)
@@ -182,6 +182,10 @@ final class ApplyBottomSheetView: UIView {
         $0.distribution = .fill
         $0.spacing = 8
         $0.backgroundColor = .white
+    }
+    
+    let scrollView = BaseScrollView().then {
+        $0.backgroundColor = UIColor.teamOne.background
     }
     
     let selectedPartSubject = PublishSubject<RecruitStatus>()
@@ -197,15 +201,25 @@ final class ApplyBottomSheetView: UIView {
         
         addSubview(contentView)
         
-        addSubview(buttonClose)
-        
         contentView.snp.makeConstraints {
             $0.leading.trailing.bottom.top.equalToSuperview()
         }
         
+        addSubview(buttonClose)
+        
         buttonClose.snp.makeConstraints {
             $0.trailing.equalToSuperview().inset(24)
             $0.centerY.equalTo(labelApply.snp.centerY)
+        }
+        
+        scrollView.contentView.addSubview(contentStackView)
+        
+        contentStackView.snp.makeConstraints {
+            $0.edges.equalToSuperview()
+        }
+        
+        self.snp.makeConstraints {
+            $0.height.equalTo(500)
         }
     }
     
@@ -218,13 +232,11 @@ final class ApplyBottomSheetView: UIView {
         guard !recruit.isEmpty else { return }
         
         recruit.forEach { data in
-            let isEnable = !data.isQuotaFull
             
             var state = ApplyState.appliable
             
             if data.applied == true { state = .applied }
-            
-            if data.isQuotaFull == false { state = .isQuotaFull }
+            if data.isQuotaFull == true { state = .isQuotaFull }
             
             let labelPart = UILabel().then {
                 $0.setLabel(text: data.part, typo: .button2, color: state.partTextColor)
