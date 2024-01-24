@@ -124,11 +124,13 @@ final class ApplyMainView: UIView {
             .disposed(by: disposeBag)
     }
 
-    func animateBottomSheet() {
+    func animateBottomSheet(completion: (() -> Void)? = nil) {
         UIView.animate(withDuration: 0.5, delay: 0, animations: {
             // 기존 bottom 제약 조건 업데이트
             self.bottomSheetConstraint?.update(offset: 0)
             self.layoutIfNeeded()
+        }, completion: { _ in 
+            completion?()
         })
     }
 
@@ -152,4 +154,5 @@ final class ApplyMainView: UIView {
             $0.edges.equalToSuperview()
         }
     }
+
 }

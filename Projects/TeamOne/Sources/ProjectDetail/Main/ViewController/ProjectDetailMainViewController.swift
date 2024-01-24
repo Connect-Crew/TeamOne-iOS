@@ -46,10 +46,6 @@ final class ProjectDetailMainViewController: ViewController {
 
     lazy var pageViewController = BasePageViewController(transitionStyle: .scroll, navigationOrientation: .horizontal)
     
-    // MARK: - SubViewControllers
-    
-    lazy var manageProjectVC = ManageProjectMainVC()
-
     // MARK: - LifeCycle
 
     override func viewDidLoad() {
@@ -138,6 +134,9 @@ final class ProjectDetailMainViewController: ViewController {
     let expelSuccess = PublishRelay<Void>()
     let expelFailure = PublishRelay<Error>()
     
+    let modifyTap = PublishRelay<Void>()
+    let manageApplicantsTap = PublishRelay<Void>()
+    
     // MARK: - Bind
     
     override func bind() {
@@ -156,8 +155,8 @@ final class ProjectDetailMainViewController: ViewController {
             applyButtonTap: introduceVC.mainView.viewBottom.buttonApply.rx.tap
                 .throttle(.seconds(1), latest: true, scheduler: MainScheduler.instance),
             expelProps: expelProps,
-            modifyButtonTap: manageProjectVC.modifySubject,
-            manageApplicantsButtonTap: manageProjectVC.manageApplicantsSubject
+            modifyButtonTap: modifyTap,
+            manageApplicantsButtonTap: manageApplicantsTap
         )
 
         let output = viewModel.transform(input: input)
@@ -303,14 +302,24 @@ final class ProjectDetailMainViewController: ViewController {
             .withUnretained(self)
             .bind(onNext: { this, _ in
                 
-                this.manageProjectVC.mainView.bottomSheet.bind(
+                let manageProjectVC = ManageProjectMainVC()
+
+                manageProjectVC.mainView.bottomSheet.bind(
                     isDeletable: output.isCompletable,
                     isCompletable: output.isDeletable
                 )
                 
-                this.manageProjectVC.modalPresentationStyle = .overFullScreen
+                manageProjectVC.modifySubject
+                    .bind(to: this.modifyTap)
+                    .disposed(by: manageProjectVC.disposeBag)
                 
-                this.present(this.manageProjectVC, animated: false)
+                manageProjectVC.manageApplicantsSubject
+                    .bind(to: this.manageApplicantsTap)
+                    .disposed(by: manageProjectVC.disposeBag)
+                
+                manageProjectVC.modalPresentationStyle = .overFullScreen
+                
+                this.present(manageProjectVC, animated: false)
                 
             })
             .disposed(by: disposeBag)

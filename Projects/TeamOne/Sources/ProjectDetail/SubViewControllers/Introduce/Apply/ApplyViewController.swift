@@ -13,7 +13,7 @@ import RxCocoa
 import Then
 import DSKit
 
-final class ApplyViewController: ViewController {
+final class ApplyViewController: BaseModalViewControl {
 
     private let viewModel: ApplyViewModel
 
@@ -33,7 +33,13 @@ final class ApplyViewController: ViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        self.mainView.animateBottomSheet()
+        self.mainView.animateBottomSheet(completion: { [weak self] in
+            guard let self = self else { return }
+            self.setInteractiveDismiss(
+                gestureView: self.mainView.applyBottomSheet,
+                targetView: self.mainView.applyBottomSheet
+            )
+        })
         self.mainView.writeApplicationView.adjustForKeyboard(disposeBag: disposeBag)
     }
 
@@ -104,6 +110,7 @@ final class ApplyViewController: ViewController {
                     .disposed(by: this.disposeBag)
             })
             .disposed(by: disposeBag)
-
     }
+    
+    
 }

@@ -14,9 +14,7 @@ import Then
 import Domain
 import DSKit
 
-final class ManageProjectMainVC: ViewController {
-    
-//    private let viewModel: ManageProjectMainViewModel
+final class ManageProjectMainVC: BaseModalViewControl {
     
     let mainView = ManageProjectMainView(frame: .zero)
     
@@ -34,7 +32,6 @@ final class ManageProjectMainVC: ViewController {
     // MARK: - Inits
     
     init() {
-
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -55,11 +52,15 @@ final class ManageProjectMainVC: ViewController {
         
         // bottomSheet를 띄움
         rx.viewWillAppear
-            .delay(.milliseconds(300), scheduler: MainScheduler.instance)
             .subscribe(on: MainScheduler.instance)
             .withUnretained(self)
             .subscribe(onNext: { this, _  in
-                this.mainView.showBottomSheet()
+                this.mainView.showBottomSheet(completion: {
+                    this.setInteractiveDismiss(
+                        gestureView: this.mainView.bottomSheet,
+                        targetView: this.mainView.bottomSheet
+                    )
+                })
             })
             .disposed(by: disposeBag)
         
@@ -94,6 +95,15 @@ final class ManageProjectMainVC: ViewController {
                     this.dismiss(animated: false, completion: {
                         this.manageApplicantsSubject.accept(())
                     })
+                })
+            })
+            .disposed(by: disposeBag)
+        
+        mainView.buttonBackground.rx.tap
+            .withUnretained(self)
+            .bind(onNext: { this, _ in
+                this.mainView.dismissBottomSheet(completion: { _ in
+                    this.dismiss(animated: false)
                 })
             })
             .disposed(by: disposeBag)

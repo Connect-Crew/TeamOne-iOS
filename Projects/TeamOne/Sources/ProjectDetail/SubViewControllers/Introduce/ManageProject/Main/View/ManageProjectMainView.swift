@@ -57,10 +57,12 @@ final class ManageProjectMainView: UIView {
         }
     }
     
-    func showBottomSheet() {
+    func showBottomSheet(completion: (() -> Void)? = nil ) {
         UIView.animate(withDuration: 0.3, animations: {
             self.bottomSheetConstraint?.update(offset: 0)
             self.layoutIfNeeded()
+        }, completion: { _ in 
+            completion?()
         })
     }
     
