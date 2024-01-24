@@ -23,9 +23,12 @@ final class ApplyMainView: UIView {
     }
 
     let applyBottomSheet = ApplyBottomSheetView()
+    
     var bottomSheetConstraint: Constraint?
 
     let writeApplicationView = WriteApplicationView()
+    
+    let writeContactView = WriteContactView()
 
     let viewResult = ApplyResultView()
 
@@ -38,6 +41,7 @@ final class ApplyMainView: UIView {
 
         layoutApplyBottomSheet()
         layoutWriteApplicationView()
+        layoutContactView()
         layoutResultView()
         setButtons()
     }
@@ -71,6 +75,19 @@ final class ApplyMainView: UIView {
             $0.centerY.equalToSuperview()
         }
     }
+    
+    private func layoutContactView() {
+        self.addSubview(writeContactView)
+        
+        writeContactView.isHidden = true
+        writeContactView.isUserInteractionEnabled = false
+        
+        writeContactView.snp.makeConstraints {
+            $0.leading.equalToSuperview().offset(45)
+            $0.trailing.equalToSuperview().inset(45)
+            $0.centerY.equalToSuperview()
+        }
+    }
 
     private func layoutResultView() {
         addSubview(viewResult)
@@ -90,6 +107,15 @@ final class ApplyMainView: UIView {
         writeApplicationView.isUserInteractionEnabled = true
 
         writeApplicationView.setContent(status: status)
+    }
+    
+    func showWriteContactView() {
+        writeContactView.isHidden = false
+        writeContactView.isUserInteractionEnabled = true
+    }
+    
+    func hideWirteContaceView() {
+        writeContactView.isHidden = true
     }
 
     func hideWriteApplicationView() {
@@ -121,6 +147,13 @@ final class ApplyMainView: UIView {
             .throttle(.seconds(1), latest: true, scheduler: MainScheduler.instance)
             .map { _ in return () }
             .bind(to: closeSubject)
+            .disposed(by: disposeBag)
+        
+        writeApplicationView.applyButton.rx.tap
+            .withUnretained(self)
+            .bind(onNext: { this, _ in
+                this.showWriteContactView()
+            })
             .disposed(by: disposeBag)
     }
 

@@ -12,4 +12,5 @@ struct AppllyStatusReponseDTO: Codable {
     let applies: Int
     let current: Int
     let max: Int
+    let comment: String
 }

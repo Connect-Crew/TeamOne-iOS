@@ -42,6 +42,8 @@ final class ApplyViewController: BaseModalViewControl {
         })
         self.mainView.writeApplicationView.adjustForKeyboard(disposeBag: disposeBag)
     }
+    
+    private let errorResult = PublishSubject<Bool>()
 
     // MARK: - Inits
 
@@ -55,12 +57,18 @@ final class ApplyViewController: BaseModalViewControl {
     }
 
     override func bind() {
+        
+        let close = Observable.merge(
+            mainView.closeSubject.asObservable(),
+            errorResult.map { _ in return () }
+        )
         let input = ApplyViewModel.Input(
-            close: mainView.closeSubject.asObservable(),
+            close: close,
             applyPartTap: mainView.applyBottomSheet.selectedPartSubject
                 .throttle(.seconds(1), latest: true, scheduler: MainScheduler.instance),
             applicationText: mainView.writeApplicationView.textView.rxTextObservable,
-            applyButtonTap: mainView.writeApplicationView.applyButton.rx.tap
+            contact: mainView.writeContactView.textView.rxTextObservable,
+            applyButtonTap: mainView.writeContactView.applyButton.rx.tap
                 .throttle(.seconds(1), latest: true, scheduler: MainScheduler.instance)
         )
 
@@ -88,26 +96,19 @@ final class ApplyViewController: BaseModalViewControl {
             .withUnretained(self)
             .emit(onNext: { viewController, result in
                 viewController.mainView.hideWriteApplicationView()
+                viewController.mainView.hideWirteContaceView()
                 viewController.mainView.showResult()
             })
             .disposed(by: disposeBag)
         
-        output
-            .showError
+        output.error
             .withUnretained(self)
-            .subscribe(on: MainScheduler.instance)
-            .subscribe(onNext: { this, alert in
-                
-                this.mainView.hideWriteApplicationView()
-                this.presentResultAlertView_Image_Title_Content(
-                    source: this,
-                    alert: alert
+            .emit(onNext: { this, error in
+                this.presentErrorAlert(
+                    error: error,
+                    finishSubject: this.errorResult,
+                    darkBackground: false
                 )
-                
-                alert.resultSubject?
-                    .map { _ in () }
-                    .bind(to: this.mainView.closeSubject)
-                    .disposed(by: this.disposeBag)
             })
             .disposed(by: disposeBag)
     }

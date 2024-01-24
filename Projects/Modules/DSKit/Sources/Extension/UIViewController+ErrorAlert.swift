@@ -51,7 +51,7 @@ public extension UIViewController {
                 break
                 
             case .unknown:
-                alert.content = "알 수 없는 에러\n고객센터로 문의해주세요"
+                alert.content = "\(error.localizedDescription)"
 
             }
         } else {

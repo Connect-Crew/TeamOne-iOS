@@ -85,11 +85,11 @@ final class ProjectSetPostViewController: ViewController, UINavigationController
         $0.setLabel(text: "팀원 모집", typo: .body2, color: .teamOne.grayscaleEight)
     }
     
-    let imageViewPartWarnning = UIImageView(image: .image(dsimage: .warinning))
+    let imageViewPartWarnning = UIImageView(image: .image(dsimage: .warning))
     
     let labelPartWarnning = UILabel().setLabel(text: "한 팀원이 여러 직무를 맡을 수 있습니다.", typo: .caption2, color: .teamOne.point)
     
-    let imageViewModifyWarnning = UIImageView(image: .image(dsimage: .warinning))
+    let imageViewModifyWarnning = UIImageView(image: .image(dsimage: .warning))
     
     let labelModifyWarnning = UILabel().then {
         $0.numberOfLines = 0

@@ -127,7 +127,7 @@ open class ResultAlertView_Image_Title_ContentVC: ViewController {
 
         switch alert.image {
         case .warnning:
-            self.imageViewResult.image = .image(dsimage: .warinning)
+            self.imageViewResult.image = .image(dsimage: .warning)
         case .write:
             self.imageViewResult.image = .image(dsimage: .write)
         case .completeProject:

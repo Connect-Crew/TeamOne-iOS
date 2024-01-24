@@ -14,10 +14,21 @@ import Core
 
 enum ManageApplicantNavigation {
     case back
-    case detail(project: Project, status: RecruitStatus)
+    case detail(projectId: Int, status: ApplyStatus)
 }
 
 final class ManageApplicantMainViewModel: ViewModel {
+    
+    let getApplyStatusUseCase: GetApplyStatusUseCase
+    
+    public init(
+        projectId: Int,
+        getApplyStatusUseCase: GetApplyStatusUseCase
+    ) {
+        self.projectId = BehaviorRelay<Int>(value: projectId)
+        self.getApplyStatusUseCase = getApplyStatusUseCase
+    }
+    
     
     struct Input {
         let viewWillAppear: Observable<Void>
@@ -26,7 +37,7 @@ final class ManageApplicantMainViewModel: ViewModel {
     }
     
     struct Output {
-        let recruitStatus: Driver<[RecruitStatus]>
+        let applyStatusList: Driver<[ApplyStatus]>
         let noHandleError: Signal<Error>
     }
     
@@ -34,54 +45,49 @@ final class ManageApplicantMainViewModel: ViewModel {
     
     let navigation = PublishSubject<ManageApplicantNavigation>()
     
-    let getApplyStatusUseCase: GetApplyStatusUseCase
-    
-    let project: BehaviorRelay<Project>
-    let recruitStatus = BehaviorRelay<[RecruitStatus]>(value: [])
+    let projectId: BehaviorRelay<Int>
+    let applyStatusList = BehaviorRelay<[ApplyStatus]>(value: [])
     let noHandleError = PublishRelay<Error>()
-    
-    public init(
-        project: Project,
-        getApplyStatusUseCase: GetApplyStatusUseCase
-    ) {
-        self.project = BehaviorRelay<Project>(value: project)
-        self.getApplyStatusUseCase = getApplyStatusUseCase
-    }
     
     func transform(input: Input) -> Output {
         
-        transformBackButton(backButtonTap: input.backButtonTap)
         transformRecruit()
+        transformBackButton(backButtonTap: input.backButtonTap)
         transformToDtail(didSelectCell: input.didSelectCell)
         
         return Output(
-            recruitStatus: recruitStatus.asDriver(),
+            applyStatusList: applyStatusList.asDriver(),
             noHandleError: noHandleError.asSignal()
         )
     }
     
-    func transformRecruit() {
-        project
-            .map { $0.recruitStatus }
-            .bind(to: recruitStatus)
+    private func transformRecruit() {
+        
+        projectId
+            .withUnretained(self)
+            .flatMap { this, id in
+                this.getApplyStatusUseCase.getApplyStatus(projectId: id)
+            }
+            .bind(to: applyStatusList)
             .disposed(by: disposeBag)
+        
     }
     
-    func transformToDtail(didSelectCell: Observable<IndexPath>) {
+    private func transformToDtail(didSelectCell: Observable<IndexPath>) {
         didSelectCell
-            .withLatestFrom(recruitStatus) { indexPath, status in
+            .withLatestFrom(applyStatusList) { indexPath, status in
                 return status[indexPath.row]
             }
-            .withLatestFrom(project) { status, project in
-                return (project, status)
+            .withLatestFrom(projectId) { status, id in
+                return (id: id, status: status)
             }
             .withUnretained(self)
             .subscribe(onNext: { this, args in
                 
-                let project = args.0
-                let status = args.1
+                let id = args.id
+                let status = args.status
                 
-                this.navigation.onNext(.detail(project: project, status: status))
+                this.navigation.onNext(.detail(projectId: id, status: status))
             })
             .disposed(by: disposeBag)
     }

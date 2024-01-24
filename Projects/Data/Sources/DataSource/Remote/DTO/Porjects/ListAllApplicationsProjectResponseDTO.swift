@@ -28,7 +28,8 @@ public struct ListAllApplicationsProjectResponseDTO: Codable {
                 partKey: dic.key,
                 applies: dic.value.applies,
                 current: dic.value.current,
-                max: dic.value.max
+                max: dic.value.max,
+                comment: dic.value.comment
             )
             
             result.append(status)

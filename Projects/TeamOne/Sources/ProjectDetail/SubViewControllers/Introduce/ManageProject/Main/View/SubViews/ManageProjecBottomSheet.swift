@@ -53,7 +53,7 @@ final class ManageProjecBottomSheet: View {
     }
     
     let imageViewDeleteWarnning = UIImageView().then {
-        $0.image = .image(dsimage: .warinning)
+        $0.image = .image(dsimage: .warning)
         $0.contentMode = .scaleAspectFit
     }
     
@@ -73,7 +73,7 @@ final class ManageProjecBottomSheet: View {
     }
     
     let imageViewCompleteWarnning = UIImageView().then {
-        $0.image = .image(dsimage: .warinning)
+        $0.image = .image(dsimage: .warning)
         $0.contentMode = .scaleAspectFit
     }
     

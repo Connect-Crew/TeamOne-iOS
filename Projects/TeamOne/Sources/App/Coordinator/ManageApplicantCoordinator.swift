@@ -41,7 +41,7 @@ final class ManageApplicantCoordinator: BaseCoordinator<ManageApplicantCoordinat
     func pushTabBarManageApplicant() {
         
         let viewModel = ManageApplicantMainViewModel(
-            project: project,
+            projectId: project.id,
             getApplyStatusUseCase: DIContainer.shared.resolve(GetApplyStatusUseCase.self)
         )
 
@@ -50,8 +50,9 @@ final class ManageApplicantCoordinator: BaseCoordinator<ManageApplicantCoordinat
                 switch $0 {
                 case .back:
                     self?.finish.onNext(.back)
-                case .detail(let project, let part):
-                    self?.pushTabBarDetail(project: project, status: part)
+                case .detail:
+                    break
+//                    self?.pushTabBarDetail(project: project, status: part)
                 }
             })
             .disposed(by: disposeBag)

@@ -12,10 +12,12 @@ public struct ProjectApplyRequestDTO: Codable {
     let projectId: Int
     let part: String
     let message: String
+    let contact: String
 
-    public init(projectId: Int, part: String, message: String) {
+    public init(projectId: Int, part: String, message: String, contact: String) {
         self.projectId = projectId
         self.part = part
         self.message = message
+        self.contact = contact
     }
 }

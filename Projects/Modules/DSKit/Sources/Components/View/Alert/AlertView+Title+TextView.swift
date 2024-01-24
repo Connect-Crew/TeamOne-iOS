@@ -82,7 +82,7 @@ public final class AlertView_Title_TextView: ViewController {
     }
     
     private let imageViewWarnning = UIImageView().then {
-        $0.image = .image(dsimage: .warinning)
+        $0.image = .image(dsimage: .warning)
     }
     
     private let labelWarnning = UILabel().then {

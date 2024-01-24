@@ -78,25 +78,25 @@ final class ManageApplicantMainViewController: ViewController {
         
         let output = viewModel.transform(input: input)
         
-        bindTableView(applyList: output.recruitStatus)
+        bindTableView(applyList: output.applyStatusList)
     }
     
-    private func bindTableView(applyList: Driver<[RecruitStatus]>) {
+    private func bindTableView(applyList: Driver<[ApplyStatus]>) {
         
         applyList
             .drive(tableView.rx.items(
                 cellIdentifier: ManageApplicantMainTableViewCell.identifier,
                 cellType: ManageApplicantMainTableViewCell.self
-            )) { (_, element, cell) in
+            )) { (_, status, cell) in
                 
                 let data = DSManageApplicantMainTableViewCellData(
-                    part: element.part,
-                    partKey: element.partKey,
-                    category: element.category,
-                    comment: element.comment,
-                    current: element.current,
-                    max: element.max,
-                    isQuotaFull: element.isQuotaFull
+                    part: status.part,
+                    partKey: status.partKey,
+                    category: status.category,
+                    comment: status.comment,
+                    current: status.current,
+                    max: status.max,
+                    isQuotaFull: status.isQuotaFull
                 )
 
                 cell.initSetting(data: data)

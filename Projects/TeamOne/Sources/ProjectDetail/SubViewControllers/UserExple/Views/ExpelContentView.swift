@@ -90,7 +90,7 @@ final class ExpelContentView: View {
     }
     
     private let imageViewWainning = UIImageView().then {
-        $0.image = .image(dsimage: .warinning)
+        $0.image = .image(dsimage: .warning)
     }
     
     private let labelWarnning = UILabel().then {

@@ -1,9 +1,9 @@
 //
-//  WriteApplicationView.swift
+//  WriteContactView.swift
 //  TeamOne
 //
-//  Created by 강현준 on 2023/11/29.
-//  Copyright © 2023 TeamOne. All rights reserved.
+//  Created by 강현준 on 1/24/24.
+//  Copyright © 2024 TeamOne. All rights reserved.
 //
 
 import DSKit
@@ -13,21 +13,16 @@ import RxCocoa
 import Domain
 import Core
 
-final class WriteApplicationView: View {
-
-    private let labelPart = UILabel().then {
-        $0.textAlignment = .center
-        $0.setLabel(text: "[]에 지원합니다", typo: .body2, color: .teamOne.grayscaleSeven)
-    }
+final class WriteContactView: View {
     
     private let introduceLabel = UILabel().then {
-        $0.setLabel(text: "1. 지원하시는 이유 및 강점을 알려주세요", typo: .body4, color: .teamOne.grayscaleSeven)
+        $0.setLabel(text: "2. 연락받을 연락처를 알려주세요", typo: .body4, color: .teamOne.grayscaleSeven)
     }
 
     let textView = TextView_PlaceHolder(frame: .zero, textContainer: nil).then {
         $0.maxTextCount = 1000
         $0.contentInset = UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16)
-        $0.placeholder = "지원 이유 및 강점 (최대 1,000자 입력 가능합니다.)"
+        $0.placeholder = "전화번호, 카카오톡 아이디 등을 알려주세요. \nex) '카카오톡아이디 teamone1'"
         $0.setRound(radius: 8)
         $0.setFont(typo: .button2)
         $0.setLayer(width: 1, color: .teamOne.grayscaleFive)
@@ -35,12 +30,21 @@ final class WriteApplicationView: View {
         $0.placeholderTextColor = .teamOne.grayscaleFive
     }
     
+    private let imageViewPrivacyPolicy = UIImageView().then {
+        $0.image = .image(dsimage: .warningGray)
+    }
+    
+    private let labelPrivacyPolicy = UILabel().then {
+        $0.numberOfLines = 0
+        $0.setLabel(text: "원활한 프로젝트 진행을 위한 목적일 뿐, 어떠한 개인정보도 수집되지 않습니다.", typo: .caption2, color: .teamOne.grayscaleFive)
+    }
+    
     private let imageViewWarnning = UIImageView().then {
         $0.image = .image(dsimage: .warning)
     }
     
     private let labelWarnning = UILabel().then {
-        $0.setLabel(text: "내용을 입력해주세요", typo: .caption2, color: .teamOne.point)
+        $0.setLabel(text: "연락처를 입력해주세요", typo: .caption2, color: .teamOne.point)
     }
 
     let cancleButton = UIButton().then {
@@ -50,8 +54,16 @@ final class WriteApplicationView: View {
 
     let applyButton = UIButton().then {
         $0.backgroundColor = .teamOne.mainColor
-        $0.setButton(text: "다음", typo: .button2, color: .teamOne.white)
+        $0.setButton(text: "지원하기", typo: .button2, color: .teamOne.white)
         $0.isEnabled = false
+    }
+    
+    private lazy var privacyPolicyStackView = UIStackView(arrangedSubviews: [
+        imageViewPrivacyPolicy,
+        labelPrivacyPolicy
+    ]).then {
+        $0.spacing = 2
+        $0.alignment = .leading
     }
     
     private lazy var warnningStackView = UIStackView(arrangedSubviews: [
@@ -93,22 +105,16 @@ final class WriteApplicationView: View {
                 }
             })
             .disposed(by: disposeBag)
-        
-        applyButton.rx.tap
-            .withUnretained(self)
-            .bind(onNext: { this, _ in
-                this.isHidden = true
-            })
-            .disposed(by: disposeBag)
     }
 
     func layout() {
+        
         addSubview(contentView)
-
+        
         contentView.snp.makeConstraints {
             $0.leading.top.trailing.bottom.equalToSuperview()
         }
-
+        
         self.setRound(radius: 8)
         self.clipsToBounds = true
         
@@ -116,25 +122,24 @@ final class WriteApplicationView: View {
         imageViewWarnning.snp.makeConstraints {
             $0.width.height.equalTo(16)
         }
-    }
-
-    func setContent(status: RecruitStatus) {
-        self.labelPart.text = "[ \(status.part) ]에 지원합니다."
+        
+        imageViewPrivacyPolicy.snp.makeConstraints {
+            $0.width.height.equalTo(16)
+        }
     }
 
     func makeContentStackView() -> UIStackView {
 
         textView.snp.makeConstraints {
-            $0.height.equalTo(160)
+            $0.height.equalTo(80)
         }
 
         return UIStackView(arrangedSubviews: [
-            labelPart,
             introduceLabel,
             textView,
+            privacyPolicyStackView,
             warnningStackView
         ]).then {
-            $0.setCustomSpacing(10, after: labelPart)
             $0.layoutMargins = UIEdgeInsets(top: 20, left: 24, bottom: 24, right: 20)
             $0.isLayoutMarginsRelativeArrangement = true
             $0.axis = .vertical

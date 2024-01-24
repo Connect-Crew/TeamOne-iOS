@@ -19,7 +19,7 @@ public protocol ProjectRepositoryProtocol {
 
     func project(projectId: Int) -> Single<Project>
 
-    func apply(projectId: Int, part: String, message: String) -> Single<Bool>
+    func apply(projectId: Int, part: String, message: String, contact: String) -> Single<Bool>
     
     func createProject(props: ProjectCreateProps) -> Single<ProjectCreateResponse>
     

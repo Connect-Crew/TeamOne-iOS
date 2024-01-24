@@ -26,8 +26,6 @@ public class Provider: ProviderProtocol {
 
     public static let `default`: Provider = {
         let configuration = URLSessionConfiguration.af.default
-        configuration.timeoutIntervalForRequest = 10
-        configuration.timeoutIntervalForResource = 10
         let networkEventLogger = NetworkEventLogger()
         let session = Session(configuration: configuration, eventMonitors: [networkEventLogger])
         return Provider(session: session)

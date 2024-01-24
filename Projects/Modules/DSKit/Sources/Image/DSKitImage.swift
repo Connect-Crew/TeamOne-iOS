@@ -115,7 +115,8 @@ public enum DSKitImage {
     // MARK: - Common
     
     case complete
-    case warinning
+    case warning
+    case warningGray
     case write
     case CheckBoxChecked
     case CheckBoxNotChecked
@@ -314,7 +315,8 @@ public enum DSKitImage {
             
             // MARK: - Common
         case .complete: return "complete"
-        case .warinning: return "warinning"
+        case .warning: return "warinning"
+        case .warningGray: return "warningGray"
         case .write: return "write"
         case .clock: return "Clock"
         case .emptyLogo: return "EmptyLogo"

@@ -48,7 +48,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         // 프로젝트 기본 정보 생성
         
-        KM.shared.configure()
+        KM.shared
 
         // APNs
 

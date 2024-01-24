@@ -23,7 +23,10 @@ final class ApplyViewModel: ViewModel {
     let applyUseCase: ProjectApplyUseCaseProtocol
     let projectUseCase: ProjectInfoUseCase
 
-    init(applyUseCase: ProjectApplyUseCaseProtocol, projectUseCase: ProjectInfoUseCase) {
+    init(project: Project,
+         applyUseCase: ProjectApplyUseCaseProtocol,
+         projectUseCase: ProjectInfoUseCase) {
+        self.project = BehaviorRelay<Project>(value: project)
         self.applyUseCase = applyUseCase
         self.projectUseCase = projectUseCase
     }
@@ -32,37 +35,28 @@ final class ApplyViewModel: ViewModel {
         let close: Observable<Void>
         let applyPartTap: Observable<RecruitStatus>
         let applicationText: Observable<String>
+        let contact: Observable<String>
         let applyButtonTap: Observable<Void>
     }
 
     struct Output {
-        let project: Driver<Project?>
+        let project: Driver<Project>
         let showWriteApplication: PublishSubject<RecruitStatus>
         let showResult: Signal<Bool>
-        let showError: PublishSubject<ResultAlertView_Image_Title_Content_Alert>
+        let error: Signal<Error>
     }
 
     let navigation = PublishSubject<ApplyNavigation>()
     
     // MARK: - Alert
     
-    lazy var errorAlert = ResultAlertView_Image_Title_Content_Alert(
-        image: .warnning,
-        title: "에러",
-        content: "",
-        availableCancle: false,
-        resultSubject: errorResultSubject
-    )
-    
     // MARK: - Subject
 
-    let project = BehaviorSubject<Project?>(value: nil)
+    let project: BehaviorRelay<Project>
     let selectPart = PublishSubject<RecruitStatus>()
     let refresh = PublishSubject<Void>()
     let showResult = PublishSubject<Bool>()
-    let showError = PublishSubject<ResultAlertView_Image_Title_Content_Alert>()
-    
-    let errorResultSubject = PublishSubject<Bool>()
+    let error = PublishRelay<Error>()
     
     var disposeBag: DisposeBag = .init()
 
@@ -80,25 +74,24 @@ final class ApplyViewModel: ViewModel {
         input.applyButtonTap
             .withLatestFrom(
                 Observable.combineLatest(
-                    project.compactMap { $0 },
-                    selectPart.asObservable()
+                    project,
+                    selectPart.asObservable(),
+                    input.applicationText,
+                    input.contact
                 )
             )
             .map {
-                return (projectid: $0.0.id, part: $0.1.part)
-            }
-            .withLatestFrom(input.applicationText) { applyPart, message in
-                return (projectid: applyPart.projectid, part: applyPart.part, message: message)
+                return (id: $0.0.id, part: $0.1.part, message: $0.2, contact: $0.3)
             }
             .withUnretained(self)
-            .flatMap { viewModel, apply in
-                viewModel.applyUseCase.apply(projectId: apply.projectid, part: KM.shared.key(name: apply.part), message: apply.message)
-                // TODO: - Error처리
-//                    .catch {
-//                        self.showError.onne
-//                        return .empty()
-//                    }
+            .flatMap { viewModel, args in
+                viewModel.applyUseCase.apply(projectId: args.id, part: KM.shared.key(name: args.part), message: args.message, contact: args.contact)
+                    .catch { error in
+                        viewModel.error.accept(error)
+                        return .just(false)
+                    }
             }
+            .filter { $0 == true }
             .withUnretained(self)
             .subscribe(onNext: { this, _ in
                 this.showResult.onNext(true)
@@ -106,10 +99,10 @@ final class ApplyViewModel: ViewModel {
             .disposed(by: disposeBag)
 
         return Output(
-            project: project.asDriver(onErrorJustReturn: nil),
+            project: project.asDriver(),
             showWriteApplication: selectPart,
             showResult: showResult.asSignal(onErrorJustReturn: false),
-            showError: showError
+            error: error.asSignal()
         )
     }
 }

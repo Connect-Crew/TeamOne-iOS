@@ -10,35 +10,31 @@ import Foundation
 import RxSwift
 
 public protocol GetApplyStatusUseCase {
-    func updateApplyStatus(project: Project) -> Single<[RecruitStatus]>
+    func getApplyStatus(projectId: Int) -> Single<[ApplyStatus]>
 }
 
 public struct GetApplyStatus: GetApplyStatusUseCase {
-
-    let projectRepository: ProjectRepositoryProtocol
-
+    
+    private let projectRepository: ProjectRepositoryProtocol
+    
     public init(projectRepository: ProjectRepositoryProtocol) {
         self.projectRepository = projectRepository
     }
     
-    public func updateApplyStatus(project: Project) -> Single<[RecruitStatus]> {
+    public func getApplyStatus(projectId: Int) -> Single<[ApplyStatus]> {
         
-        return projectRepository.listAllApplicationsForProject(projectId: project.id)
-            .map { applyStatusList in
-                
-                var current = project.recruitStatus
-                
-                for item in applyStatusList {
-                    
-                    if let index = current.firstIndex(where: { $0.partKey == item.partKey }) {
-                        
-                        current[index].current = item.current
-                        current[index].max = item.max
+        return projectRepository.listAllApplicationsForProject(projectId: projectId)
+            .map {
+                return $0.sorted {
+                    switch ($0.isQuotaFull, $1.isQuotaFull) {
+                    case (true, false):
+                        return false
+                    case (false, true):
+                        return true
+                    default:
+                        return $0.partKey < $1.partKey
                     }
-                    
                 }
-                
-                return current
             }
     }
 }

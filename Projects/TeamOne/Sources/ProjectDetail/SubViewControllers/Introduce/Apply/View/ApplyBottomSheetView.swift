@@ -143,7 +143,7 @@ final class ApplyBottomSheetView: UIView {
     }
     
     let imageViewWarnning = UIImageView().then {
-        $0.image = .image(dsimage: .warinning)
+        $0.image = .image(dsimage: .warning)
         
         $0.snp.makeConstraints {
             $0.width.height.equalTo(16)

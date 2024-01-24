@@ -52,12 +52,13 @@ public struct ProjectRepository: ProjectRepositoryProtocol {
             .map { $0.toDomain() }
     }
 
-    public func apply(projectId: Int, part: String, message: String) -> Single<Bool> {
+    public func apply(projectId: Int, part: String, message: String, contact: String) -> Single<Bool> {
 
         let request = ProjectApplyRequestDTO(
             projectId: projectId,
             part: part,
-            message: message
+            message: message,
+            contact: contact
         )
 
         return projectDataSource.apply(request)
@@ -187,7 +188,7 @@ extension ProjectRepository {
             recruits: props.recruits.map {
                 
                 ProjectRecruitDTO(
-                    part: KM.shared.key(name: $0.part),
+                    part: KM.shared.findNameByKey(key: $0.part),
                     comment: $0.comment,
                     max: $0.max
                 )

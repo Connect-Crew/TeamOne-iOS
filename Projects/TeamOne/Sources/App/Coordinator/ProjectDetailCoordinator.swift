@@ -80,10 +80,9 @@ final class ProjectDetailCoordinator: BaseCoordinator<ProjectDetailCoordinatorRe
 
     func showApply(project: Project) {
         let viewModel = ApplyViewModel(
+            project: project,
             applyUseCase: DIContainer.shared.resolve(ProjectApplyUseCaseProtocol.self),
             projectUseCase: DIContainer.shared.resolve(ProjectInfoUseCase.self))
-
-        viewModel.project.onNext(project)
 
         viewModel.navigation
             .subscribe(onNext: { [weak self] in
