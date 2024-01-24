@@ -93,7 +93,7 @@ final class ProjectDetailMainViewModel: ViewModel {
 
     func transform(input: Input) -> Output {
         
-        transformProject(input: input.viewWillAppear)
+        transformProject()
         transformIsMyProject(viewWillAppear: input.viewWillAppear)
         transformNavigation(input: input)
         transformLike(likeButtonTap: input.likeButtonTap)
@@ -119,9 +119,8 @@ final class ProjectDetailMainViewModel: ViewModel {
         )
     }
   
-    func transformProject(input: Observable<Void>) {
+    func transformProject() {
         let getProjectResult = Observable.merge(
-            input.take(1),
             refresh
         )
             .withLatestFrom(project)
@@ -160,16 +159,7 @@ final class ProjectDetailMainViewModel: ViewModel {
         getFailure
             .bind(to: error)
             .disposed(by: disposeBag)
-        
-    
-//        HomeCoordinator.commonChangedProject
-//            .withLatestFrom(project) { ($0, $1) }
-//            .filter { changedProject, currentProject in
-//                changedProject.id == currentProject.id
-//            }
-//            .map { $0.0 }
-//            .bind(to: project)
-//            .disposed(by: disposeBag)
+
     }
     
     func transformIsMyProject(viewWillAppear: Observable<Void>) {

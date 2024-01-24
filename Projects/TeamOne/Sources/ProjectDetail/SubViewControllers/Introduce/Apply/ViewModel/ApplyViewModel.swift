@@ -94,6 +94,7 @@ final class ApplyViewModel: ViewModel {
             .filter { $0 == true }
             .withUnretained(self)
             .subscribe(onNext: { this, _ in
+                ProjectDetailCoordinator.refresh.onNext(())
                 this.showResult.onNext(true)
             })
             .disposed(by: disposeBag)

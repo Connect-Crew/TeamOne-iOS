@@ -88,7 +88,6 @@ final class ProjectDetailCoordinator: BaseCoordinator<ProjectDetailCoordinatorRe
             .subscribe(onNext: { [weak self] in
                 switch $0 {
                 case .close:
-                    Self.refresh.onNext(())
                     self?.dismiss(animated: false)
                 }
             })
