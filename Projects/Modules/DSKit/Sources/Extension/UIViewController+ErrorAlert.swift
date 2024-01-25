@@ -44,14 +44,17 @@ public extension UIViewController {
             
             switch error {
                 
-            case .network(let statusCode, let message):
-                alert.content = "\(statusCode): \(message)"
+            case .network:
+                alert.content = error.errorDescription ?? ""
                 
             case .notToken:
-                break
+                alert.content = error.errorDescription ?? ""
+                
+            case .decodingError:
+                alert.content = error.errorDescription ?? ""
                 
             case .unknown:
-                alert.content = "\(error.localizedDescription)"
+                alert.content = error.errorDescription ?? ""
 
             }
         } else {
