@@ -123,6 +123,7 @@ final class ProjectCreateMainViewModel: ViewModel {
     let type: ProjectCreateType
     let modifyTarget: Int?
     let isModify = PublishRelay<Void>()
+    var modifyTargetProject: Project?
     
     // MARK: - Error
     
@@ -780,12 +781,22 @@ final class ProjectCreateMainViewModel: ViewModel {
                 .disposed(by: disposeBag)
             
             input.minusRecruit
-                .withLatestFrom(projectCreateProps) { recurit, before -> ProjectCreateProps in
+                .withLatestFrom(projectCreateProps) { [weak self] recurit, before -> ProjectCreateProps in
+                    
+                    guard let self = self else { return before }
+                    
                     var props = before
                     
                     if let index = props.recruits.firstIndex(of: recurit) {
                         if props.recruits[index].max > 1 {
-                            props.recruits[index].max -= 1
+                            if let target = self.modifyTargetProject?.recruitStatus.firstIndex(where: { $0.part == props.recruits[index].part }) {
+                                
+                                if self.modifyTargetProject?.recruitStatus[target].current ?? 0 > props.recruits[index].max - 1 {
+                                 
+                                    props.recruits[index].max -= 1
+                                }
+                                
+                            }
                         }
                     }
                     
@@ -810,11 +821,18 @@ final class ProjectCreateMainViewModel: ViewModel {
                 .disposed(by: disposeBag)
             
             input.deleteRecruit
-                .withLatestFrom(projectCreateProps) { recurit, before -> ProjectCreateProps in
+                .withLatestFrom(projectCreateProps) { [weak self] recurit, before -> ProjectCreateProps in
+                    
+                    guard let self = self else { return before }
+                    
                     var props = before
                     
-                    if let index = props.recruits.firstIndex(of: recurit) {
-                        props.recruits.remove(at: index)
+                    if let index = props.recruits.firstIndex(of: recurit),
+                       let target = modifyTargetProject?.recruitStatus.firstIndex(where: { $0.part == props.recruits[index].part }) {
+                        
+                        if modifyTargetProject?.recruitStatus[target].current == 0 {
+                            props.recruits.remove(at: index)
+                        }
                     }
                     
                     return props
@@ -890,6 +908,7 @@ final class ProjectCreateMainViewModel: ViewModel {
                     project.toProps(completion: { props in
                         this.projectCreateProps.accept(props)
                         this.isModify.accept(())
+                        this.modifyTargetProject = project
                     })
                 })
                 .disposed(by: disposeBag)

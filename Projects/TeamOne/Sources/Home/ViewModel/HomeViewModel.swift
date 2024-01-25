@@ -57,8 +57,6 @@ final class HomeViewModel: ViewModel {
     let isEnd = BehaviorSubject<Bool>(value: false)
     let lastID = BehaviorSubject<Int?>(value: nil)
     
-    
-
     let navigation = PublishSubject<HomeNavigation>()
     var disposeBag = DisposeBag()
     var error = PublishRelay<Error>()
@@ -119,6 +117,12 @@ final class HomeViewModel: ViewModel {
                                                      career: nil, region: nil, online: nil,
                                                      part: part, skills: nil, states: nil,
                                                      category: nil, search: nil)
+            .catch { error in
+                
+                viewModel.error.accept(error)
+                
+                return .empty()
+            }
         }
         .do(onNext: { [weak self] list in
             self?.setPagingInformation(list: list)
@@ -149,6 +153,12 @@ final class HomeViewModel: ViewModel {
                         }
 
                         return current + new
+                    }
+                    .catch { error in
+                        
+                        viewModel.error.accept(error)
+                        
+                        return .empty()
                     }
             }
             .subscribe(onNext: { [weak self] updatedProjects in
