@@ -13,7 +13,7 @@ public extension Project {
         "CFBundleDevelopmentRegion": "ko",
         "CFBundleVersion": "1",
         "CFBundleIdentifier": "com.connectCrew.TeamOne",
-        "CFBundleDisplayName": "TeamOne",
+        "CFBundleDisplayName": "TeamNo1",
         "UILaunchStoryboardName": "Launch Screen",
         "UIUserInterfaceStyle": "Light",
         "UIRequiresFullScreen": true,

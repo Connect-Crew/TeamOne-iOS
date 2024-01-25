@@ -34,18 +34,34 @@ public class Provider: ProviderProtocol {
     public func request<T: Decodable>(_ urlConvertible: URLRequestConvertible) -> Observable<T> {
 
         return Observable.create { emitter in
+            Loading.start()
+
             let request = self.session
                 .request(urlConvertible,
                          interceptor: self.authInterceptor)
                 .validate(statusCode: 200 ..< 300)
                 .responseDecodable(of: T.self) { response in
-                    print("@@@@@@@@ REST API \(urlConvertible.urlRequest?.url?.absoluteString ?? "") @@@@@@@@")
                     switch response.result {
                     case let .success(data):
                         emitter.onNext(data)
                     case let .failure(error):
-                        emitter.onError(error)
+                        if let errorData = response.data {
+                            do {
+                                let networkError = try JSONDecoder().decode(ErrorEntity.self, from: errorData)
+
+                                let apiError = APIError(error: networkError)
+
+                                emitter.onError(apiError)
+                            } catch {
+                                emitter.onError(APIError.decodingError)
+                            }
+                        } else {
+                            emitter.onError(APIError.unknown)
+                        }
                     }
+                    
+                    Loading.stop()
+
                 }
             return Disposables.create {
                 request.cancel()
@@ -129,7 +145,7 @@ public class Provider: ProviderProtocol {
 
                                 single(.failure(apiError))
                             } catch {
-                                single(.failure(APIError.unknown))
+                                single(.failure(APIError.decodingError))
                             }
                         } else {
                             single(.failure(error))
