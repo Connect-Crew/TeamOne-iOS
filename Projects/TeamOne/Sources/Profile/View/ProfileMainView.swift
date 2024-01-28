@@ -23,6 +23,12 @@ final class ProfileMainView: UIView {
         $0.setLabel(text: "마이페이지", typo: .title1, color: .teamOne.grayscaleEight)
     }
     
+    private let scrollView = BaseScrollView()
+    
+    let myProfileView = MyProfileView()
+    let myProjectView = MyProjectView()
+    let settingView = SettingView()
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         
@@ -45,6 +51,29 @@ final class ProfileMainView: UIView {
         headerTitle.snp.makeConstraints { make in
             make.centerY.equalToSuperview()
             make.left.right.equalToSuperview().inset(24)
+        }
+        
+        addSubview(scrollView)
+        scrollView.snp.makeConstraints { make in
+            make.top.equalTo(headerView.snp.bottom)
+            make.left.right.bottom.equalTo(safeAreaLayoutGuide)
+        }
+        
+        scrollView.contentView.addSubview(myProfileView)
+        myProfileView.snp.makeConstraints { make in
+            make.top.left.right.equalToSuperview()
+        }
+        
+        scrollView.contentView.addSubview(myProjectView)
+        myProjectView.snp.makeConstraints { make in
+            make.top.equalTo(myProfileView.snp.bottom)
+            make.left.right.equalToSuperview()
+        }
+        
+        scrollView.contentView.addSubview(settingView)
+        settingView.snp.makeConstraints { make in
+            make.top.equalTo(myProjectView.snp.bottom)
+            make.left.right.bottom.equalToSuperview()
         }
     }
 }

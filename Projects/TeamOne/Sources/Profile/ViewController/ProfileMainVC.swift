@@ -46,5 +46,11 @@ final class ProfileMainVC: ViewController {
         let input = ProfileMainViewModel.Input()
         
         let output = viewModel.transform(input: input)
+        
+        mainView.myProjectView.myProjectType
+            .subscribe(onNext: { type in
+                print(type.toName)
+            })
+            .disposed(by: disposeBag)
     }
 }
