@@ -1,0 +1,45 @@
+//
+//  ProfileCoordinator.swift
+//  TeamOne
+//
+//  Created by Junyoung on 1/28/24.
+//  Copyright © 2024 TeamOne. All rights reserved.
+//
+
+import Foundation
+import RxSwift
+import Inject
+
+import Core
+
+enum ProfileCoordinatorResult {
+    case finish
+}
+
+final class ProfileCoordinator: BaseCoordinator<ProfileCoordinatorResult> {
+    
+    let finish = PublishSubject<ProfileCoordinatorResult>()
+    
+    override func start() -> Observable<ProfileCoordinatorResult> {
+        showProfile()
+        return finish
+    }
+    
+    func showProfile() {
+        let viewModel = ProfileMainViewModel()
+        
+        viewModel.navigation
+            .withUnretained(self)
+            .subscribe(onNext: { this, navi in
+                switch navi {
+                case .finish:
+                    break
+                }
+            })
+            .disposed(by: disposeBag)
+        
+        let viewController = Inject.ViewControllerHost(ProfileMainVC(viewModel: viewModel))
+        
+        push(viewController, animated: true, isRoot: true)
+    }
+}
