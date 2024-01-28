@@ -174,6 +174,11 @@ public enum DSKitImage {
     
     case copy
     
+    // MARK: - Profile
+    case myProject
+    case submittedProject
+    case favoriteProject
+    
     var toName: String {
         switch self {
         case .homeSolid:
@@ -373,6 +378,13 @@ public enum DSKitImage {
         case .arrowRightBlue: return "arrow.right.blue"
             
         case .copy: return "copy"
+            
+        case .myProject:
+            return "line"
+        case .submittedProject:
+            return "small"
+        case .favoriteProject:
+            return "heart"
         }
     }
 }
