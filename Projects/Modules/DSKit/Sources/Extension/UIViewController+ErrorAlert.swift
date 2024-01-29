@@ -35,7 +35,7 @@ public extension UIViewController {
         var alert = ResultAlertView_Image_Title_Content_Alert(
             image: .warnning,
             title: "에러",
-            content: "",
+            content: "", 
             availableCancle: false,
             resultSubject: finishSubject
         )
