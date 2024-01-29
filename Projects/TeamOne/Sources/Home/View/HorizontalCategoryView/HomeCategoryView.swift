@@ -118,7 +118,7 @@ struct HomeCategoryModel: Equatable {
             case .marketing: return "TOTAL_MARKETING"
             case .media: return "TOTAL_MEDIA"
             case .specialized: return "TOTAL_SPECIAL"
-            case .others: return nil
+            case .others: return "ETC"
             }
         }
     }
