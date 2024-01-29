@@ -23,8 +23,7 @@ final class NotificationNavigationView: View {
     }
     
     lazy var contentView = UIStackView(arrangedSubviews: [
-        titleLabel,
-        UIView()
+        titleLabel
     ]).then {
         $0.isLayoutMarginsRelativeArrangement = true
         $0.layoutMargins = UIEdgeInsets(top: 17, left: 24, bottom: 17, right: 24)

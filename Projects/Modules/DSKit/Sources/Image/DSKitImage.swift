@@ -174,6 +174,10 @@ public enum DSKitImage {
     
     case copy
     
+    // MARK: - NotificaitonTap
+    
+    case chatbot
+    
     var toName: String {
         switch self {
         case .homeSolid:
@@ -373,6 +377,11 @@ public enum DSKitImage {
         case .arrowRightBlue: return "arrow.right.blue"
             
         case .copy: return "copy"
+            
+            // MARK: - NotificationTap
+            
+        case .chatbot: return "chatbot"
+            
         }
     }
 }
