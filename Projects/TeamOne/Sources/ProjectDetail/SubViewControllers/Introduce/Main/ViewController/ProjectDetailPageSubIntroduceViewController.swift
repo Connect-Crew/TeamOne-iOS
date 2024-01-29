@@ -50,8 +50,16 @@ final class ProjectDetailPageSubIntroduceViewController: ViewController {
             .compactMap { $0 }
 
         project
-            .map { $0.region }
-            .drive(mainView.labelLocaion.rx.text)
+            .map { return (region: $0.region, isOnline: $0.isOnline) }
+            .drive(onNext: { [weak self] args in
+                if args.isOnline == .online {
+                    self?.mainView.labelLocaion.text = "온라인"
+                } else if args.isOnline == .onOffline {
+                    self?.mainView.labelLocaion.text = "온라인 + \(args.region)"
+                } else {
+                    self?.mainView.labelLocaion.text = args.region
+                }
+            })
             .disposed(by: disposeBag)
 
         project
