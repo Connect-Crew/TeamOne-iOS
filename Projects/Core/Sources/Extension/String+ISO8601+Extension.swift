@@ -66,13 +66,18 @@ public extension String {
      */
     func isDateWithin(days: Int) -> Bool {
         let formatter = ISO8601DateFormatter()
-        formatter.formatOptions = [.withFullDate, .withTime, .withDashSeparatorInDate, .withColonSeparatorInTime]
-
+        // 시간 정보를 무시하는 옵션으로 설정
+        formatter.formatOptions = [.withFullDate, .withDashSeparatorInDate]
+        
         guard let date = formatter.date(from: self) else { return false }
         let calendar = Calendar.current
-        let now = Date()
-        let components = calendar.dateComponents([.day], from: date, to: now)
-
+        
+        // 입력된 날짜와 현재 날짜를 '날짜만'으로 비교하기 위해 시간을 자정으로 설정
+        let startOfGivenDate = calendar.startOfDay(for: date)
+        let startOfCurrentDate = calendar.startOfDay(for: Date())
+        
+        let components = calendar.dateComponents([.day], from: startOfGivenDate, to: startOfCurrentDate)
+        
         if let day = components.day, day <= days {
             return false
         } else {
