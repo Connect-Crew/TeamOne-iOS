@@ -114,7 +114,45 @@ public class Provider: ProviderProtocol {
                                 single(.failure(APIError.unknown))
                             }
                         } else {
-                            single(.failure(error))
+                            single(.failure(APIError.unknown))
+                        }
+                    }
+                    
+                    Loading.stop()
+
+                }
+            return Disposables.create {
+                request.cancel()
+            }
+        }
+    }
+    
+    public func request(_ urlConvertible: URLRequestConvertible) -> Single<Void> {
+        return Single.create { single in
+            
+            Loading.start()
+
+            let request = self.session
+                .request(urlConvertible,
+                         interceptor: self.authInterceptor)
+                .validate(statusCode: 200 ..< 300)
+                .response() { response in 
+                    switch response.result {
+                    case .success:
+                        single(.success(()))
+                    case .failure:
+                        if let errorData = response.data {
+                            do {
+                                let networkError = try JSONDecoder().decode(ErrorEntity.self, from: errorData)
+
+                                let apiError = APIError(error: networkError)
+
+                                single(.failure(apiError))
+                            } catch {
+                                single(.failure(APIError.unknown))
+                            }
+                        } else {
+                            single(.failure(APIError.unknown))
                         }
                     }
                     
