@@ -114,6 +114,11 @@ public struct ProjectRepository: ProjectRepositoryProtocol {
         return projectDataSource.getApplies(request: request)
             .map { $0.map { $0.toDomain() } }
     }
+    
+    public func updateState(projectId: Int, state: ProjectState) -> Single<Void> {
+        
+        return projectDataSource.updateState(projectId: projectId, state: state.toMultiPartValue())
+    }
 }
 
 extension ProjectRepository {

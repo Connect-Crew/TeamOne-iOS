@@ -104,15 +104,15 @@ final class ProjectSetStateRegionViewController: ViewController {
             .map { $0.state }
             .drive(onNext: { [weak self] state in
                 switch state {
-                case nil:
-                    self?.buttonStateBefore.isSelected = false
-                    self?.buttonStateRunning.isSelected = false
                 case .before:
                     self?.buttonStateBefore.isSelected = true
                     self?.buttonStateRunning.isSelected = false
                 case .running:
                     self?.buttonStateBefore.isSelected = false
                     self?.buttonStateRunning.isSelected = true
+                default:
+                    self?.buttonStateBefore.isSelected = false
+                    self?.buttonStateRunning.isSelected = false
                 }
             })
             .disposed(by: disposeBag)

@@ -189,14 +189,14 @@ final class ManageApplicantDetailViewController: ViewController {
             .withUnretained(self)
             .map { this, target in
                 this.rejectAlert.title = "\(target)님의 지원을 거절하시겠습니까?"
+                this.rejectAlert.okButtonTitle = "거절"
                 return this.rejectAlert
             }
             .withUnretained(self)
             .bind(onNext: { this, alert in
                 this.presentResultAlertView_Image_Title_Content(
                     source: this,
-                    alert: alert,
-                    okButtonTitle: "거절"
+                    alert: alert
                 )
             })
             .disposed(by: disposeBag)

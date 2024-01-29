@@ -180,14 +180,8 @@ final class ManageProjecBottomSheet: View {
         isDeletable: Driver<Bool>,
         isCompletable: Driver<Bool>
     ) {
-                
-        let isDeletable = isDeletable
-            .filter { $0 == true }
-        
-        let isUnDeletable = isDeletable
-            .filter { $0 == false }
-        
         isDeletable
+            .filter { $0 == true }
             .drive(onNext: { [weak self] _ in
                 guard let self = self else { return }
                 
@@ -198,7 +192,8 @@ final class ManageProjecBottomSheet: View {
             })
             .disposed(by: disposeBag)
         
-        isUnDeletable
+        isDeletable
+            .filter { $0 == false }
             .drive(onNext: { [weak self] _ in
                 guard let self = self else { return }
                 
@@ -209,14 +204,8 @@ final class ManageProjecBottomSheet: View {
             })
             .disposed(by: disposeBag)
         
-
-        let isCompletable = isCompletable
-            .filter { $0 == true }
-        
-        let isUnCompletable = isCompletable
-            .filter { $0 == false }
-        
         isCompletable
+            .filter { $0 == true }
             .drive(onNext: { [weak self] _ in
                 guard let self = self else { return }
                 
@@ -225,7 +214,8 @@ final class ManageProjecBottomSheet: View {
             })
             .disposed(by: disposeBag)
         
-        isUnCompletable
+        isCompletable
+            .filter { $0 == false }
             .drive(onNext: { [weak self] _ in
                 guard let self = self else { return }
                 

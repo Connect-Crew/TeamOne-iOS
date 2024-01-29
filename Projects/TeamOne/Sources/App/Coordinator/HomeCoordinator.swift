@@ -8,6 +8,7 @@
 
 import UIKit
 import RxSwift
+import RxCocoa
 import Core
 import Inject
 import Domain
@@ -23,6 +24,7 @@ final class HomeCoordinator: BaseCoordinator<HomeCoordinatorResult> {
     
     // 프로젝트가 변경되어 새로운 프로젝트의 전달이 필요한 경우
     static let commonChangedProject = PublishSubject<Project>()
+    static let deletedProject = PublishRelay<Void>()
 
     override func start() -> Observable<HomeCoordinatorResult> {
         showHome()

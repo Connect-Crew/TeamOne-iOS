@@ -43,6 +43,8 @@ final class ManageProjectMainVC: BaseModalViewControl {
     
     let modifySubject = PublishRelay<Void>()
     let manageApplicantsSubject = PublishRelay<Void>()
+    let deleteButtonTap = PublishRelay<Void>()
+    let completeButtonTap = PublishRelay<Void>()
     
     override func bind() {
         bindBottomSheet()
@@ -104,6 +106,30 @@ final class ManageProjectMainVC: BaseModalViewControl {
             .bind(onNext: { this, _ in
                 this.mainView.dismissBottomSheet(completion: { _ in
                     this.dismiss(animated: false)
+                })
+            })
+            .disposed(by: disposeBag)
+        
+        mainView.bottomSheet.buttonComplete.rx.tap
+            .subscribe(on: MainScheduler.instance)
+            .withUnretained(self)
+            .subscribe(onNext: { this, _ in
+                this.mainView.dismissBottomSheet(completion: { _ in
+                    this.dismiss(animated: false, completion: {
+                        this.completeButtonTap.accept(())
+                    })
+                })
+            })
+            .disposed(by: disposeBag)
+        
+        mainView.bottomSheet.buttonDelete.rx.tap
+            .subscribe(on: MainScheduler.instance)
+            .withUnretained(self)
+            .subscribe(onNext: { this, _ in
+                this.mainView.dismissBottomSheet(completion: { _ in
+                    this.dismiss(animated: false, completion: {
+                        this.deleteButtonTap.accept(())
+                    })
                 })
             })
             .disposed(by: disposeBag)

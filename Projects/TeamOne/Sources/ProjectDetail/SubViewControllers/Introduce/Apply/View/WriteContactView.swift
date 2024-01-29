@@ -126,6 +126,8 @@ final class WriteContactView: View {
         imageViewPrivacyPolicy.snp.makeConstraints {
             $0.width.height.equalTo(16)
         }
+        
+        adjustForKeyboard(disposeBag: disposeBag)
     }
 
     func makeContentStackView() -> UIStackView {

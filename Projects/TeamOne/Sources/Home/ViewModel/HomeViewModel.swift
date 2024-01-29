@@ -103,7 +103,8 @@ final class HomeViewModel: ViewModel {
     func transformLoadProjects(input: Input) {
         Observable.merge(
             input.parts.map { _ in return () },
-            refresh
+            refresh,
+            HomeCoordinator.deletedProject.asObservable()
         )
         .withLatestFrom(input.parts)
         .map { [weak self] in

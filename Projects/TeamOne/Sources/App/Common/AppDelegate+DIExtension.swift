@@ -249,17 +249,24 @@ extension AppDelegate {
             )
         })
         
-        container.register(interface: ApproveUserUseCase.self, implement:{ res in
+        container.register(interface: ApproveUserUseCase.self, implement: { res in
             
             return ApproveUser(
                 userRepository: res.resolve(UserRepositoryProtocol.self)!
             )
         })
         
-        container.register(interface: RejectUserUseCase.self, implement:{ res in
+        container.register(interface: RejectUserUseCase.self, implement: { res in
             
             return RejectUser(
                 userRepository: res.resolve(UserRepositoryProtocol.self)!
+            )
+        })
+        
+        container.register(interface: ProjectUpdateStateUseCase.self, implement: { res in
+            
+            return ProjectUpdateState(
+                projectRepository: res.resolve(ProjectRepositoryProtocol.self)!
             )
         })
 
