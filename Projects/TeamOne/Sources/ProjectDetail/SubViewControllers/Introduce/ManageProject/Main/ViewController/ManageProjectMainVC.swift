@@ -51,7 +51,7 @@ final class ManageProjectMainVC: BaseModalViewControl {
     func bindBottomSheet() {
         
         // bottomSheet를 띄움
-        rx.viewWillAppear
+        rx.viewDidAppear
             .subscribe(on: MainScheduler.instance)
             .withUnretained(self)
             .subscribe(onNext: { this, _  in
