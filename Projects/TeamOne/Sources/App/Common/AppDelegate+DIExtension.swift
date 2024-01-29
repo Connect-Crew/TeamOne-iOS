@@ -52,6 +52,10 @@ extension AppDelegate {
 
             return dataSource
         }
+        
+        container.register(interface: AppDataSourceProtocol.self, implement: { _ in
+            return AppDataSource()
+        })
 
         // MARK: - Repository
 
@@ -92,6 +96,12 @@ extension AppDelegate {
         container.register(interface: RecentSearchHistoryRepository.self) { _ in
             DefaultRecentSearchHistoryRepository()
         }
+        
+        container.register(interface: AppRepositoryProtocol.self, implement: { res in
+            return AppRepository(
+                appDataSource: res.resolve(AppDataSourceProtocol.self)!
+            )
+        })
 
         // MARK: - UseCase
 
@@ -223,6 +233,33 @@ extension AppDelegate {
             res in
             return GetApplyStatus(
                 projectRepository: res.resolve(ProjectRepositoryProtocol.self)!
+            )
+        })
+        
+        container.register(interface: GetAppliesUseCase.self, implement: { res in
+            
+            return GetApplies(
+                projectRepository: res.resolve(ProjectRepositoryProtocol.self)!
+                )
+        })
+        
+        container.register(interface: WishUseCase.self, implement: { res in
+            return Wish(
+                appRepository: res.resolve(AppRepositoryProtocol.self)!
+            )
+        })
+        
+        container.register(interface: ApproveUserUseCase.self, implement:{ res in
+            
+            return ApproveUser(
+                userRepository: res.resolve(UserRepositoryProtocol.self)!
+            )
+        })
+        
+        container.register(interface: RejectUserUseCase.self, implement:{ res in
+            
+            return RejectUser(
+                userRepository: res.resolve(UserRepositoryProtocol.self)!
             )
         })
 

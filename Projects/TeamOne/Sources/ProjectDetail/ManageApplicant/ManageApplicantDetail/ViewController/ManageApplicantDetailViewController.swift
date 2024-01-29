@@ -61,15 +61,17 @@ final class ManageApplicantDetailViewController: ViewController {
     // alert의 result를 받기 위해
     private let approveAlertResult = PublishSubject<Bool>()
     // approve의 target을 갖고있도록
-    private let approveTarget = PublishRelay<String>()
+    private let approveTarget = PublishRelay<Int>()
     // alert에서 승인 버튼이 클릭된 경우 해당 서브젝트로 accept
-    private let approveTap = PublishRelay<String>()
+    private let approveTap = PublishRelay<Int>()
     
     private let rejectAlertResult = PublishSubject<Bool>()
     private let rejectReason = PublishRelay<String>()
-    private let rejectTarget = PublishRelay<String>()
-    // $0 == target, $1 == reason
-    private let rejectTap = PublishRelay<(String, String)>()
+    private let rejectTarget = PublishRelay<Int>()
+    // $0 == row, $1 == reason
+    private let rejectTap = PublishRelay<(Int, String)>()
+    
+    private let profileTap = PublishRelay<Int>()
     
     // MARK: - LifeCycle
     
@@ -117,51 +119,73 @@ final class ManageApplicantDetailViewController: ViewController {
     
     override func bind() {
         let input = ManageApplicantDetailViewModel.Input(
-            backButtonTap: navigationBar.backButtonTap
+            viewDidLoad: rx.viewWillAppear.take(1).map { _ in return () },
+            backButtonTap: navigationBar.backButtonTap,
+            rejectButtonTap: rejectTap,
+            approveButtonTap: approveTap
         )
         
         let output = viewModel.transform(input: input)
         
         output
-            .sampleOutput
+            .appliesList
             .drive(tableView.rx.items(
                 cellIdentifier: ManageApplicantDetailTableViewCell.identifier,
-                cellType: ManageApplicantDetailTableViewCell.self)) { [weak self] _, item, cell in
+                cellType: ManageApplicantDetailTableViewCell.self)) { [weak self] row, item, cell in
                     
                     guard let self = self else { return }
                     
                     cell.bind()
                     
                     cell.rejectTap
-                        .bind(onNext: {
-                            self.rejectTarget.accept("김찬호")
-                        })
-                        .disposed(by: disposeBag)
+                        .bind(to: self.rejectTarget)
+                        .disposed(by: cell.disposeBag)
                     
                     cell.approveTap
-                        .bind(onNext: {
-                            self.approveTarget.accept("김찬호")
-                        })
-                        .disposed(by: disposeBag)
-                    
-                    cell.copyButtonTap
-                        .bind(onNext: { print($0)})
+                        .bind(to: self.approveTarget)
                         .disposed(by: cell.disposeBag)
                     
                     cell.profileTap
-                        .bind(onNext: { print($0)})
+                        .bind(to: self.profileTap)
                         .disposed(by: cell.disposeBag)
+                    
+                    var cellState = ManageApplicantDetailTableViewCell.ApplyState.waiting
+                    
+                    switch item.state {
+                    case .accept: cellState = .accept
+                    case .reject: cellState = .rejected
+                    case .waiting: cellState = .waiting
+                    }
+                    
+                    let cellItem = ManageApplicantDetailTableViewCell.Item(
+                        applyState: cellState,
+                        nickname: item.user.nickname,
+                        profile: item.user.profile,
+                        temperature: item.user.temperature,
+                        responseRate: item.user.responseRate,
+                        parts: item.user.parts.map { (category: $0.category, part: $0.part)},
+                        introduction: item.user.introduction,
+                        contact: item.contact,
+                        message: item.message
+                    )
+                    
+                    cell.initSetting(item: cellItem, row: row)
                     
                 }
                 .disposed(by: disposeBag)
         
-        bindNavigationBar()
-        bindReject()
-        bindApprove()
+        bindNavigationBar(status: output.status)
+        bindReject(list: output.appliesList)
+        bindApprove(list: output.appliesList)
+        bindError(error: output.error)
+        bindEmpty(empty: output.appliesList.map { $0.isEmpty })
     }
     
-    private func bindReject() {
+    private func bindReject(list: Driver<[Applies]>) {
         rejectTarget
+            .withLatestFrom(list) { row, list in
+                return list[row].user.nickname
+            }
             .withUnretained(self)
             .map { this, target in
                 this.rejectAlert.title = "\(target)님의 지원을 거절하시겠습니까?"
@@ -181,7 +205,7 @@ final class ManageApplicantDetailViewController: ViewController {
             .filter { $0 == true }
             .withLatestFrom(rejectTarget)
             .withUnretained(self)
-            .subscribe(onNext: { this, target in
+            .subscribe(onNext: { this, _ in
                 this.presentAlert_Title_TextView(source: this, alert: this.rejectReasonAlert)
             })
             .disposed(by: disposeBag)
@@ -192,17 +216,13 @@ final class ManageApplicantDetailViewController: ViewController {
             }
             .bind(to: rejectTap)
             .disposed(by: disposeBag)
-        
-        
-        rejectTap
-            .bind(onNext: {
-                print("DEBUG: Reject Target: \($0.0), Reason: \($0.1) Tap")
-            })
-            .disposed(by: disposeBag)
     }
     
-    private func bindApprove() {
+    private func bindApprove(list: Driver<[Applies]>) {
         approveTarget
+            .withLatestFrom(list) { row, list in
+                return list[row].user.nickname
+            }
             .withUnretained(self)
             .map { this, target in
                 this.approveAlert.title = "\(target)님의 지원을 승인하시겠습니까?"
@@ -225,16 +245,30 @@ final class ManageApplicantDetailViewController: ViewController {
                 this.approveTap.accept(target)
             })
             .disposed(by: disposeBag)
-        
-        approveTap
-            .bind(onNext: {
-                print("DEBUG: Approve \($0) Tap")
+    }
+    
+    private func bindNavigationBar(status: Driver<ApplyStatus>) {
+        status
+            .drive(onNext: { [weak self] status in
+                self?.navigationBar.initSetting(part: status.partDescription)
             })
             .disposed(by: disposeBag)
     }
     
-    private func bindNavigationBar() {
-        navigationBar.initSetting(part: "UX / UI 디자이너")
+    private func bindError(error: Signal<Error>) {
+        error
+            .emit(onNext: { [weak self] error in
+                self?.presentErrorAlert(error: error)
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    private func bindEmpty(empty: Driver<Bool>) {
+        empty
+            .drive(onNext: { [weak self] in
+                self?.emptyApplicantLabel.isHidden = !$0
+            })
+            .disposed(by: disposeBag)
     }
     
     override func viewDidLayoutSubviews() {

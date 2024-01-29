@@ -76,6 +76,7 @@ public final class AlertView_Title_TextView: ViewController {
         $0.maxTextCount = Int.max
         $0.contentInset = UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16)
         $0.placeholder = ""
+        $0.placeholderTextColor = .teamOne.grayscaleFive
         $0.setRound(radius: 8)
         $0.setFont(typo: .button2)
         $0.setLayer(width: 1, color: .teamOne.grayscaleFive)
@@ -140,7 +141,6 @@ public final class AlertView_Title_TextView: ViewController {
     func initSetting() {
         
         textView.maxTextCount = maxTextCount
-        textView.placeholderTextColor = .teamOne.grayscaleFive
         layout()
         addtarget()
         
@@ -192,6 +192,8 @@ public final class AlertView_Title_TextView: ViewController {
         self.labelTitle.text = titleLabelString
         self.textView.placeholder = placeHolder
         self.okButton.setTitle(okButtonTitle, for: .normal)
+        
+        self.contentView.adjustForKeyboard(disposeBag: disposeBag)
     }
     
     func addtarget() {

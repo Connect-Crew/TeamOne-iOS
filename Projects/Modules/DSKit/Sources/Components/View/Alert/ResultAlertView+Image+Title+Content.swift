@@ -154,6 +154,8 @@ open class ResultAlertView_Image_Title_ContentVC: ViewController {
                 }
             })
             .disposed(by: disposeBag)
+        
+        self.contentView.adjustForKeyboard(disposeBag: disposeBag)
     }
 
     private func initSetting() {

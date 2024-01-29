@@ -90,9 +90,8 @@ final class ManageApplicantMainViewController: ViewController {
             )) { (_, status, cell) in
                 
                 let data = DSManageApplicantMainTableViewCellData(
-                    part: status.part,
-                    partKey: status.partKey,
-                    category: status.category,
+                    part: status.partDescription,
+                    category: status.partCategoryDescription,
                     comment: status.comment,
                     current: status.current,
                     max: status.max,
