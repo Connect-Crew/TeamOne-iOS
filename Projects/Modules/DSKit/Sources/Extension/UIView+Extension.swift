@@ -11,6 +11,12 @@ import SnapKit
 
 public extension UIView {
 
+    /**
+     레이어의 굵기, 색상을 설정
+     - Parameters:
+        - width: 굵기
+        - color: layer의 색상
+     */
     func setLayer(width: CGFloat, color: UIColor) {
         self.layer.borderWidth = width
         self.layer.borderColor = color.cgColor
@@ -34,6 +40,12 @@ public extension UIView {
         self.layer.cornerRadius = radius
     }
 
+    /**
+     선택한 위치의 코너에만 radius를 적용할 수 있는 메서드
+     - Parameters:
+        - corners: 적용할 코너
+        - radius: 적용할 코너의 radius
+     */
     func roundCorners(corners: UIRectCorner, radius: CGFloat) {
         self.clearCorners()
 
@@ -68,6 +80,9 @@ public extension UIView {
         self.layer.maskedCorners = masked //
     }
 
+    /**
+     뷰를 원형으로 깎는 메서드, 뷰의 크기가 정해진 뒤 호출해야합니다.
+     */
     func setRoundCircle() {
         self.layer.cornerRadius = self.frame.height / 2
     }

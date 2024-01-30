@@ -70,6 +70,10 @@ final class IntroduceBottomView: View {
                 self?.setButton(isMyproject: isMyproject)
             })
             .disposed(by: disposeBag)
+        
+        buttonLike.rx.tap
+            .bind(onNext: { NSUtil.Vibration.selection.vibrate()})
+            .disposed(by: disposeBag)
     }
     
     func setButton(isMyproject: Bool) {
