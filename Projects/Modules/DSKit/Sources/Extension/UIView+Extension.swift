@@ -11,6 +11,12 @@ import SnapKit
 
 public extension UIView {
 
+    /**
+     레이어의 굵기, 색상을 설정
+     - Parameters:
+        - width: 굵기
+        - color: layer의 색상
+     */
     func setLayer(width: CGFloat, color: UIColor) {
         self.layer.borderWidth = width
         self.layer.borderColor = color.cgColor
@@ -34,6 +40,12 @@ public extension UIView {
         self.layer.cornerRadius = radius
     }
 
+    /**
+     선택한 위치의 코너에만 radius를 적용할 수 있는 메서드
+     - Parameters:
+        - corners: 적용할 코너
+        - radius: 적용할 코너의 radius
+     */
     func roundCorners(corners: UIRectCorner, radius: CGFloat) {
         self.clearCorners()
 
@@ -68,6 +80,9 @@ public extension UIView {
         self.layer.maskedCorners = masked //
     }
 
+    /**
+     뷰를 원형으로 깎는 메서드, 뷰의 크기가 정해진 뒤 호출해야합니다.
+     */
     func setRoundCircle() {
         self.layer.cornerRadius = self.frame.height / 2
     }
@@ -80,14 +95,32 @@ public extension UIView {
 // MARK: - Shadow
 public extension UIView {
     
-    func setBaseShadow(radius: CGFloat, backgroundColor: UIColor = .teamOne.white) {
+    /**
+     전체 그림자를 설정할 수 있는 메서드
+     - Parameters:
+        - offsetX, Y : offsetX, offsetY
+        - color: 그림자의 색(alpha: 1)
+        - opacity: 연한 정도(실제 그림자의 alpha)
+        - blurRadius: 그림자의 corner radius
+        - backgroundColor: 뷰의 백그라운드 컬러
+     - returns: Void
+     */
+    func setBaseShadow(
+        offsetX: Int = 0,
+        offsetY: Int = 0,
+        color: UIColor = .init(r: 158, g: 158, b: 158, a: 1),
+        opacity: Float = 0.2,
+        radius: CGFloat,
+        backgroundColor: UIColor = .teamOne.white) 
+    {
         self.clipsToBounds = false
         self.layer.masksToBounds = false
+        
         self.backgroundColor = backgroundColor
-        self.layer.shadowOffset = CGSize(width: 0, height: 0)
+        self.layer.shadowOffset = CGSize(width: offsetX, height: offsetY)
         self.layer.shadowRadius = radius
-        self.layer.shadowColor = UIColor(r: 158, g: 158, b: 158, a: 1).cgColor
-        self.layer.shadowOpacity = 0.2
+        self.layer.shadowColor = color.cgColor
+        self.layer.shadowOpacity = opacity
     }
     
     enum ShadowPosition {
@@ -98,6 +131,16 @@ public extension UIView {
         case allSides
     }
     
+    /**
+     좌, 우, 상, 하 의 그림자를 설정할 수 있는 메서드
+     - Parameters:
+        - offsetX, Y : offsetX, offsetY
+        - blurRadius: 그림자의 corner radius
+        - color: 그림자의 색(alpha: 1)
+        - opacity: 연한 정도(실제 그림자의 alpha)
+        - position: 설정할 그림자들의 포지션
+     - returns: Void
+     */
     func applyShadow(
         offsetX: CGFloat, offsetY: CGFloat,
         blurRadius: CGFloat, color: UIColor,
@@ -138,7 +181,16 @@ public extension UIView {
                 shadowPath.addLine(to: CGPoint(x: bounds.maxX + shadowWidth, y: bounds.maxY))
                 shadowPath.addLine(to: CGPoint(x: bounds.maxX + shadowWidth, y: 0))
             case .allSides:
-                shadowPath.append(UIBezierPath(rect: bounds))
+                clipsToBounds = false
+                layer.masksToBounds = false
+                
+                backgroundColor = .white
+                layer.shadowOffset = CGSize(width: offsetX, height: offsetY)
+                layer.shadowRadius = blurRadius
+                layer.shadowColor = color.cgColor
+                layer.shadowOpacity = opacity
+                
+                return
             }
         }
         

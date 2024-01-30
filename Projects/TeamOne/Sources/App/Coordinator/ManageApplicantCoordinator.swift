@@ -50,9 +50,8 @@ final class ManageApplicantCoordinator: BaseCoordinator<ManageApplicantCoordinat
                 switch $0 {
                 case .back:
                     self?.finish.onNext(.back)
-                case .detail:
-                    break
-//                    self?.pushTabBarDetail(project: project, status: part)
+                case .detail(let projectId, let status):
+                    self?.pushTabBarDetail(projectId: projectId, status: status)
                 }
             })
             .disposed(by: disposeBag)
@@ -62,9 +61,12 @@ final class ManageApplicantCoordinator: BaseCoordinator<ManageApplicantCoordinat
         pushTabbar(viewController, animated: true)
     }
     
-    func pushTabBarDetail(project: Project, status: RecruitStatus) {
+    func pushTabBarDetail(projectId: Int, status: ApplyStatus) {
         
-        let viewModel = ManageApplicantDetailViewModel()
+        let viewModel = ManageApplicantDetailViewModel(
+            status: status,
+            projectId: projectId
+        )
         
         viewModel.navigation
             .subscribe(onNext: { [weak self] in

@@ -129,7 +129,7 @@ final class HomeTableViewCell: UITableViewCell, CellIdentifiable {
             self.labelLocation.text = project.region
         }
 
-        viewIsNew.isHidden = !project.region.isNewData()
+        viewIsNew.isHidden = project.createdAt.isDateWithin(days: 7)
         labelUploadTime.text = project.createdAt.toRelativeDateString()
 
         var totalMemberCnt: Int = 0

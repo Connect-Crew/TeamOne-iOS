@@ -34,7 +34,11 @@ public protocol ProjectsDataSouceProtocol {
     
     func modify(_ request: ProjectModifyRequestDTO, projectId: Int) -> Single<ProjectCreateResponseDTO>
     
-    func listAllApplicationsForProject(projectId: Int) -> Single<ListAllApplicationsProjectResponseDTO>
+    func listAllApplicationsForProject(projectId: Int) -> Single<[GetApplyStatusResponseDTO]>
+    
+    func getApplies(request: GetAppliesRequestDTO) -> Single<[GetAppliesResponseDTO]>
+    
+    func updateState(projectId: Int, state: String) -> Single<Void>
 }
 
 public struct ProjectsDataSource: ProjectsDataSouceProtocol {
@@ -270,9 +274,17 @@ public struct ProjectsDataSource: ProjectsDataSouceProtocol {
         }
     }
     
-    public func listAllApplicationsForProject(projectId: Int) -> Single<ListAllApplicationsProjectResponseDTO> {
+    public func listAllApplicationsForProject(projectId: Int) -> Single<[GetApplyStatusResponseDTO]> {
         
         return provider.request(ProjectsTarget.listAllApplicationsForProject(projectId: projectId))
+    }
+    
+    public func getApplies(request: GetAppliesRequestDTO) -> Single<[GetAppliesResponseDTO]> {
+        return provider.request(ProjectsTarget.getApplies(request: request))
+    }
+    
+    public func updateState(projectId: Int, state: String) -> Single<Void> {
+        return provider.request(ProjectsTarget.updateState(projectId: projectId, state: state))
     }
 }
 extension NetworkConstant {
@@ -289,6 +301,8 @@ enum ProjectsTarget {
     case report(request: ProjectReportRequestDTO)
     case members(projectId: Int)
     case listAllApplicationsForProject(projectId: Int)
+    case getApplies(request: GetAppliesRequestDTO)
+    case updateState(projectId: Int, state: String)
 }
 
 extension ProjectsTarget: TargetType {
@@ -299,9 +313,9 @@ extension ProjectsTarget: TargetType {
     
     var method: HTTPMethod {
         switch self {
-        case .list, .project, .baseInformation, .members, .listAllApplicationsForProject:
+        case .list, .project, .baseInformation, .members, .listAllApplicationsForProject, .getApplies:
             return .get
-        case .like, .apply, .createProject, .report:
+        case .like, .apply, .createProject, .report, .updateState:
             return .post
         }
     }
@@ -310,8 +324,7 @@ extension ProjectsTarget: TargetType {
         switch self {
         case .createProject:
             return ["Contents-Type": "multipart/form-data"]
-        case .apply, .report, .list, .like, .project, .baseInformation, .members, .listAllApplicationsForProject:
-            return []
+        default: return []
         }
     }
     
@@ -331,14 +344,16 @@ extension ProjectsTarget: TargetType {
             return .none
         case let .report(request: request):
             return .body(request)
-        case .members, .listAllApplicationsForProject:
+        case .members, .listAllApplicationsForProject, .updateState:
             return .none
+        case .getApplies(let request):
+            return .query(request)
         }
     }
     
     var encoding: ParameterEncoding {
         switch self {
-        case .list, .project, .baseInformation, .members:
+        case .list, .project, .baseInformation, .members, .getApplies, .updateState:
             return  URLEncoding.default
         case .like, .apply, .report, .listAllApplicationsForProject:
             return JSONEncoding.default
@@ -358,6 +373,10 @@ extension ProjectsTarget: TargetType {
         case .report: return "/project/report"
         case .members(projectId: let id): return "/project/members/\(id)"
         case .listAllApplicationsForProject(let id): return "/project/apply/\(id)"
+        case .getApplies(let request):
+            return "/project/apply/\(request.projectId)/\(request.part)"
+        case .updateState(let projectId, let state):
+            return "/project/\(projectId)/state/\(state)/update"
         }
     }
 }

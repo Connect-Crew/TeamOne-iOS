@@ -49,6 +49,7 @@ final class ProjectDetailCoordinator: BaseCoordinator<ProjectDetailCoordinatorRe
             memberFacade: DIContainer.shared.resolve(MemberFacade.self),
             projectLikeUseCase: DIContainer.shared.resolve(ProjectLikeUseCaseProtocol.self),
             projectInfoUseCase: DIContainer.shared.resolve(ProjectInfoUseCase.self),
+            projectUpdateStateUseCase: DIContainer.shared.resolve(ProjectUpdateStateUseCase.self),
             project: project
         )
         

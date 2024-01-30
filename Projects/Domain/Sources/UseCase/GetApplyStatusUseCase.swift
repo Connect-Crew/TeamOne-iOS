@@ -10,6 +10,7 @@ import Foundation
 import RxSwift
 
 public protocol GetApplyStatusUseCase {
+    /// 프로젝트 전체의 지원 현황을  리턴
     func getApplyStatus(projectId: Int) -> Single<[ApplyStatus]>
 }
 

@@ -174,6 +174,10 @@ public enum DSKitImage {
     
     case copy
     
+    // MARK: - NotificaitonTap
+    
+    case chatbot
+
     // MARK: - Profile
     case myProject
     case submittedProject
@@ -379,12 +383,17 @@ public enum DSKitImage {
             
         case .copy: return "copy"
             
+            // MARK: - NotificationTap
+            
+        case .chatbot: return "chatbot"
+
         case .myProject:
             return "line"
         case .submittedProject:
             return "small"
         case .favoriteProject:
             return "heart"
+
         }
     }
 }

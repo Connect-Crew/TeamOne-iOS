@@ -30,4 +30,8 @@ public protocol ProjectRepositoryProtocol {
     func modify(props: ProjectCreateProps, projectId: Int) -> Single<ProjectCreateResponse>
     
     func listAllApplicationsForProject(projectId: Int) -> Single<[ApplyStatus]>
+    
+    func getApplies(projectId: Int, part: String) -> Single<[Applies]>
+    
+    func updateState(projectId: Int, state: ProjectState) -> Single<Void>
 }

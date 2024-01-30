@@ -15,42 +15,81 @@ import RxCocoa
 
 /// 지원자 관리 Detail TableViewCell
 public final class ManageApplicantDetailTableViewCell: UITableViewCell, CellIdentifiable {
+    
+    public struct Item {
+        let applyState: ApplyState
+        let nickname: String
+        let profile: String
+        let temperature: Double
+        let responseRate: Int
+        let parts: [(category: String, part: String)]
+        let introduction: String
+        let contact: String
+        let message: String
+        
+        public init(applyState: ApplyState, nickname: String, profile: String, temperature: Double, responseRate: Int, parts: [(category: String, part: String)], introduction: String, contact: String, message: String) {
+            self.applyState = applyState
+            self.nickname = nickname
+            self.profile = profile
+            self.temperature = temperature
+            self.responseRate = responseRate
+            self.parts = parts
+            self.introduction = introduction
+            self.contact = contact
+            self.message = message
+        }
+    }
 
-    public enum ApplicationStatus {
+    public enum ApplyState {
         /// 지원이 수락된 상태
-        case approved
+        case accept
         /// 지원이 거절된 상태
         case rejected
         /// 지원이 아직 결정되지 않은 미 결재 상태
-        case pending
+        case waiting
         
         var cellBackgrouncColor: UIColor {
             switch self {
-            case .approved: return .teamOne.white
+            case .accept: return .teamOne.white
             case .rejected: return .teamOne.white
-            case .pending: return .teamOne.mainlightColor
+            case .waiting: return .teamOne.mainlightColor
             }
         }
         
         var reviewButtonisHidden: Bool {
             switch self {
-            case .approved, .rejected: return true
-            case .pending: return false
+            case .accept, .rejected: return true
+            case .waiting: return false
             }
         }
         
-        var isReviewedDateLabelHidden: Bool {
+        var reviewdStackViewIsHidden: Bool {
             switch self {
-            case .pending: return false
-            case .approved, .rejected: return true
+            case .waiting: return true
+            case .accept, .rejected: return false
             }
         }
         
         var reviewdStateLabeTextColor: UIColor {
             switch self {
-            case .approved: return .teamOne.mainColor
+            case .accept: return .teamOne.mainColor
             case .rejected: return .teamOne.point
             default: return .clear
+            }
+        }
+        
+        var reviewedStateLabelText: String {
+            switch self {
+            case .accept: return "승인"
+            case .rejected: return "거절"
+            case .waiting: return "대기"
+            }
+        }
+        
+        var contactIsHidden: Bool {
+            switch self {
+            case .rejected: return true
+            default: return false
             }
         }
     }
@@ -163,11 +202,17 @@ public final class ManageApplicantDetailTableViewCell: UITableViewCell, CellIden
     
     public var disposeBag = DisposeBag()
     
-    private lazy var applcationStatus: ApplicationStatus = .pending
+    private lazy var applyState: ApplyState = .waiting {
+        didSet {
+            setStateLayout()
+        }
+    }
     
-    public let rejectTap = PublishRelay<Void>()
-    public let approveTap = PublishRelay<Void>()
-    public let profileTap = PublishRelay<Void>()
+    private var row: Int?
+    // row를 전달
+    public let rejectTap = PublishRelay<Int>()
+    public let approveTap = PublishRelay<Int>()
+    public let profileTap = PublishRelay<Int>()
     public let copyButtonTap = PublishRelay<Void>()
     
     public override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -177,7 +222,6 @@ public final class ManageApplicantDetailTableViewCell: UITableViewCell, CellIden
     }
     
     private func layout() {
-        
         self.selectionStyle = .none
         
         // ImageView
@@ -213,29 +257,60 @@ public final class ManageApplicantDetailTableViewCell: UITableViewCell, CellIden
         }
     }
     
+    private func setStateLayout() {
+        self.contentView.backgroundColor = applyState.cellBackgrouncColor
+        self.buttonStackView.isHidden = applyState.reviewButtonisHidden
+        self.labelReviewdType.textColor = applyState.reviewdStateLabeTextColor
+        self.labelReviewdType.text = applyState.reviewedStateLabelText
+        self.reviewedStackView.isHidden = applyState.reviewdStackViewIsHidden
+        self.contactStackView.isHidden = applyState.contactIsHidden
+    }
+    
     public func bind() {
         
         rejectButton.rx.tap
+            .map { [weak self] _ in return self?.row }
+            .compactMap { $0 }
             .bind(to: rejectTap)
             .disposed(by: disposeBag)
         
         approveButton.rx.tap
+            .map { [weak self] _ in return self?.row }
+            .compactMap { $0 }
             .bind(to: approveTap)
             .disposed(by: disposeBag)
         
         copyButton.rx.tap
+            .do(onNext: { [weak self] _ in
+                NSUtil.Copy.textCopy(target: self?.labelContact.text)
+            })
             .bind(to: copyButtonTap)
             .disposed(by: disposeBag)
         
         profileContainerButton.rx.tap
+            .map { [weak self] _ in return self?.row }
+            .compactMap { $0 }
             .bind(to: profileTap)
             .disposed(by: disposeBag)
-        
-        
+    }
+    
+    public func initSetting(item: Item, row: Int) {
+        self.row = row
+        self.profileImageView.setTeamOneImage(path: item.profile)
+        self.labelName.text = item.nickname
+        self.imageViewHodey.setHoney(temparature: item.temperature)
+        self.labelPart.text = item.parts.map {
+            return "\($0.category)/\($0.part)"
+        }.joined(separator: ", ")
+        self.labelIntroduction.text = item.introduction
+        self.labelContact.text = item.contact
+        self.textViewIntroduction.text = item.message
+        self.applyState = item.applyState
     }
     
     public override func prepareForReuse() {
         super.prepareForReuse()
+        profileImageView.image = .image(dsimage: .baseProfile)
         disposeBag = DisposeBag()
     }
     

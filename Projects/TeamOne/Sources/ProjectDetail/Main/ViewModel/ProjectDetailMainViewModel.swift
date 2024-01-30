@@ -32,18 +32,21 @@ final class ProjectDetailMainViewModel: ViewModel {
     private let memberFacade: MemberFacade
     private let projectLikeUseCase: ProjectLikeUseCaseProtocol
     private let projectInfoUseCase: ProjectInfoUseCase
+    private let projectUpdateStateUseCase: ProjectUpdateStateUseCase
     
     public init(
         projectReportUseCase: ProjectReportUseCase,
         memberFacade: MemberFacade,
         projectLikeUseCase: ProjectLikeUseCaseProtocol,
         projectInfoUseCase: ProjectInfoUseCase,
+        projectUpdateStateUseCase: ProjectUpdateStateUseCase,
         project: Project
     ) {
         self.projectReportUseCase = projectReportUseCase
         self.memberFacade = memberFacade
         self.projectLikeUseCase = projectLikeUseCase
         self.projectInfoUseCase = projectInfoUseCase
+        self.projectUpdateStateUseCase = projectUpdateStateUseCase
         self.project = BehaviorRelay<Project>(value: project)
     }
 
@@ -59,6 +62,8 @@ final class ProjectDetailMainViewModel: ViewModel {
         let expelProps: PublishRelay<UserExpelProps>
         let modifyButtonTap: PublishRelay<Void>
         let manageApplicantsButtonTap: PublishRelay<Void>
+        let deleteButtonTap: PublishRelay<Void>
+        let completeButtonTap: PublishRelay<Void>
     }
 
     struct Output {
@@ -101,6 +106,8 @@ final class ProjectDetailMainViewModel: ViewModel {
         transformMemberList(input: input)
         transformUserExple(input: input.expelProps)
         transformDeletableCompletable(input: input)
+        transformDelete(deleteTap: input.deleteButtonTap)
+        transformComplete(completeTap: input.completeButtonTap)
         
         return Output(
             project: project.asDriver(),
@@ -348,24 +355,107 @@ final class ProjectDetailMainViewModel: ViewModel {
     func transformDeletableCompletable(input: Input) {
         // projectMember가 2명 이상이면 삭제 불가 처리
         // 지울 수 없으면 false
-        input.viewWillAppear
-            .withLatestFrom(project)
-            .map { $0.id }
-            .withUnretained(self)
-            .flatMap { this, id in
-                this.memberFacade.getProjectMembers(projectId: id)
-            }
+        projectMembers
             .map { $0.count }
             .map { !($0 >= 2) }
             .bind(to: isDeletable)
             .disposed(by: disposeBag)
         
         // 2주가 경과하였으면 삭제가능
-        input.viewWillAppear
-            .withLatestFrom(project)
+        project
             .map { $0.createdAt }
             .map { $0.isDateWithin(days: 14) }
             .bind(to: isCompletable)
+            .disposed(by: disposeBag)
+    }
+    
+    func transformDelete(deleteTap: PublishRelay<Void>) {
+        let result = deleteTap
+            .withLatestFrom(project)
+            .map { $0.id }
+            .withUnretained(self)
+            .flatMap { this, id in
+                return this.projectUpdateStateUseCase.updateState(projectId: id, state: .deleted)
+                    .asObservable()
+                    .catch { error in
+                        this.error.onNext(error)
+                        return .empty()
+                    }
+            }
+            .asResult()
+        
+        let getSuccess = result
+            .compactMap { result -> Void? in
+                guard case .success = result else {
+                    return nil
+                }
+                return ()
+            }
+        
+        getSuccess
+            .withUnretained(self)
+            .subscribe(onNext: { this, _ in
+                HomeCoordinator.deletedProject.accept(())
+                this.navigation.onNext(.back)
+            })
+            .disposed(by: disposeBag)
+        
+        let getFailure = result
+            .compactMap { result -> Error? in
+                guard case .failure(let error) = result else {
+                    return nil
+                }
+
+                return error
+            }
+        
+        getFailure
+            .bind(to: error)
+            .disposed(by: disposeBag)
+    }
+    
+    func transformComplete(completeTap: PublishRelay<Void>) {
+        let result = completeTap
+            .withLatestFrom(project)
+            .map { $0.id }
+            .withUnretained(self)
+            .flatMap { this, id in
+                return this.projectUpdateStateUseCase.updateState(projectId: id, state: .completed)
+                    .asObservable()
+                    .catch { error in
+                        this.error.onNext(error)
+                        return .empty()
+                    }
+            }
+            .asResult()
+        
+        let getSuccess = result
+            .compactMap { result -> Void? in
+                guard case .success = result else {
+                    return nil
+                }
+                return ()
+            }
+        
+        getSuccess
+            .withUnretained(self)
+            .subscribe(onNext: { this, _ in
+                HomeCoordinator.deletedProject.accept(())
+                this.navigation.onNext(.back)
+            })
+            .disposed(by: disposeBag)
+        
+        let getFailure = result
+            .compactMap { result -> Error? in
+                guard case .failure(let error) = result else {
+                    return nil
+                }
+
+                return error
+            }
+        
+        getFailure
+            .bind(to: error)
             .disposed(by: disposeBag)
     }
 }

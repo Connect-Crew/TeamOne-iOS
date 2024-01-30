@@ -29,7 +29,6 @@ final class ManageApplicantMainViewModel: ViewModel {
         self.getApplyStatusUseCase = getApplyStatusUseCase
     }
     
-    
     struct Input {
         let viewWillAppear: Observable<Void>
         let backButtonTap: PublishRelay<Void>

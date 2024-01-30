@@ -15,16 +15,14 @@ import RxCocoa
 
 public struct DSManageApplicantMainTableViewCellData {
     let part: String
-    let partKey: String
     let category: String
     let comment: String
     let current: Int
     let max: Int
     let isQuotaFull: Bool
     
-    public init(part: String, partKey: String, category: String, comment: String, current: Int, max: Int, isQuotaFull: Bool) {
+    public init(part: String, category: String, comment: String, current: Int, max: Int, isQuotaFull: Bool) {
         self.part = part
-        self.partKey = partKey
         self.category = category
         self.comment = comment
         self.current = current
@@ -45,7 +43,7 @@ public final class ManageApplicantMainTableViewCell: UITableViewCell, CellIdenti
             case .appliable:
                 UIColor.teamOne.mainlightColor
             case .isQuotaFull:
-                UIColor.teamOne.grayscaleTwo
+                UIColor.teamOne.white
             }
         }
         

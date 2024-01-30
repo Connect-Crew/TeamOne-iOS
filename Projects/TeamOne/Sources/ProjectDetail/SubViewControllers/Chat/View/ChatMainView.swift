@@ -68,24 +68,28 @@ final class ChatMainView: View {
     }
     
     private func updateChatInputViewLayout(height: CGFloat) {
-        if height == 0 {
-            UIView.animate(withDuration: 0.3, animations: { [weak self] in
-                guard let self else { return }
-                self.chatInputView.snp.remakeConstraints {
-                    $0.bottom.leading.trailing.equalToSuperview()
+        
+        if chatInputView.isFirstResponder {
+            if height == 0 {
+                UIView.animate(withDuration: 0.3, animations: { [weak self] in
+                    guard let self else { return }
+                    self.chatInputView.snp.remakeConstraints {
+                        $0.bottom.leading.trailing.equalToSuperview()
+                    }
+                    
+                    layoutIfNeeded()
+                })
+            } else {
+                UIView.animate(withDuration: 0.3) { [weak self] in
+                    guard let self else { return }
+                    self.chatInputView.snp.remakeConstraints {
+                        $0.left.right.equalToSuperview()
+                        $0.bottom.equalToSuperview().inset(height)
+                    }
+                    layoutIfNeeded()
                 }
-                
-                layoutIfNeeded()
-            })
-        } else {
-            UIView.animate(withDuration: 0.3) { [weak self] in
-                guard let self else { return }
-                self.chatInputView.snp.remakeConstraints {
-                    $0.left.right.equalToSuperview()
-                    $0.bottom.equalToSuperview().inset(height)
-                }
-                layoutIfNeeded()
             }
+            
         }
     }
 }

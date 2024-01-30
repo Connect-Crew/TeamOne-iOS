@@ -102,7 +102,22 @@ public struct ProjectRepository: ProjectRepositoryProtocol {
     public func listAllApplicationsForProject(projectId: Int) -> Single<[ApplyStatus]> {
         
         return projectDataSource.listAllApplicationsForProject(projectId: projectId)
-            .map { $0.toDomain() }
+            .map { $0.map { $0.toDomain() } }
+    }
+    
+    public func getApplies(projectId: Int, part: String) -> Single<[Applies]> {
+        
+        let request = GetAppliesRequestDTO(
+            projectId: projectId,
+            part: part
+        )
+        return projectDataSource.getApplies(request: request)
+            .map { $0.map { $0.toDomain() } }
+    }
+    
+    public func updateState(projectId: Int, state: ProjectState) -> Single<Void> {
+        
+        return projectDataSource.updateState(projectId: projectId, state: state.toMultiPartValue())
     }
 }
 

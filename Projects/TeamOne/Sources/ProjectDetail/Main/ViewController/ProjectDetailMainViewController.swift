@@ -136,6 +136,11 @@ final class ProjectDetailMainViewController: ViewController {
     
     let modifyTap = PublishRelay<Void>()
     let manageApplicantsTap = PublishRelay<Void>()
+    let deleteTap = PublishRelay<Void>()
+    let completeTap = PublishRelay<Void>()
+    
+    let presentDeleteAlert = PublishRelay<Void>()
+    let presentCompleteAlert = PublishRelay<Void>()
     
     // MARK: - Bind
     
@@ -156,7 +161,9 @@ final class ProjectDetailMainViewController: ViewController {
                 .throttle(.seconds(1), latest: true, scheduler: MainScheduler.instance),
             expelProps: expelProps,
             modifyButtonTap: modifyTap,
-            manageApplicantsButtonTap: manageApplicantsTap
+            manageApplicantsButtonTap: manageApplicantsTap,
+            deleteButtonTap: deleteTap,
+            completeButtonTap: completeTap
         )
 
         let output = viewModel.transform(input: input)
@@ -244,7 +251,8 @@ final class ProjectDetailMainViewController: ViewController {
                 return ResultAlertView_Image_Title_Content_Alert(
                     image: .complete,
                     title: "신고가 완료되었습니다.",
-                    content: "소중한 의견 감사합니다.",
+                    content: "소중한 의견 감사합니다.", 
+                    okButtonTitle: "신고하기",
                     availableCancle: false
                 )
             }
@@ -256,6 +264,59 @@ final class ProjectDetailMainViewController: ViewController {
                 )
             })
             .disposed(by: disposeBag)
+        
+        // MARK: - 수정하기, 삭제하기 alert
+        
+        let deleteAlertResult = PublishSubject<Bool>()
+        
+        presentDeleteAlert
+            .map { _ in
+                return ResultAlertView_Image_Title_Content_Alert(
+                    image: .warnning,
+                    title: "프로젝트를 삭제하시겠습니까?",
+                    content: "삭제 전 한번 더 고민해보시기 바랍니다", 
+                    okButtonTitle: "삭제",
+                    availableCancle: true,
+                    resultSubject: deleteAlertResult
+                )
+            }
+            .withUnretained(self)
+            .bind(onNext: { this, alert in
+                this.presentResultAlertView_Image_Title_Content(source: this, alert: alert)
+            })
+            .disposed(by: disposeBag)
+        
+        deleteAlertResult
+            .filter { $0 == true }
+            .map { _ in return () }
+            .bind(to: deleteTap)
+            .disposed(by: disposeBag)
+        
+        let completeAlertResult = PublishSubject<Bool>()
+        
+        presentCompleteAlert
+            .map { _ in
+                return ResultAlertView_Image_Title_Content_Alert(
+                    image: .completeProject,
+                    title: "프로젝트를 완수하시겠습니까?",
+                    content: "프로젝트를 마무리하느라 수고하셨습니다!", 
+                    okButtonTitle: "종료",
+                    availableCancle: true,
+                    resultSubject: completeAlertResult
+                )
+            }
+            .withUnretained(self)
+            .bind(onNext: { this, alert in
+                this.presentResultAlertView_Image_Title_Content(source: this, alert: alert)
+            })
+            .disposed(by: disposeBag)
+        
+        completeAlertResult
+            .filter { $0 == true }
+            .map { _ in return () }
+            .bind(to: completeTap)
+            .disposed(by: disposeBag)
+            
     }
     
     func bindExpel(output: ProjectDetailMainViewModel.Output) {
@@ -305,8 +366,8 @@ final class ProjectDetailMainViewController: ViewController {
                 let manageProjectVC = ManageProjectMainVC()
 
                 manageProjectVC.mainView.bottomSheet.bind(
-                    isDeletable: output.isCompletable,
-                    isCompletable: output.isDeletable
+                    isDeletable: output.isDeletable,
+                    isCompletable: output.isCompletable
                 )
                 
                 manageProjectVC.modifySubject
@@ -315,6 +376,14 @@ final class ProjectDetailMainViewController: ViewController {
                 
                 manageProjectVC.manageApplicantsSubject
                     .bind(to: this.manageApplicantsTap)
+                    .disposed(by: manageProjectVC.disposeBag)
+                
+                manageProjectVC.deleteButtonTap
+                    .bind(to: this.presentDeleteAlert)
+                    .disposed(by: manageProjectVC.disposeBag)
+                
+                manageProjectVC.completeButtonTap
+                    .bind(to: this.presentCompleteAlert)
                     .disposed(by: manageProjectVC.disposeBag)
                 
                 manageProjectVC.modalPresentationStyle = .overFullScreen

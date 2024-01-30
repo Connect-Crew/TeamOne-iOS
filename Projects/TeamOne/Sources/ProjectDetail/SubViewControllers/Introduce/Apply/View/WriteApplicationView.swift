@@ -100,6 +100,8 @@ final class WriteApplicationView: View {
                 this.isHidden = true
             })
             .disposed(by: disposeBag)
+        
+        adjustForKeyboard(disposeBag: disposeBag)
     }
 
     func layout() {

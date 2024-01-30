@@ -112,6 +112,7 @@ final class HomeViewController: ViewController {
             cell.buttonLikeTap
                 .subscribe(onNext: { [weak self]  in
                     self?.likeButtonTap.onNext($0)
+                    NSUtil.Vibration.selection.vibrate()
                 })
                 .disposed(by: cell.disposeBag)
             

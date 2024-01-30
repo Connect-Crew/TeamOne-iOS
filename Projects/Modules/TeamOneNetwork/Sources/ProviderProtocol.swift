@@ -14,6 +14,8 @@ public protocol ProviderProtocol: AnyObject {
 
     func request<T: Decodable>(_ urlConvertible: URLRequestConvertible) -> Single<T> 
     
+    func request(_ urlConvertible: URLRequestConvertible) -> Single<Void>
+    
     func requestNoInterceptor<T: Decodable>(_ urlConvertible: URLRequestConvertible) -> Single<T>
 }
 

@@ -18,8 +18,7 @@ public extension UIViewController {
     func presentResultAlertView_Image_Title_Content(
         source: UIViewController?,
         alert: ResultAlertView_Image_Title_Content_Alert,
-        darkbackground: Bool = true,
-        okButtonTitle: String? = nil
+        darkbackground: Bool = true
         ) {
 
         let viewController = ResultAlertView_Image_Title_ContentVC(
@@ -37,13 +36,15 @@ public struct ResultAlertView_Image_Title_Content_Alert {
     public var image: ResultAlertView_Image
     public var title: String
     public var content: String
+    public var okButtonTitle: String
     public var availableCancle: Bool
     public var resultSubject: PublishSubject<Bool>?
 
-    public init(image: ResultAlertView_Image, title: String, content: String, availableCancle: Bool, resultSubject: PublishSubject<Bool>? = nil) {
+    public init(image: ResultAlertView_Image, title: String, content: String, okButtonTitle: String = "확인",  availableCancle: Bool, resultSubject: PublishSubject<Bool>? = nil) {
         self.image = image
         self.title = title
         self.content = content
+        self.okButtonTitle = okButtonTitle
         self.availableCancle = availableCancle
         self.resultSubject = resultSubject
     }
@@ -108,16 +109,11 @@ open class ResultAlertView_Image_Title_ContentVC: ViewController {
 
     public init(
         alert: ResultAlertView_Image_Title_Content_Alert,
-        darkbackground: Bool,
-        okButtonTitle: String? = nil
+        darkbackground: Bool
     ) {
         self.darkBackground = darkbackground
         
         super.init(nibName: nil, bundle: nil)
-        
-        if okButtonTitle != nil {
-            self.okButton.setTitle(okButtonTitle, for: .normal)
-        }
 
         initSetting()
         self.bind(alert)
@@ -135,9 +131,11 @@ open class ResultAlertView_Image_Title_ContentVC: ViewController {
         case .complete:
             self.imageViewResult.image = .image(dsimage: .complete)
         }
+        
         self.labelTitle.text = alert.title
         self.labelContent.text = alert.content
         self.cancleButton.isHidden = !alert.availableCancle
+        self.okButton.setTitle(alert.okButtonTitle, for: .normal)
 
         self.cancleButton.rx.tap
             .subscribe(onNext: { [weak self] _ in
@@ -154,6 +152,8 @@ open class ResultAlertView_Image_Title_ContentVC: ViewController {
                 }
             })
             .disposed(by: disposeBag)
+        
+        self.contentView.adjustForKeyboard(disposeBag: disposeBag)
     }
 
     private func initSetting() {
