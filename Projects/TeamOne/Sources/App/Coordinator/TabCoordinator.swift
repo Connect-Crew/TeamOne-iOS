@@ -73,7 +73,7 @@ final class TabCoordinator: BaseCoordinator<TabCoordinatorResult> {
             switch $0 {
             case .home: showHome(navigationController)
             case .notification: showNotification(navigationController)
-            case .profile: break
+            case .profile: showProfile(navigationController)
             }
         }
 
@@ -110,6 +110,17 @@ final class TabCoordinator: BaseCoordinator<TabCoordinatorResult> {
         let notification = NotificationCoordinator(root)
         
         coordinate(to: notification)
+            .subscribe(onNext: { _ in
+                
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    private func showProfile(_ root: UINavigationController) {
+        
+        let coordinator = ProfileCoordinator(root)
+        
+        coordinate(to: coordinator)
             .subscribe(onNext: { _ in
                 
             })
