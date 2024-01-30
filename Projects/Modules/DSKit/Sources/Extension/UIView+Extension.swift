@@ -80,6 +80,16 @@ public extension UIView {
 // MARK: - Shadow
 public extension UIView {
     
+    /**
+     전체 그림자를 설정할 수 있는 메서드
+     - Parameters:
+        - offsetX, Y : offsetX, offsetY
+        - color: 그림자의 색(alpha: 1)
+        - opacity: 연한 정도(실제 그림자의 alpha)
+        - blurRadius: 그림자의 corner radius
+        - backgroundColor: 뷰의 백그라운드 컬러
+     - returns: Void
+     */
     func setBaseShadow(
         offsetX: Int = 0,
         offsetY: Int = 0,
@@ -106,6 +116,16 @@ public extension UIView {
         case allSides
     }
     
+    /**
+     좌, 우, 상, 하 의 그림자를 설정할 수 있는 메서드
+     - Parameters:
+        - offsetX, Y : offsetX, offsetY
+        - blurRadius: 그림자의 corner radius
+        - color: 그림자의 색(alpha: 1)
+        - opacity: 연한 정도(실제 그림자의 alpha)
+        - position: 설정할 그림자들의 포지션
+     - returns: Void
+     */
     func applyShadow(
         offsetX: CGFloat, offsetY: CGFloat,
         blurRadius: CGFloat, color: UIColor,
