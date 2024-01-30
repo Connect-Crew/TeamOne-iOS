@@ -23,4 +23,12 @@ public struct UserRepository: UserRepositoryProtocol {
         return self.userDataSource.myProfile()
             .map { $0.toDomain() }
     }
+    
+    public func approve(applyId: Int) -> Single<Void> {
+        return self.userDataSource.approve(applyId: applyId)
+    }
+    
+    public func reject(applyId: Int, rejectMessage: String) -> Single<Void> {
+        return self.userDataSource.approve(applyId: applyId)
+    }
 }

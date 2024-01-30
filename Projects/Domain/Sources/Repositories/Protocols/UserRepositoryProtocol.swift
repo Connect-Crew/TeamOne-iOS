@@ -11,4 +11,8 @@ import RxSwift
 
 public protocol UserRepositoryProtocol {
     func myProfile() -> Observable<Profile>
+    
+    func approve(applyId: Int) -> Single<Void>
+    
+    func reject(applyId: Int, rejectMessage: String) -> Single<Void> 
 }
