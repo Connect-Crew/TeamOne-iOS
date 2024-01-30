@@ -80,14 +80,22 @@ public extension UIView {
 // MARK: - Shadow
 public extension UIView {
     
-    func setBaseShadow(radius: CGFloat, backgroundColor: UIColor = .teamOne.white) {
+    func setBaseShadow(
+        offsetX: Int = 0,
+        offsetY: Int = 0,
+        color: UIColor = .init(r: 158, g: 158, b: 158, a: 1),
+        opacity: Float = 0.2,
+        radius: CGFloat,
+        backgroundColor: UIColor = .teamOne.white) 
+    {
         self.clipsToBounds = false
         self.layer.masksToBounds = false
+        
         self.backgroundColor = backgroundColor
-        self.layer.shadowOffset = CGSize(width: 0, height: 0)
+        self.layer.shadowOffset = CGSize(width: offsetX, height: offsetY)
         self.layer.shadowRadius = radius
-        self.layer.shadowColor = UIColor(r: 158, g: 158, b: 158, a: 1).cgColor
-        self.layer.shadowOpacity = 0.2
+        self.layer.shadowColor = color.cgColor
+        self.layer.shadowOpacity = opacity
     }
     
     enum ShadowPosition {
@@ -138,7 +146,16 @@ public extension UIView {
                 shadowPath.addLine(to: CGPoint(x: bounds.maxX + shadowWidth, y: bounds.maxY))
                 shadowPath.addLine(to: CGPoint(x: bounds.maxX + shadowWidth, y: 0))
             case .allSides:
-                shadowPath.append(UIBezierPath(rect: bounds))
+                clipsToBounds = false
+                layer.masksToBounds = false
+                
+                backgroundColor = .white
+                layer.shadowOffset = CGSize(width: offsetX, height: offsetY)
+                layer.shadowRadius = blurRadius
+                layer.shadowColor = color.cgColor
+                layer.shadowOpacity = opacity
+                
+                return
             }
         }
         
