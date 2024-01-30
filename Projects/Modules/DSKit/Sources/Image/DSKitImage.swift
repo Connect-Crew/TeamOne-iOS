@@ -177,11 +177,12 @@ public enum DSKitImage {
     // MARK: - NotificaitonTap
     
     case chatbot
-
+  
     // MARK: - Profile
     case myProject
     case submittedProject
     case favoriteProject
+
     
     var toName: String {
         switch self {

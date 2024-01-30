@@ -14,6 +14,10 @@ import Alamofire
 
 public protocol UserDataSourceProtocol {
     func myProfile() -> Observable<BaseUserResponseDTO>
+    
+    func approve(applyId: Int) -> Single<Void>
+    
+    func reject(applyId: Int) -> Single<Void>
 }
 
 public struct UserDataSource: UserDataSourceProtocol {
@@ -27,6 +31,14 @@ public struct UserDataSource: UserDataSourceProtocol {
     public func myProfile() -> Observable<BaseUserResponseDTO> {
         return provider.request(UserTarget.myProfile)
     }
+    
+    public func approve(applyId: Int) -> Single<Void> {
+        return provider.request(UserTarget.approve(applyId: applyId))
+    }
+    
+    public func reject(applyId: Int) -> Single<Void> {
+        return provider.request(UserTarget.approve(applyId: applyId))
+    }
 }
 
 extension NetworkConstant {
@@ -35,6 +47,8 @@ extension NetworkConstant {
 
 enum UserTarget {
     case myProfile
+    case approve(applyId: Int)
+    case reject(applyId: Int)
 }
 
 extension UserTarget: TargetType {
@@ -46,6 +60,8 @@ extension UserTarget: TargetType {
         switch self {
         case .myProfile:
             return .get
+        case .approve, .reject:
+            return .post
         }
     }
 
@@ -53,6 +69,9 @@ extension UserTarget: TargetType {
         switch self {
         case .myProfile:
             return ["Authorization": "Bearer \(UserDefaultKeyList.Auth.appAccessToken ?? "")"]
+        
+        default:
+            return []
         }
     }
 
@@ -60,6 +79,8 @@ extension UserTarget: TargetType {
         switch self {
         case .myProfile:
             return "/user/myprofile"
+        case .approve(let applyId): return "/project/apply/\(applyId)/accept"
+        case .reject(let applyId): return "/project/apply/\(applyId)/reject"
         }
     }
 
@@ -67,6 +88,8 @@ extension UserTarget: TargetType {
         switch self {
         case .myProfile:
             return .none
+        case .approve, .reject:
+            return .body(["leaderMessage"])
         }
     }
 
@@ -74,6 +97,8 @@ extension UserTarget: TargetType {
         switch self {
         case .myProfile:
             return URLEncoding.default
+        case .approve, .reject:
+            return JSONEncoding.default
         }
     }
 }
