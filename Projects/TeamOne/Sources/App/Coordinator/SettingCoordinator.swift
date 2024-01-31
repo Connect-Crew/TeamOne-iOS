@@ -24,9 +24,6 @@ final class SettingCoordinator: BaseCoordinator<SettingCoordinatorResult> {
     override func start() -> Observable<SettingCoordinatorResult> {
         showSetting()
         return finish
-            .do(onNext: { [weak self] _ in
-                self?.popTabbar(animated: true)
-            })
     }
     
     func showSetting() {
@@ -39,8 +36,10 @@ final class SettingCoordinator: BaseCoordinator<SettingCoordinatorResult> {
             .subscribe(onNext: { this, navi in
                 switch navi {
                 case .back:
+                    this.popTabbar(animated: true)
                     this.finish.onNext(.back)
                 case .logout:
+                    this.popTabbar(animated: true)
                     this.finish.onNext(.finish)
                 }
             })

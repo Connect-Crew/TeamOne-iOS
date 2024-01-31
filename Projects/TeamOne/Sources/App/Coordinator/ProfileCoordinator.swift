@@ -23,9 +23,6 @@ final class ProfileCoordinator: BaseCoordinator<ProfileCoordinatorResult> {
     override func start() -> Observable<ProfileCoordinatorResult> {
         showProfile()
         return finish
-            .do(onNext: { [weak self] _ in
-                self?.pop(animated: true)
-            })
     }
     
     func showProfile() {
