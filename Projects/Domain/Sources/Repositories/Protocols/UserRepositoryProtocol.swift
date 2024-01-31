@@ -15,4 +15,6 @@ public protocol UserRepositoryProtocol {
     func approve(applyId: Int) -> Single<Void>
     
     func reject(applyId: Int, rejectMessage: String) -> Single<Void> 
+    
+    func deleteUserData() -> Single<Void>
 }

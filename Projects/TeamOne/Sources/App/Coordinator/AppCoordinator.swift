@@ -75,10 +75,10 @@ final class AppCoordinator: BaseCoordinator<Void> {
         navigationController.setNavigationBarHidden(true, animated: true)
         let tab = TabCoordinator(navigationController)
         coordinate(to: tab)
-            .subscribe(onNext: {
+            .subscribe(onNext: { [weak self] in
                 switch $0 {
                 case .finish:
-                    break
+                    self?.showLogin()
                 }
             })
             .disposed(by: disposeBag)

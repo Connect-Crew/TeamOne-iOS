@@ -23,6 +23,9 @@ final class ProfileCoordinator: BaseCoordinator<ProfileCoordinatorResult> {
     override func start() -> Observable<ProfileCoordinatorResult> {
         showProfile()
         return finish
+            .do(onNext: { [weak self] _ in
+                self?.pop(animated: true)
+            })
     }
     
     func showProfile() {
@@ -34,6 +37,8 @@ final class ProfileCoordinator: BaseCoordinator<ProfileCoordinatorResult> {
                 switch navi {
                 case .finish:
                     break
+                case .setting:
+                    this.showSetting()
                 }
             })
             .disposed(by: disposeBag)
@@ -41,5 +46,19 @@ final class ProfileCoordinator: BaseCoordinator<ProfileCoordinatorResult> {
         let viewController = Inject.ViewControllerHost(ProfileMainVC(viewModel: viewModel))
         
         push(viewController, animated: true, isRoot: true)
+    }
+    
+    func showSetting() {
+        let setting = SettingCoordinator(navigationController)
+        
+        coordinate(to: setting)
+            .subscribe(onNext: { [weak self] in
+                switch $0 {
+                case .back: break
+                case .finish:
+                    self?.finish.onNext(.finish)
+                }
+            })
+            .disposed(by: disposeBag)
     }
 }

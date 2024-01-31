@@ -26,6 +26,5 @@ public struct LoginUseCase: LoginUseCaseProtocol {
 
     public func login(props: OAuthLoginProps) -> Single<Bool> {
         return authRepository.login(request: props)
-            .catchAndReturn(false)
     }
 }

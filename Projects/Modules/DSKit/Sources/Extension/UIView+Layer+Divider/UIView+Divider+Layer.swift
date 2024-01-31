@@ -27,7 +27,7 @@ public extension UIView {
      - Parameters:
         - height: CGFloat
      */
-    func setDivider(height: CGFloat, color: UIColor) {
+    func setDivider(height: CGFloat, color: UIColor = .teamOne.grayscaleTwo) {
         self.backgroundColor = color
         self.snp.makeConstraints {
             $0.height.equalTo(height)

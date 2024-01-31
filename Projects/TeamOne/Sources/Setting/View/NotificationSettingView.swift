@@ -13,6 +13,7 @@ import Then
 import RxSwift
 import RxCocoa
 import DSKit
+import Domain
 import Core
 
 final class NotificationSettingView: View {
@@ -21,18 +22,25 @@ final class NotificationSettingView: View {
         $0.axis = .vertical
         $0.layoutMargins = UIEdgeInsets(top: 20, left: 24, bottom: 20, right: 24)
         $0.isLayoutMarginsRelativeArrangement = true
-        $0.alignment = .leading
     }
     
     private let setAlertTitleLabel = PaddingLabel().then {
         $0.setLabel(text: "알림 설정", typo: .body4, color: .teamOne.grayscaleEight)
-        $0.textInsets = UIEdgeInsets(top: 10, left: 0, bottom: 10, right: 0)
+        $0.textInsets = UIEdgeInsets(top: 10, left: 0, bottom: 20, right: 0)
     }
     
+    private let activitySetting = Setting_Switch(
+        title: SettingType.NotificationSettingType.activity.toName,
+        isOn: false
+    )
+    
+    var notificationSettingTap = PublishRelay<NotificationSettingType>()
+
     override init(frame: CGRect) {
         super.init(frame: .zero)
         
         initLayout()
+        bind()
     }
     
     required init?(coder: NSCoder) {
@@ -47,5 +55,21 @@ final class NotificationSettingView: View {
         }
         
         contentView.addArrangedSubview(setAlertTitleLabel)
+        contentView.addArrangedSubview(activitySetting)
+    }
+    
+    public func bind(settings: Driver<NotificationSettings>) {
+        settings
+            .drive(onNext: { [weak self] setting in
+                self?.activitySetting.setIsOn(isOn: setting.activitySetting)
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    private func bind() {
+        activitySetting.tap
+            .map { _ in .activity }
+            .bind(to: notificationSettingTap)
+            .disposed(by: disposeBag)
     }
 }

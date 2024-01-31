@@ -31,4 +31,13 @@ public struct UserRepository: UserRepositoryProtocol {
     public func reject(applyId: Int, rejectMessage: String) -> Single<Void> {
         return self.userDataSource.approve(applyId: applyId)
     }
+    
+    public func deleteUserData() -> Single<Void> {
+        return Single.create { single in
+            UserDefaultKeyList.clearAllUserData()
+            UserDefaultKeyList.clearAllSetting()
+            single(.success(()))
+            return Disposables.create()
+        }
+    }
 }

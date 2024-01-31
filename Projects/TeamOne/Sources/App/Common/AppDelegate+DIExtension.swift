@@ -102,6 +102,12 @@ extension AppDelegate {
                 appDataSource: res.resolve(AppDataSourceProtocol.self)!
             )
         })
+        
+        // MARK: - Service
+        
+        container.register(interface: PushNotificationService.self, implement: { _ in 
+            return DefaultPushNotificationService()
+        })
 
         // MARK: - UseCase
 
@@ -267,6 +273,19 @@ extension AppDelegate {
             
             return ProjectUpdateState(
                 projectRepository: res.resolve(ProjectRepositoryProtocol.self)!
+            )
+        })
+        
+        container.register(interface: SignOutUseCase.self, implement: { res in
+            return SignOut(
+                userRepository: res.resolve(UserRepositoryProtocol.self)!,
+                pushNotificationService: res.resolve(PushNotificationService.self)!
+            )
+        })
+        
+        container.register(interface: AppSettingUseCase.self, implement: { res in
+            return DefaultAppSettingUseCase(
+                appRepository: res.resolve(AppRepositoryProtocol.self)!
             )
         })
 

@@ -87,7 +87,9 @@ final class ProjectSetPostViewController: ViewController, UINavigationController
     
     let imageViewPartWarnning = UIImageView(image: .image(dsimage: .warning))
     
-    let labelPartWarnning = UILabel().setLabel(text: "한 팀원이 여러 직무를 맡을 수 있습니다.", typo: .caption2, color: .teamOne.point)
+    let labelPartWarnning = UILabel().then {
+        $0.setLabel(text: "한 팀원이 여러 직무를 맡을 수 있습니다.", typo: .caption2, color: .teamOne.point)
+    }
     
     let imageViewModifyWarnning = UIImageView(image: .image(dsimage: .warning))
     
