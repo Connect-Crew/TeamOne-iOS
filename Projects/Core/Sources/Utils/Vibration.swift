@@ -10,6 +10,8 @@ import UIKit
 import AVFoundation
 
 extension NSUtil {
+    /// 진동 이벤트를 발생시키기위한 타입입니다.
+    /// vibrate메서드로 진동을 발생시킵니다.
     public enum Vibration: String, CaseIterable {
         
         public static var allCases: [Vibration] {

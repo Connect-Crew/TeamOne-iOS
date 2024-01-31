@@ -9,6 +9,9 @@
 import UIKit
 import SnapKit
 
+/// 프로젝트에서 사용되는 BaseScrollView입니다.
+/// 세로방향 스크롤 뷰입니다.
+/// contentView 프로퍼티에 addSubView합니다.
 open class BaseScrollView: UIScrollView {
 
     public let contentView = UIView()
@@ -23,7 +26,7 @@ open class BaseScrollView: UIScrollView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func initSetting() {
+    private func initSetting() {
 
         self.addSubview(contentView)
 

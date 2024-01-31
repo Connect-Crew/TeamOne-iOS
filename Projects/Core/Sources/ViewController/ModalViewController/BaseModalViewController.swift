@@ -8,6 +8,9 @@
 
 import UIKit
 
+/// 커스텀으로 작성된 뷰 컨트롤러입니다.
+/// 바텀시트를 띄우는 뷰 컨트롤러에 사용됩니다.
+/// setInteractiveDismiss메서드를 사용해 선택한 뷰를 끌어내려서 dismiss 시킬 수 있습니다.
 open class BaseModalViewControl : ViewController{
     
     weak var targetView:UIView!
@@ -22,6 +25,8 @@ open class BaseModalViewControl : ViewController{
     var isCloseClick:Bool = false
     var onCancel:(()->())? = nil
     
+    /// 끌어내릴 뷰를 선택합니다.
+    /// targetView의 frame이 결정 된 후에 호출해야합니다.
     public func setInteractiveDismiss(gestureView:UIView, targetView:UIView, onCancel:(()->())? = nil){
         
         self.onCancel = onCancel

@@ -13,6 +13,7 @@ import SnapKit
 import RxSwift
 import RxCocoa
 
+/// DropDown 아이템 하나의 대한 Item입니다.
 public struct DropDownMenu {
     let title: String
     let titleColor: UIColor
@@ -25,6 +26,9 @@ public struct DropDownMenu {
     }
 }
 
+/// DropDown으로 열리는 커스텀 클래스입니다.
+/// x, y position을 지정하여 사용합니다.
+/// 넓이는 지정하지 않습니다.
 public class DropDown: UIView {
     
     var maxShowCount: Int = 4
@@ -58,6 +62,12 @@ public class DropDown: UIView {
     // 테이블 뷰의 최대 높이 지정
     var tableViewHeight: Constraint?
     
+    /// DropDown Item의 Inits
+    /// menus: item의 배열
+    /// maxShowCount: 한 번에 보여줄 셀의 개수(menus의 개수보다 많다면 스크롤됩니다.)
+    /// cellHeight: 셀들의 높이를 설정합니다.
+    /// textAlignement: 셀 들의 TextAlignment를 설정합니다.
+    /// completion: 선택된 경우 클로저가 실행됩니다. 선택된 아이템의 title이 전달됩니다.
     public init(
         menus: [DropDownMenu],
         maxShowCount: Int,
@@ -77,7 +87,7 @@ public class DropDown: UIView {
         updateTableDataSource()
     }
     
-    func setup() {
+    private func setup() {
         addSubview(stackView)
         
         stackView.snp.makeConstraints {
@@ -93,7 +103,7 @@ public class DropDown: UIView {
         }
     }
     
-    func updateTableDataSource() {
+    private func updateTableDataSource() {
         if dataSource.count >= maxShowCount {
             tableViewHeight?.update(offset: (CGFloat(maxShowCount) * cellHeight))
         }
@@ -101,11 +111,10 @@ public class DropDown: UIView {
         updateDropDownWidth()
     }
     
-    // DropDown의 너비를 업데이트하는 함수
-    func updateDropDownWidth() {
+    /// DropDown의 너비를 업데이트하는 함수
+    private func updateDropDownWidth() {
         var maxWidth: CGFloat = 0
         
-        // 각 셀에 대한 너비 계산
         for i in 0..<dataSource.count {
             
             let menu = dataSource[i]

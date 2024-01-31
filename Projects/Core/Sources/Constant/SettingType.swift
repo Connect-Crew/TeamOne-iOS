@@ -22,4 +22,15 @@ public enum SettingType: CaseIterable {
         }
     }
     
+    public enum NotificationSettingType {
+        
+        case activity(Bool)
+        
+        public var toName: String {
+            switch self {
+            case .activity: return "활동 알림 (지원 응답, 팀원 변동사항 등)"
+            }
+        }
+    }
+    
 }

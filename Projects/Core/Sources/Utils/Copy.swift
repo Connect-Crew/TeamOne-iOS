@@ -12,6 +12,9 @@ import Then
 import SnapKit
 
 public extension NSUtil {
+    /// String Copy에 관한 클래스입니다
+    /// textCopy메서드를 사용해 복사합니다.
+    /// 복사된 경우 토스트가 등장합니다.
     class Copy {
         
         static var indicator = PaddingLabel().then {

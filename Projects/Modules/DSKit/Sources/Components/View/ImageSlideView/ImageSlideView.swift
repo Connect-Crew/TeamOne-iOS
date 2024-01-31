@@ -11,6 +11,8 @@ import Then
 import SnapKit
 import SDWebImage
 
+/// 가로스크롤 ImageSlide를 지원하는 ImageSlideView 입니다.
+/// configure 메서드를 사용해 이미지를 설정합니다.
 open class ImageSlideView: UIView {
     
     static var contentMode: UIImageView.ContentMode = .scaleAspectFill

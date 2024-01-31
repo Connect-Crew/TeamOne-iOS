@@ -400,6 +400,12 @@ public enum DSKitImage {
 }
 
 public extension UIImage {
+    
+    /**
+     UIImage를 리턴합니다.
+     이미지 에셋을 추가할 땐 Assets에 추가하고 DSKitImage에 enum을 추가합니다.
+     named로 직접 에셋을 사용하지 않습니다.
+     */
     static func image(dsimage: DSKitImage) -> UIImage? {
         guard let image = UIImage(named: dsimage.toName, in: Bundle.module, compatibleWith: .none) else 
         {

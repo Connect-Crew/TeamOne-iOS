@@ -78,6 +78,11 @@ public enum SansNeo: String {
 }
 
 public extension UIFont {
+    /**
+     Font를 리턴합니다
+     - Parameters:
+        - font: SansNeo타입으로 Figma에 폰트가 작성되어 있습니다.
+     */
     static func setFont(font: SansNeo) -> UIFont {
         guard let font = UIFont(name: font.font, size: font.size) else {
             fatalError("Font set Error")

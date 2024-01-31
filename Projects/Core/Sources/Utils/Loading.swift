@@ -8,6 +8,7 @@
 
 import UIKit
 
+/// ActivityIndicator관련 클래스입니다.
 public class Loading {
     
     static let backgroundColor = UIColor(red: 112/255.0, green: 112/255.0, blue: 112/255.0, alpha: 0.10)
@@ -52,6 +53,12 @@ public class Loading {
         return rotateAnimation
     }()
 
+    /**
+     액티비티 인디케이터 동작을 시작합니다.
+     - Parameters:
+        - isFullScreen: true로 사용합니다.
+        - stopTouch: 인디케이터가 작동하는 동안 터치이벤트를 받지 않습니다.
+     */
     public static func start(isFullScreen: Bool = true, stopTouch: Bool = true) {
         DispatchQueue.main.async {
             if let window: UIWindow = UIApplication.shared.windows.filter({$0.isKeyWindow}).first {
@@ -108,7 +115,8 @@ public class Loading {
             }
         }
     }
-
+    
+    /// 액티비티 인디케이터의 동작을 정지시킵니다.
     public static func stop() {
         DispatchQueue.main.async {
             
