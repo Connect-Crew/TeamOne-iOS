@@ -26,5 +26,21 @@ public struct LoginUseCase: LoginUseCaseProtocol {
 
     public func login(props: OAuthLoginProps) -> Single<Bool> {
         return authRepository.login(request: props)
+            .catch { error in
+                if let error = error as? APIError {
+                    switch error {
+                    case .network(let statusCode, _):
+                        
+                        if statusCode == 404 {
+                            return Observable.just(false).asSingle()
+                        } else {
+                            return .never()
+                        }
+                    default: return .never()
+                    }
+                } else {
+                    return .never()
+                }
+            }
     }
 }
