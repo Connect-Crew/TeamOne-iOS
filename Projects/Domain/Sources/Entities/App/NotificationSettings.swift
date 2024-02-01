@@ -14,8 +14,4 @@ public struct NotificationSettings {
     public init(activitySetting: Bool) {
         self.activitySetting = activitySetting
     }
-    
-    public static var isNotSet: NotificationSettings {
-        return NotificationSettings(activitySetting: false)
-    }
 }

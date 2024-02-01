@@ -11,7 +11,7 @@ import RxSwift
 
 public protocol AppSettingUseCase {
     func getNotificationSetting() -> Single<NotificationSettings>
-    func setNotificationSetting(setting: NotificationSettings) -> Completable
+    func setActivitySetting(isOn: Bool) -> Completable
 }
 
 public struct DefaultAppSettingUseCase: AppSettingUseCase {
@@ -26,7 +26,7 @@ public struct DefaultAppSettingUseCase: AppSettingUseCase {
         return appRepository.getNotificationSetting()
     }
     
-    public func setNotificationSetting(setting: NotificationSettings) -> Completable {
-        return appRepository.setNotificationSetting(setting: setting)
+    public func setActivitySetting(isOn: Bool) -> Completable {
+        return appRepository.setActivitySetting(isOn: isOn)
     }
 }

@@ -13,5 +13,5 @@ public protocol AppRepositoryProtocol {
     func wish(message: String) -> Single<String>
     
     func getNotificationSetting() -> Single<NotificationSettings>
-    func setNotificationSetting(setting: NotificationSettings) -> Completable
+    func setActivitySetting(isOn: Bool) -> Completable
 }

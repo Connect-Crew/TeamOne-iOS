@@ -31,7 +31,7 @@ public struct UserDefaultKeyList {
     
     public struct Setting {
         public struct Notification {
-            @UserDefaultWrapper<Bool>(key: NotificationSettingType.activity.toName) public static var activity
+            @UserDefaultWrapper<Bool>(key: "activity") public static var activity
         }
     }
 }

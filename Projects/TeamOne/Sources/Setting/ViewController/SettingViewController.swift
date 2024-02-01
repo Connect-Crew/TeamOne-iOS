@@ -12,25 +12,24 @@ import RxSwift
 import RxCocoa
 import Then
 import DSKit
+import Domain
 
 final class SettingViewController: ViewController {
     
-    lazy var signOutAlert = ResultAlertView_Image_Title_Content_Alert(
+    lazy var logoutAlert = ResultAlertView_Image_Title_Content_Alert(
         image: .warnning,
         title: "로그아웃 하시겠습니까?",
         content: "",
         okButtonTitle: "확인",
         availableCancle: true,
-        resultSubject: signOutAlertResult
+        resultSubject: logoutResult
     )
     
     private let viewModel: SettingViewModel
     
     private let mainView = SettingMainView()
     
-    private let signOutAlertResult = PublishSubject<Bool>()
-    
-    private let appSettingTap = PublishRelay<SettingType.AppSettingType>()
+    private let logoutResult = PublishSubject<Bool>()
     
     // MARK: - LifeCycle
     
@@ -56,37 +55,45 @@ final class SettingViewController: ViewController {
     
     override func bind() {
         let input = SettingViewModel.Input(
-            viewDidLoad: rx.viewWillAppear.map { _ in () }.asObservable(),
+            viewDidLoad: rx.viewWillAppear.take(1).map { _ in () }.asObservable(),
             backButtonTap: mainView.backButtonTap,
-            appSettingTap: appSettingTap,
-            notificationSettingTap: mainView.notificationSettingTap
+            cellDidSelect: mainView.tableView.rx.itemSelected
+                .withUnretained(self)
+                .map { this, indexPath -> SettingCellType? in
+                    return this.mainView.dataSource?.itemIdentifier(for: indexPath)
+                }
+                .compactMap { $0 },
+            logoutTap: logoutResult.filter { $0 == true }.map { _ in () }
         )
         
         let output = viewModel.transform(input: input)
         
         mainView.bind(output: output)
-        bindAppSetting()
+        
+        let itemSelected = mainView.tableView.rx.itemSelected
+            .withUnretained(self)
+            .map { this, indexPath in
+                return this.mainView.dataSource?.itemIdentifier(for: indexPath)
+            }
+            .compactMap { $0 }
+        
+        bindAppSetting(itemSelectd: itemSelected)
+        
     }
     
-    private func bindAppSetting() {
-        
+    private func bindAppSetting(itemSelectd: Observable<SettingCellType>) {
+    
         // MARK: - Singout
-        mainView.appSettingTap
-            .filter { $0 == .signOut}
+        itemSelectd
+            .filter { $0 == .logout }
             .withUnretained(self)
             .map { this, _ in
-                this.signOutAlert
+                this.logoutAlert
             }
             .withUnretained(self)
             .bind(onNext: { this, alert in
                 this.presentResultAlertView_Image_Title_Content(source: this, alert: alert, darkbackground: true)
             })
-            .disposed(by: disposeBag)
-        
-        signOutAlertResult
-            .filter { $0 == true}
-            .map { _ in return .signOut }
-            .bind(to: appSettingTap)
             .disposed(by: disposeBag)
     }
 }

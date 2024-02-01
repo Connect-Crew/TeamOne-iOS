@@ -38,11 +38,11 @@ public struct AppRepository: AppRepositoryProtocol {
         }
     }
     
-    public func setNotificationSetting(setting: NotificationSettings) -> Completable {
+    public func setActivitySetting(isOn: Bool) -> Completable {
         
         return Completable.create { complete in
             
-            UserDefaultKeyList.Setting.Notification.activity = setting.activitySetting
+            UserDefaultKeyList.Setting.Notification.activity = isOn
             
             complete(.completed)
             

@@ -24,14 +24,6 @@ public final class Setting_Switch: UIView {
     
     private let controlSwitch = TOTogle(type: .small)
     
-    private lazy var contentView = UIStackView(arrangedSubviews: [
-        titleLabel,
-        controlSwitch
-    ]).then {
-        $0.spacing = 10
-        $0.alignment = .center
-    }
-    
     public init(title: String, isOn: Bool) {
         super.init(frame: .zero)
         
@@ -53,10 +45,24 @@ public final class Setting_Switch: UIView {
     
     private func initLayout() {
         
-        self.addSubview(contentView)
+        self.snp.makeConstraints {
+            $0.height.equalTo(40)
+        }
         
-        contentView.snp.makeConstraints {
-            $0.edges.equalToSuperview()
+        self.addSubview(titleLabel)
+        
+        titleLabel.snp.makeConstraints {
+            $0.top.bottom.leading.equalToSuperview()
+        }
+        
+        titleLabel.snp.contentHuggingHorizontalPriority = 750
+        controlSwitch.snp.contentHuggingHorizontalPriority = 745
+        
+        self.addSubview(controlSwitch)
+        controlSwitch.snp.makeConstraints {
+            $0.leading.equalTo(titleLabel)
+            $0.trailing.equalToSuperview()
+            $0.centerY.equalTo(titleLabel)
         }
     }
     

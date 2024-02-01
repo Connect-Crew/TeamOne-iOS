@@ -63,7 +63,7 @@ public class TOTogle: View {
         }
     }
     
-    private let backgroundButton = UIButton().then {
+    public let backgroundButton = UIButton().then {
         $0.isEnabled = true
     }
     

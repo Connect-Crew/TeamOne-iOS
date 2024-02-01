@@ -17,6 +17,8 @@ enum SettingNavigation {
     case logout
 }
 
+typealias SettingDataSource = [SettingSection: [SettingCellType]]
+
 final class SettingViewModel: ViewModel {
     
     let signOutUseCase: SignOutUseCase
@@ -29,93 +31,116 @@ final class SettingViewModel: ViewModel {
     struct Input {
         let viewDidLoad: Observable<Void>
         let backButtonTap: Observable<Void>
-        let appSettingTap: PublishRelay<AppSettingType>
-        let notificationSettingTap: PublishRelay<NotificationSettingType>
+        let cellDidSelect: Observable<SettingCellType>
+        let logoutTap: Observable<Void>
     }
     
     struct Output {
-        let notificationSetting: Driver<NotificationSettings>
+        let dataSource: Driver<[SettingDataSource]>
     }
     
     var disposeBag: DisposeBag = DisposeBag()
     
     let navigation = PublishSubject<SettingNavigation>()
     
-    let notificationSetting = BehaviorRelay<NotificationSettings>(value: NotificationSettings.isNotSet)
+    let dataSource = BehaviorRelay<[SettingDataSource]>(value: [])
     
     func transform(input: Input) -> Output {
         
-        transformFetchSetting(viewDidLoad: input.viewDidLoad)
-        transformSetNotificationSetting(tap: input.notificationSettingTap)
         transformBackButton(tap: input.backButtonTap)
-        transformAppSetting(setting: input.appSettingTap)
         
-        return Output(
-            notificationSetting: notificationSetting.asDriver()
-        )
-    }
-    
-    private func transformFetchSetting(viewDidLoad: Observable<Void>) {
-        viewDidLoad
+        input.viewDidLoad
             .withUnretained(self)
             .flatMap { this, _ in
-                this.appSettingUseCase.getNotificationSetting()
+                this.makeDataSource()
             }
-            .bind(to: notificationSetting)
+            .bind(to: dataSource)
             .disposed(by: disposeBag)
-    }
-    
-    private func transformSetNotificationSetting(
-        tap: PublishRelay<NotificationSettingType>
-    ) {
         
-        let activity = tap
-            .filter { $0 == .activity }
-        
-        activity
-                .withLatestFrom(notificationSetting) { _, setting in
-                    var toggled = setting
-                    toggled.activitySetting.toggle()
-                    
-                    return toggled
-                }
-                .withUnretained(self)
-                .flatMap { this, setting in
-                    this.appSettingUseCase.setNotificationSetting(setting: setting)
-                        .do(onCompleted: {
-                            this.notificationSetting.accept(setting)
-                        })
-                }
-                .subscribe(onNext: { _ in })
-                .disposed(by: disposeBag)
-    }
-    
-    private func transformAppSetting(
-        setting: PublishRelay<AppSettingType>
-    ) {
-        
-        // SignOut
-        setting
-            .filter({ $0 == .signOut })
+        input.cellDidSelect
             .withUnretained(self)
-            .flatMap { this, _ in
-                this.signOutUseCase.signOut()
-                    .catch { error in
-                        print("DEBUG: printError1\(error)")
-                        return .never()
-                    }
-            }
-            .subscribe(onNext: { [weak self] in
-                print("DEBUG: Logout")
-                self?.navigation.onNext(.logout)
+            .subscribe(onNext: { this, type in
+                switch type {
+                case .activityNotification(let isOn):
+                    this.updateActivity(current: isOn)
+                case .dropout: break
+                case .logout: break
+                case .privacyPolicy: break
+                case .termsOfService: break
+                }
             })
             .disposed(by: disposeBag)
+        
+        input.logoutTap
+            .subscribe(onNext: { [weak self] in
+                self?.logout()
+            })
+            .disposed(by: disposeBag)
+        
+        return Output(
+            dataSource: dataSource.asDriver()
+        )
     }
     
     private func transformBackButton(tap: Observable<Void>) {
         tap
             .map { .back }
             .bind(to: navigation)
+            .disposed(by: disposeBag)
+    }
+}
+
+extension SettingViewModel {
+    
+    private func makeDataSource() -> Observable<[SettingDataSource]> {
+        let notificationSetings = fetchNotificationSettings().map { [$0] }
+        
+        let rowData = Observable.of([
+            makePolicySetting(),
+            makeAppSetting()
+        ])
+        
+        return Observable.zip(notificationSetings, rowData)
+            .map { $0.0 + $0.1 }
+    }
+    
+    private func fetchNotificationSettings() -> Observable<SettingDataSource> {
+        return appSettingUseCase.getNotificationSetting()
+            .asObservable()
+            .withUnretained(self)
+            .map { this, setting -> SettingDataSource in
+                return [.notification: [.activityNotification(setting.activitySetting)]]
+            }
+    }
+    
+    private func makePolicySetting() -> SettingDataSource {
+        return [.policy: [.termsOfService, .privacyPolicy]]
+    }
+    
+    private func makeAppSetting() -> SettingDataSource {
+        return [.app: [.logout, .dropout]]
+    }
+    
+    private func updateActivity(current: Bool) {
+        appSettingUseCase.setActivitySetting(isOn: !current)
+            .do(afterCompleted: { [weak self] in
+                
+                guard let self = self else { return }
+                
+                self.makeDataSource()
+                    .bind(to: self.dataSource)
+                    .disposed(by: self.disposeBag)
+            })
+            .subscribe(onCompleted: { })
+            .disposed(by: disposeBag)
+    }
+    
+    private func logout() {
+        signOutUseCase.signOut()
+            .asObservable()
+            .subscribe(onNext: { [weak self] _ in
+                self?.navigation.onNext(.logout)
+            })
             .disposed(by: disposeBag)
     }
 }
