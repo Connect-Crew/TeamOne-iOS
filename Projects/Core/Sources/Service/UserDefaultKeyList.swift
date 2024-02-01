@@ -28,4 +28,29 @@ public struct UserDefaultKeyList {
     public struct RecentSearchHistory {
         @UserDefaultWrapper<[String]>(key: "searchRecentHistory") public static var searchRecentHistory
     }
+    
+    public struct Setting {
+        public struct Notification {
+            @UserDefaultWrapper<Bool>(key: "activity") public static var activity
+        }
+    }
+}
+
+extension UserDefaultKeyList {
+    public static func clearAllUserData() {
+        UserDefaultKeyList.Auth.appAccessToken = nil
+        UserDefaultKeyList.Auth.appRefreshToken = nil
+        UserDefaultKeyList.Auth.appLoginSocial = nil
+        UserDefaultKeyList.User.id = nil
+        UserDefaultKeyList.User.nickname = nil
+        UserDefaultKeyList.User.profileImageURL = nil
+        UserDefaultKeyList.User.introduction = nil
+        UserDefaultKeyList.User.temperature = nil
+        UserDefaultKeyList.User.responseRate = nil
+        UserDefaultKeyList.RecentSearchHistory.searchRecentHistory = nil
+    }
+    
+    public static func clearAllSetting() {
+        UserDefaultKeyList.Setting.Notification.activity = nil
+    }
 }

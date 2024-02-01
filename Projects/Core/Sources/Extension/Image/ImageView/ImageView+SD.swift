@@ -34,6 +34,12 @@ public extension UIImageView {
         }
     }
     
+    /**
+     여러 Path를 활용해 이미지를 가져옵니다
+     - Parameters:
+        - path: [String] 통신 후 가져온 String 배열입니다.
+        - completion: 이미지 다운로드가 완료된 후 실행할 콜백함수입니다.
+     */
     static func pathToImage(path: [String?], completion: @escaping ([UIImage?]) -> Void) {
         
         Loading.start(stopTouch: false)

@@ -8,6 +8,8 @@
 
 import UIKit
 
+/// 라벨에 여백을 적용한 커스텀 라벨입니다.
+/// textInsets에 UIEdgeInsets를 설정합니다.
 public class PaddingLabel: UILabel {
     
     public var textInsets = UIEdgeInsets.zero {

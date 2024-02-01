@@ -11,6 +11,12 @@ import RxSwift
 import RxKeyboard
 
 public extension UIView {
+    
+    /**
+     뷰가 키보드에의해 가려질 경우 뷰의 바텀을 키보드의 상단에 맞춥니다
+     - Parameters:
+        - disposeBag: 원하는 뷰의 disposeBag
+     */
     func adjustForKeyboard(disposeBag: DisposeBag) {
         RxKeyboard.instance.visibleHeight
             .drive(onNext: { [unowned self] keyboardVisibleHeight in

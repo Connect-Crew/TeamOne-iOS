@@ -118,7 +118,7 @@ final class LoginMainViewModel: ViewModel {
 
                 print("발급받은 토큰 token in kakao: \(oAuthToken.accessToken)")
 
-                return (token: oAuthToken.accessToken ?? "", name: nil, email: nil)
+                return (token: oAuthToken.accessToken, name: nil, email: nil)
             }
             .withUnretained(self)
             .flatMap { viewModel, data in

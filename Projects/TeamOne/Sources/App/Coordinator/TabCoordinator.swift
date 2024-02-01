@@ -61,6 +61,9 @@ final class TabCoordinator: BaseCoordinator<TabCoordinatorResult> {
         setup()
 
         return finish
+            .do(onNext: { [weak self] _ in
+                self?.pop(animated: true)
+            })
     }
 
     private func setup() {
@@ -121,8 +124,11 @@ final class TabCoordinator: BaseCoordinator<TabCoordinatorResult> {
         let coordinator = ProfileCoordinator(root)
         
         coordinate(to: coordinator)
-            .subscribe(onNext: { _ in
-                
+            .subscribe(onNext: { [weak self] in
+                switch $0 {
+                case .finish:
+                    self?.finish.onNext(.finish)
+                }
             })
             .disposed(by: disposeBag)
     }

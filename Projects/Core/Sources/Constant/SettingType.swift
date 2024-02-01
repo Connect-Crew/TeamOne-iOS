@@ -21,5 +21,4 @@ public enum SettingType: CaseIterable {
             return "고객센터"
         }
     }
-    
 }

@@ -9,12 +9,17 @@
 import UIKit
 
 public extension UILabel {
-    @discardableResult
-    func setLabel(text: String, typo: SansNeo, color: UIColor) -> Self {
+    
+    /**
+     Label을 설정합니다
+     - Parameters :
+        - text: String
+        - type: Font
+        - color: TextColor
+     */
+    func setLabel(text: String, typo: SansNeo, color: UIColor) {
         self.text = text
         self.font = .setFont(font: typo)
         self.textColor = color
-
-        return self
     }
 }
