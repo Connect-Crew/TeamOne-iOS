@@ -37,7 +37,7 @@ public struct AuthDataSource: AuthDataSourceProtocol {
     }
 
     public func signup(_ request: AuthRegisterRequestDTO) -> Single<AuthResponseResponseDTO> {
-        return provider.request(AuthTarget.register(requst: request))
+        return provider.requestNoInterceptor(AuthTarget.register(requst: request))
     }
 
     public func reissuance() -> Single<AuthRefreshResponseDTO> {

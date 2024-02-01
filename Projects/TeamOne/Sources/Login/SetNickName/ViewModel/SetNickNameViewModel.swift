@@ -52,20 +52,19 @@ final class SetNickNameViewModel: ViewModel {
     func transform(input: Input) -> Output {
 
         input.nickname
-            .subscribe(onNext: { [weak self] nickname in
+            .withUnretained(self)
+            .subscribe(onNext: { this, nickname in
 
-                if nickname.count < 2 {
-                    self?.isEnabled.onNext(false)
-                    self?.errorText.onNext("")
+                if nickname.count >= 2 && this.validate(nickName: nickname) {
+                    this.isEnabled.onNext(true)
+                    this.errorText.onNext("")
                 } else {
-                    if let result = self?.validate(nickName: nickname) {
-                        if result {
-                            self?.isEnabled.onNext(true)
-                            self?.errorText.onNext("")
-                        } else {
-                            self?.isEnabled.onNext(false)
-                            self?.errorText.onNext("특수문자는 포함될 수 없어요")
-                        }
+                    if nickname.count < 2 {
+                        this.errorText.onNext("닉네임은 2글자 이상이어야합니다.")
+                        this.isEnabled.onNext(false)
+                    } else if this.validate(nickName: nickname) == false || nickname.contains(" ") {
+                        this.errorText.onNext("공백과 특수문자는 들어갈 수 없어요.")
+                        this.isEnabled.onNext(false)
                     }
                 }
             })
@@ -86,8 +85,23 @@ final class SetNickNameViewModel: ViewModel {
 
                 return auth
             }
-            .flatMap {
-                self.signUpUseCase.signUp(signUpProps: $0)
+            .withUnretained(self)
+            .flatMap { this, auth in
+                self.signUpUseCase.signUp(signUpProps: auth)
+                    .catch { error in
+                        
+                        if let error = error as? APIError {
+                            switch error {
+                            case .network(_, let message):
+                                this.errorText.onNext(message)
+                                return .never()
+                            default:
+                                return .never()
+                            }
+                        }
+                        
+                        return .never()
+                    }
             }
             .subscribe(onNext: { bool in
                 if bool { self.navigation.onNext(.finish) }
