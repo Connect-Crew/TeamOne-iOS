@@ -9,7 +9,9 @@
 import RxSwift
 
 public extension ObservableType {
-    public func asResult() -> Observable<Result<Element, Error>> {
+    
+    /// 옵저버블 타입을 옵저버블 리절트 타입으로 변경합니다.
+    func asResult() -> Observable<Result<Element, Error>> {
         return self.map { .success($0) }
             .catch { .just(.failure($0)) }
     }

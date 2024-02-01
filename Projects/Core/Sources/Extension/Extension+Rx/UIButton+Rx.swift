@@ -12,6 +12,7 @@ import RxCocoa
 
 extension Reactive where Base: UIButton {
     
+    /// Reactive Rapper for `isSelected` property
     public var isSelected: ControlProperty<Bool> {
         return base.rx.controlProperty(editingEvents: .touchUpInside, getter: { button in
             return button.isSelected
