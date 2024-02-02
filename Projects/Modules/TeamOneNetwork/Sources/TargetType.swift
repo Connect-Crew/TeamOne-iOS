@@ -33,6 +33,7 @@ public extension TargetType {
         urlRequest.headers = header
 
         switch parameters {
+            
         case let .query(request):
             let params = request?.toDictionary() ?? [:]
             var components = URLComponents(string: url.appendingPathComponent(path).absoluteString)
@@ -40,9 +41,16 @@ public extension TargetType {
             components?.queryItems = queryParams
             urlRequest.url = components?.url
             return urlRequest
+            
         case let .body(request):
             let params = request?.toDictionary() ?? [:]
             urlRequest.httpBody = try JSONSerialization.data(withJSONObject: params, options: [])
+            return try encoding.encode(urlRequest, with: params)
+            
+        case let .plainText(request):
+            let params = request?.toDictionary() ?? [:]
+            
+            
             return try encoding.encode(urlRequest, with: params)
         case .none:
             return urlRequest
@@ -80,4 +88,5 @@ public extension TargetType {
 public enum RequestParams {
     case query(_ parameter: Encodable?)
     case body(_ parameter: Encodable?)
+    case plainText(_ parameter: Encodable?)
 }
