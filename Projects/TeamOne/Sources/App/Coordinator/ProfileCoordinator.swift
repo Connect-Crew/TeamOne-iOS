@@ -36,6 +36,8 @@ final class ProfileCoordinator: BaseCoordinator<ProfileCoordinatorResult> {
                     break
                 case .setting:
                     this.showSetting()
+                case .myProject:
+                    this.showMyProject()
                 }
             })
             .disposed(by: disposeBag)
@@ -57,5 +59,25 @@ final class ProfileCoordinator: BaseCoordinator<ProfileCoordinatorResult> {
                 }
             })
             .disposed(by: disposeBag)
+    }
+    
+    func showMyProject() {
+        let viewModel = MyProjectViewModel()
+        
+        viewModel.navigation
+            .withUnretained(self)
+            .subscribe(onNext: { this, navi in
+                switch navi {
+                case .finish:
+                    break
+                case .back:
+                    this.popTabbar(animated: true)
+                }
+            })
+            .disposed(by: disposeBag)
+        
+        let viewController = Inject.ViewControllerHost(MyProjectVC(viewModel: viewModel))
+        
+        pushTabbar(viewController, animated: true)
     }
 }

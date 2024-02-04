@@ -220,7 +220,7 @@ public enum DSKitImage {
             return "homeWriteButton"
             
         case .categoryall:
-            return "category.all"
+            return "category.fill.all"
         case .categorycustomerservice:
             return "category.customerservice"
         case .categorydesign:
