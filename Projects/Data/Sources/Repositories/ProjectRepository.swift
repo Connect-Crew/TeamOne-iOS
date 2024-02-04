@@ -13,7 +13,7 @@ import TeamOneNetwork
 import Core
 
 public struct ProjectRepository: ProjectRepositoryProtocol {
-
+    
     let projectDataSource: ProjectsDataSouceProtocol
 
     public init(projectDataSource: ProjectsDataSouceProtocol) {
@@ -118,6 +118,11 @@ public struct ProjectRepository: ProjectRepositoryProtocol {
     public func updateState(projectId: Int, state: ProjectState) -> Single<Void> {
         
         return projectDataSource.updateState(projectId: projectId, state: state.toMultiPartValue())
+    }
+    
+    public func getMyProjects() -> Single<[MyProjects]> {
+        return projectDataSource.getMyProjects()
+            .map { $0.map { $0.toDomain() } }
     }
 }
 

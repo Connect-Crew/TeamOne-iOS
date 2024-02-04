@@ -345,6 +345,12 @@ extension AppDelegate {
 
             return viewModel
         }
+        
+        container.register(interface: GetMyProjectUseCase.self) { res in
+            return GetMyProject(
+                getMyProjectsRepository: res.resolve(ProjectRepositoryProtocol.self)!
+            )
+        }
 
     }
 }
