@@ -34,4 +34,6 @@ public protocol ProjectRepositoryProtocol {
     func getApplies(projectId: Int, part: String) -> Single<[Applies]>
     
     func updateState(projectId: Int, state: ProjectState) -> Single<Void>
+    
+    func getMyProjects() -> Single<[MyProjects]>
 }

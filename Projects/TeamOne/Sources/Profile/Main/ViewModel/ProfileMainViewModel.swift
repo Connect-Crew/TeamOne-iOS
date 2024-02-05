@@ -16,12 +16,14 @@ import Core
 enum ProfileNavigation {
     case finish
     case setting
+    case myProject
 }
 
 final class ProfileMainViewModel: ViewModel {
     
     struct Input {
         let tapSetting: Observable<SettingType>
+        let tapMyProfile: Observable<MyProjectType>
     }
     
     struct Output {
@@ -34,6 +36,7 @@ final class ProfileMainViewModel: ViewModel {
     func transform(input: Input) -> Output {
         
         transformTapSetting(tap: input.tapSetting)
+        transformTapMyProject(input.tapMyProfile)
         
         return Output()
     }
@@ -44,6 +47,22 @@ final class ProfileMainViewModel: ViewModel {
         tapSetting
             .map { _ in return .setting }
             .bind(to: navigation)
+            .disposed(by: disposeBag)
+    }
+    
+    func transformTapMyProject(_ input: Observable<MyProjectType>) {
+        input
+            .withUnretained(self)
+            .subscribe(onNext: { this, type in
+                switch type {
+                case .myProject:
+                    this.navigation.onNext(.myProject)
+                case .submittedProject:
+                    break
+                case .favoriteProject:
+                    break
+                }
+            })
             .disposed(by: disposeBag)
     }
 }

@@ -39,6 +39,8 @@ public protocol ProjectsDataSouceProtocol {
     func getApplies(request: GetAppliesRequestDTO) -> Single<[GetAppliesResponseDTO]>
     
     func updateState(projectId: Int, state: String) -> Single<Void>
+    
+    func getMyProjects() -> Single<[MyProjectsResponseDTO]>
 }
 
 public struct ProjectsDataSource: ProjectsDataSouceProtocol {
@@ -286,6 +288,10 @@ public struct ProjectsDataSource: ProjectsDataSouceProtocol {
     public func updateState(projectId: Int, state: String) -> Single<Void> {
         return provider.request(ProjectsTarget.updateState(projectId: projectId, state: state))
     }
+    
+    public func getMyProjects() -> Single<[MyProjectsResponseDTO]> {
+        return provider.request(ProjectsTarget.getMyProjects)
+    }
 }
 extension NetworkConstant {
     static let projectBasedURLString: String = "http://teamone.kro.kr:9080"
@@ -293,6 +299,7 @@ extension NetworkConstant {
 
 enum ProjectsTarget {
     case baseInformation
+    case getMyProjects
     case list(request: ProjectListRequestDTO)
     case like(request: ProjectFavoriteRequestDTO)
     case project(projectId: Int)
@@ -313,7 +320,7 @@ extension ProjectsTarget: TargetType {
     
     var method: HTTPMethod {
         switch self {
-        case .list, .project, .baseInformation, .members, .listAllApplicationsForProject, .getApplies:
+        case .list, .project, .baseInformation, .members, .listAllApplicationsForProject, .getApplies, .getMyProjects:
             return .get
         case .like, .apply, .createProject, .report, .updateState:
             return .post
@@ -330,6 +337,8 @@ extension ProjectsTarget: TargetType {
     
     var parameters: RequestParams? {
         switch self {
+        case .getMyProjects:
+            return .none
         case .baseInformation:
             return .none
         case let .list(request: request):
@@ -359,11 +368,14 @@ extension ProjectsTarget: TargetType {
             return JSONEncoding.default
         case .createProject:
             return JSONEncoding.default
+        case .getMyProjects:
+            return JSONEncoding.default
         }
     }
     
     var path: String {
         switch self {
+        case .getMyProjects: return "/project/mylist"
         case .baseInformation: return "/project/"
         case .list: return "/project/list"
         case .like: return "/project/favorite"
