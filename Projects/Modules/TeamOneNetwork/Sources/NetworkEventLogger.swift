@@ -16,14 +16,30 @@ struct NetworkEventLogger: EventMonitor {
     func requestDidFinish(_ request: Request) {
         print("🛰 NETWORK Reqeust LOG")
         print(request.description)
-
+        
+        let url = request.request?.url?.absoluteString ?? ""
+        let method = request.request?.httpMethod ?? ""
+        let headers = "\(request.request?.allHTTPHeaderFields ?? [:])"
+        var requestBodyString = "nil"
+        var requestBodyJson: [String: Any] = [:]
+        
+        // httpBody를 문자열로 변환하여 출력
+        if let httpBody = request.request?.httpBody {
+            if let json = try? JSONSerialization.jsonObject(with: httpBody, options: []) as? [String: Any] {
+                requestBodyJson = json
+            } else if let string = String(data: httpBody, encoding: .utf8) {
+                requestBodyString = string
+            }
+        }
+        
+        
         print(
-            "URL: " + (request.request?.url?.absoluteString ?? "") + "\n"
-                + "Method: " + (request.request?.httpMethod ?? "") + "\n"
-                + "Headers: " + "\(request.request?.allHTTPHeaderFields ?? [:])" + "\n"
+            "URL: \(url)\n"
+            + "Method: \(method)\n"
+            + "Headers: \(headers)\n"
+            + "RequestBodyString: \(requestBodyString)\n"
+            + "RequestBodyJson: \(requestBodyJson)"
         )
-        print("Authorization: " + (request.request?.headers["Authorization"] ?? ""))
-        print("Body: " + (request.request?.httpBody?.toPrettyPrintedString ?? ""))
     }
 
     func request<Value>(_ request: DataRequest, didParseResponse response: DataResponse<Value, AFError>) {

@@ -46,6 +46,10 @@ final class MemberListCell: UICollectionViewCell, CellIdentifiable {
         $0.isEnabled = false
     }
     
+    private let labelPartString = UILabel().then {
+        $0.setLabel(text: "역할", typo: .caption2, color: .teamOne.mainColor)
+    }
+    
     private let labelPart = UILabel().then {
         $0.setLabel(text: "트린다미어", typo: .caption2, color: .teamOne.grayscaleFive)
     }
@@ -58,16 +62,7 @@ final class MemberListCell: UICollectionViewCell, CellIdentifiable {
         $0.setLabel(text: "대표 프로젝트", typo: .caption2, color: .teamOne.grayscaleFive)
     }
     
-    private lazy var collectionViewRepresentProject = UICollectionView(
-        frame: .zero,
-        collectionViewLayout: createCollectionViewLayout()
-    ).then {
-        $0.register(
-            RepresentProjectCell.self,
-            forCellWithReuseIdentifier: RepresentProjectCell.identifier
-        )
-        $0.dataSource = self
-    }
+    private lazy var collectionViewRepresentProject = RepresentProjectCollectionView()
     
     private let emtpyView = View_EmptyRepresentProject()
     
@@ -82,8 +77,10 @@ final class MemberListCell: UICollectionViewCell, CellIdentifiable {
     
     private lazy var profileCenterStackView = UIStackView(arrangedSubviews: [
         makeHorizontalStackView(
-            subviews: [labelName, imageViewHoney, labelIsLeader, UIView()]),
-        labelPart,
+            subviews: [labelName, imageViewHoney, labelIsLeader, UIView()],
+            spacing: 5),
+        makeHorizontalStackViewLeading(subviews: [labelPartString, labelPart, UIView()],
+                                spacing: 3),
         labelIntroduce,
         UIView()
     ]).then {
@@ -140,7 +137,10 @@ final class MemberListCell: UICollectionViewCell, CellIdentifiable {
     private var type: MemberListCellType?
     private var member: ProjectMember?
     
-    var representProjectTap = PublishRelay<RepresentProject>()
+    var representProjectTap: Observable<RepresentProject> {
+        return collectionViewRepresentProject.didSelectCell
+            .map { RepresentProject(id: $0.id, thumbnail: $0.thumbnail) }
+    }
     var expelMemberSelected = PublishRelay<ProjectMember>()
     
     override init(frame: CGRect) {
@@ -158,6 +158,9 @@ final class MemberListCell: UICollectionViewCell, CellIdentifiable {
         
         initSettingLayout()
         bind()
+        let representProjects = member.profile.representProjects.map { DSRepresentProject(id: $0.id, thumbnail: $0.thumbnail) }
+        collectionViewRepresentProject.setProjects(projects: representProjects)
+        
     }
     
     private func initSettingLayout() {
@@ -171,7 +174,6 @@ final class MemberListCell: UICollectionViewCell, CellIdentifiable {
         self.labelIsLeader.isHidden = !member.isLeader
         self.labelPart.text = member.parts.joined(separator: ",")
         self.labelIntroduce.text = member.profile.introduction
-        self.emtpyView.isHidden = !member.profile.representProjects.isEmpty
         
         switch type {
         case .member:
@@ -225,12 +227,6 @@ final class MemberListCell: UICollectionViewCell, CellIdentifiable {
         collectionViewRepresentProject.snp.makeConstraints {
             $0.height.equalTo(60)
         }
-        
-        self.contentView.addSubview(emtpyView)
-        
-        emtpyView.snp.makeConstraints {
-            $0.edges.equalTo(collectionViewRepresentProject)
-        }
     }
     
     private func bind() {
@@ -248,44 +244,22 @@ final class MemberListCell: UICollectionViewCell, CellIdentifiable {
             .disposed(by: disposeBag)
     }
     
-    private func createCollectionViewLayout() -> UICollectionViewCompositionalLayout {
-        let layout = UICollectionViewCompositionalLayout { (sectionIndex, layoutEnvironment) -> NSCollectionLayoutSection? in
-            
-            let itemSize = NSCollectionLayoutSize(
-                widthDimension: .fractionalWidth(1/3),
-                heightDimension: .absolute(60)
-            )
-            
-            let item = NSCollectionLayoutItem(layoutSize: itemSize)
-
-            let groupSize = NSCollectionLayoutSize(
-                widthDimension: .fractionalWidth(1),
-                heightDimension: .absolute(60)
-            )
-            
-            let group = NSCollectionLayoutGroup.horizontal(
-                layoutSize: groupSize, 
-                subitem: item,
-                count: 3
-            )
-            
-            group.interItemSpacing = NSCollectionLayoutSpacing.fixed(16)
-
-            let section = NSCollectionLayoutSection(group: group)
-            
-            return section
-        }
-        return layout
-    }
-    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    private func makeHorizontalStackView(subviews: [UIView]) -> UIStackView {
+    private func makeHorizontalStackView(subviews: [UIView], spacing: CGFloat) -> UIStackView {
         return UIStackView(arrangedSubviews: subviews)
             .then {
-                $0.spacing = 5
+                $0.spacing = spacing
+            }
+    }
+    
+    private func makeHorizontalStackViewLeading(subviews: [UIView], spacing: CGFloat) -> UIStackView {
+        return UIStackView(arrangedSubviews: subviews)
+            .then {
+                $0.spacing = spacing
+                $0.alignment = .leading
             }
     }
     
@@ -294,44 +268,5 @@ final class MemberListCell: UICollectionViewCell, CellIdentifiable {
         
         self.disposeBag = DisposeBag()
         self.imageViewProfile.image = .image(dsimage: .baseProfile)
-    }
-}
-
-extension MemberListCell: UICollectionViewDataSource {
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        
-        guard let member = member else { return 0 }
-        
-        return member.profile.representProjects.count
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(
-            withReuseIdentifier: RepresentProjectCell.identifier,
-            for: indexPath
-        ) as? RepresentProjectCell,
-              let project = member?.profile.representProjects[indexPath.row] 
-        else {
-            return UICollectionViewCell()
-        }
-        
-        let dsProject = DSRepresentProject(
-            id: project.id,
-            thumbnail: project.thumbnail
-        )
-        
-        cell.setProject(project: dsProject)
-        
-        cell.representImageViewTap
-            .map {
-                RepresentProject(
-                    id: $0.id,
-                    thumbnail: $0.thumbnail
-                )
-            }
-            .bind(to: representProjectTap)
-            .disposed(by: cell.disposeBag)
-        
-        return cell
     }
 }

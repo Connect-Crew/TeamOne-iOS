@@ -17,7 +17,7 @@ public protocol UserDataSourceProtocol {
     
     func approve(applyId: Int) -> Single<Void>
     
-    func reject(applyId: Int) -> Single<Void>
+    func reject(applyId: Int, message: String) -> Single<Void>
 }
 
 public struct UserDataSource: UserDataSourceProtocol {
@@ -33,11 +33,11 @@ public struct UserDataSource: UserDataSourceProtocol {
     }
     
     public func approve(applyId: Int) -> Single<Void> {
-        return provider.request(UserTarget.approve(applyId: applyId))
+        return provider.request(UserTarget.approve(applyId: applyId, leaderMessage: "Approved"))
     }
     
-    public func reject(applyId: Int) -> Single<Void> {
-        return provider.request(UserTarget.approve(applyId: applyId))
+    public func reject(applyId: Int, message: String) -> Single<Void> {
+        return provider.request(UserTarget.reject(applyId: applyId, leaderMessage: message))
     }
 }
 
@@ -47,8 +47,8 @@ extension NetworkConstant {
 
 enum UserTarget {
     case myProfile
-    case approve(applyId: Int)
-    case reject(applyId: Int)
+    case approve(applyId: Int, leaderMessage: String?)
+    case reject(applyId: Int, leaderMessage: String)
 }
 
 extension UserTarget: TargetType {
@@ -69,7 +69,8 @@ extension UserTarget: TargetType {
         switch self {
         case .myProfile:
             return ["Authorization": "Bearer \(UserDefaultKeyList.Auth.appAccessToken ?? "")"]
-        
+        case .approve:
+            return []
         default:
             return []
         }
@@ -79,8 +80,10 @@ extension UserTarget: TargetType {
         switch self {
         case .myProfile:
             return "/user/myprofile"
-        case .approve(let applyId): return "/project/apply/\(applyId)/accept"
-        case .reject(let applyId): return "/project/apply/\(applyId)/reject"
+        case .approve(let applyId, _ ):
+            return "/project/apply/\(applyId)/accept"
+        case .reject(let aaplyId, _):
+            return "/project/apply/\(aaplyId)/reject"
         }
     }
 
@@ -88,8 +91,10 @@ extension UserTarget: TargetType {
         switch self {
         case .myProfile:
             return .none
-        case .approve, .reject:
-            return .body(["leaderMessage"])
+        case .approve(_, let message):
+            return .plainText(["message": message])
+        case .reject(_, let message):
+            return .plainText(["message": message])
         }
     }
 
@@ -98,7 +103,7 @@ extension UserTarget: TargetType {
         case .myProfile:
             return URLEncoding.default
         case .approve, .reject:
-            return JSONEncoding.default
+            return PlainTextEncoding.default
         }
     }
 }

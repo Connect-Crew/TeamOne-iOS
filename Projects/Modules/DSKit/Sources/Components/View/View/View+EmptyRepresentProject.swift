@@ -35,8 +35,7 @@ public class View_EmptyRepresentProject: UIView {
         self.addSubview(emtpyLabel)
         
         emtpyLabel.snp.makeConstraints {
-            $0.centerY.equalToSuperview()
-            $0.leading.trailing.equalToSuperview()
+            $0.center.equalToSuperview()
         }
     }
 }

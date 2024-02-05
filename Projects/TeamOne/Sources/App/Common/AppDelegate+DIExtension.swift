@@ -345,12 +345,18 @@ extension AppDelegate {
 
             return viewModel
         }
-        
+      
         container.register(interface: GetMyProjectUseCase.self) { res in
             return GetMyProject(
                 getMyProjectsRepository: res.resolve(ProjectRepositoryProtocol.self)!
             )
         }
 
+      // MARK: - Listener
+        
+        container.register(interface: AuthExpiredListener.self, implement: { _ in
+            return AppListener.shared
+        })
+      
     }
 }

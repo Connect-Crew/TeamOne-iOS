@@ -144,7 +144,7 @@ final class IntroduceRecuritStatusView: View {
             
             if data.max > data.current { state = .appliable }
             
-            if isAppliableProject == false { state = .allPartQuotafull }
+            if data.isQuotaFull == true { state = .allPartQuotafull }
 
             let labelCategory = UILabel().then {
                 $0.setLabel(text: data.category, typo: .caption2, color: state.categoryTextColor)

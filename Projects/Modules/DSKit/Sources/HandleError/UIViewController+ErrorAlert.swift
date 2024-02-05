@@ -48,24 +48,9 @@ public extension UIViewController {
             availableCancle: false,
             resultSubject: finishSubject
         )
-        
+        // TODO: - 리프레시 오류인경우 로그아웃 처리 
         if let error = error as? APIError {
-            
-            switch error {
-                
-            case .network:
-                alert.content = error.errorDescription ?? ""
-                
-            case .notToken:
-                alert.content = error.errorDescription ?? ""
-                
-            case .decodingError:
-                alert.content = error.errorDescription ?? ""
-                
-            case .unknown:
-                alert.content = error.errorDescription ?? ""
-
-            }
+            alert.content = error.errorDescription ?? ""
         } else {
             alert.content = "알 수 없는 에러\n고객센터로 문의해주세요"
         }

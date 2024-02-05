@@ -44,6 +44,18 @@ open class BaseCoordinator<ResultType> {
                 self?.remove(coordinator: coordinator)
             })
     }
+    
+    public func removeAllChildCoordinatorsWithRecursion() {
+        childCoordinators.forEach { key, value in
+            if let coordinator = value as? BaseCoordinator<Any> {
+                coordinator.removeAllChildCoordinatorsWithRecursion()
+            }
+        }
+        
+        navigationController.viewControllers = []
+        childCoordinators.removeAll()
+
+    }
 
     // MARK: - Push ∙ Pop
 
@@ -107,6 +119,10 @@ open class BaseCoordinator<ResultType> {
             hidden,
             animated: animated
         )
+    }
+    
+    deinit {
+        print("Deinit \(type(of: self))")
     }
 
 }
