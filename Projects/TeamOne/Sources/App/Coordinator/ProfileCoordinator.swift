@@ -11,6 +11,7 @@ import RxSwift
 import Inject
 
 import Core
+import Domain
 
 enum ProfileCoordinatorResult {
     case finish
@@ -62,7 +63,9 @@ final class ProfileCoordinator: BaseCoordinator<ProfileCoordinatorResult> {
     }
     
     func showMyProject() {
-        let viewModel = MyProjectViewModel()
+        let viewModel = MyProjectViewModel(
+            getMyProjectsUseCase: DIContainer.shared.resolve(GetMyProjectUseCase.self)
+        )
         
         viewModel.navigation
             .withUnretained(self)
