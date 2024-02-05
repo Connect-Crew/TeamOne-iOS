@@ -82,8 +82,8 @@ extension UserTarget: TargetType {
             return "/user/myprofile"
         case .approve(let applyId, _ ):
             return "/project/apply/\(applyId)/accept"
-        case .reject(let applyId): 
-            return "/project/apply/\(applyId)/reject"
+        case .reject(let aaplyId, _):
+            return "/project/apply/\(aaplyId)/reject"
         }
     }
 
