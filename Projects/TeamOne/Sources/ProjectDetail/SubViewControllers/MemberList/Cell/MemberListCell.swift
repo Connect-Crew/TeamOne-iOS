@@ -46,6 +46,10 @@ final class MemberListCell: UICollectionViewCell, CellIdentifiable {
         $0.isEnabled = false
     }
     
+    private let labelPartString = UILabel().then {
+        $0.setLabel(text: "역할", typo: .caption2, color: .teamOne.mainColor)
+    }
+    
     private let labelPart = UILabel().then {
         $0.setLabel(text: "트린다미어", typo: .caption2, color: .teamOne.grayscaleFive)
     }
@@ -73,8 +77,10 @@ final class MemberListCell: UICollectionViewCell, CellIdentifiable {
     
     private lazy var profileCenterStackView = UIStackView(arrangedSubviews: [
         makeHorizontalStackView(
-            subviews: [labelName, imageViewHoney, labelIsLeader, UIView()]),
-        labelPart,
+            subviews: [labelName, imageViewHoney, labelIsLeader, UIView()],
+            spacing: 5),
+        makeHorizontalStackViewLeading(subviews: [labelPartString, labelPart, UIView()],
+                                spacing: 3),
         labelIntroduce,
         UIView()
     ]).then {
@@ -242,10 +248,18 @@ final class MemberListCell: UICollectionViewCell, CellIdentifiable {
         fatalError("init(coder:) has not been implemented")
     }
     
-    private func makeHorizontalStackView(subviews: [UIView]) -> UIStackView {
+    private func makeHorizontalStackView(subviews: [UIView], spacing: CGFloat) -> UIStackView {
         return UIStackView(arrangedSubviews: subviews)
             .then {
-                $0.spacing = 5
+                $0.spacing = spacing
+            }
+    }
+    
+    private func makeHorizontalStackViewLeading(subviews: [UIView], spacing: CGFloat) -> UIStackView {
+        return UIStackView(arrangedSubviews: subviews)
+            .then {
+                $0.spacing = spacing
+                $0.alignment = .leading
             }
     }
     
