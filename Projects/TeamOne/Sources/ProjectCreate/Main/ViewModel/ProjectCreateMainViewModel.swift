@@ -789,13 +789,10 @@ final class ProjectCreateMainViewModel: ViewModel {
                     
                     if let index = props.recruits.firstIndex(of: recurit) {
                         if props.recruits[index].max > 1 {
-                            if let target = self.modifyTargetProject?.recruitStatus.firstIndex(where: { $0.part == props.recruits[index].part }) {
-                                
-                                if self.modifyTargetProject?.recruitStatus[target].current ?? 0 > props.recruits[index].max - 1 {
-                                 
+                            if let target = self.modifyTargetProject?.recruitStatus.firstIndex(where:  { $0.part == props.recruits[index].part}) {
+                                if self.modifyTargetProject?.recruitStatus[target].current ?? 0 <= props.recruits[index].max - 1 {
                                     props.recruits[index].max -= 1
                                 }
-                                
                             }
                         }
                     }

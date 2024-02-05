@@ -109,6 +109,8 @@ final class RecruitSetPartCell: UITableViewCell, CellIdentifiable {
             $0.leading.trailing.equalTo(textfieldComment)
         }
 
+        self.selectionStyle = .none
+        
     }
 
     func initSetting(recruit: Recruit) {
