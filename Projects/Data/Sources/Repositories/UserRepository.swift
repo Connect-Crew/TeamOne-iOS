@@ -29,7 +29,7 @@ public struct UserRepository: UserRepositoryProtocol {
     }
     
     public func reject(applyId: Int, rejectMessage: String) -> Single<Void> {
-        return self.userDataSource.approve(applyId: applyId)
+        return self.userDataSource.reject(applyId: applyId, message: rejectMessage)
     }
     
     public func deleteUserData() -> Single<Void> {
