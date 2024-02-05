@@ -37,13 +37,12 @@ public final class RepresentProjectCell: UICollectionViewCell, CellIdentifiable 
         super.init(frame: frame)
         
         layout()
-        bind()
     }
     
     public func setProject(project: DSRepresentProject) {
         self.project = project
-        
         self.imageViewProject.setTeamOneImage(path: project.thumbnail)
+        bind()
     }
     
     private func bind() {
