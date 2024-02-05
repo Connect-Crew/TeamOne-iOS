@@ -345,6 +345,12 @@ extension AppDelegate {
 
             return viewModel
         }
+        
+        // MARK: - Listener
+        
+        container.register(interface: AuthExpiredListener.self, implement: { _ in
+            return AppListener.shared
+        })
 
     }
 }

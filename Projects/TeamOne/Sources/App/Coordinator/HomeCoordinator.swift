@@ -67,19 +67,17 @@ final class HomeCoordinator: BaseCoordinator<HomeCoordinatorResult> {
         let projectInfoUseCase = DIContainer.shared.resolve(ProjectInfoUseCase.self)
 
         viewController.navigation
-            .subscribe(onNext: { [weak self] in
+            .withUnretained(self)
+            .subscribe(onNext: { this, finish in
                 
-                guard let self = self else { return }
-                
-                switch $0 {
+                switch finish {
                 case let .detail(id):
                     projectInfoUseCase.project(projectId: id)
                         .asObservable()
-                        .withUnretained(self)
-                        .subscribe(onNext: { this, project in
+                        .subscribe(onNext: { project in
                             this.showDetail(project)
                         })
-                        .disposed(by: disposeBag)
+                        .disposed(by: this.disposeBag)
                 }
             })
             .disposed(by: disposeBag)

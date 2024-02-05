@@ -59,7 +59,9 @@ class AuthInterceptor: RequestInterceptor {
                 },
                 onFailure:  { error in
                     print("DEBUG: REFRESH 실패")
-                    // TODO: - 갱신실패 -> 로그인 화면으로 전환 필요
+                    
+                    DIContainer.shared.resolve(AuthExpiredListener.self).authExpiredListener.accept(())
+                    
                     completion(.doNotRetryWithError(error))
                 }
             )

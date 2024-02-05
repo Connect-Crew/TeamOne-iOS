@@ -11,6 +11,7 @@ import DSKit
 import RxSwift
 import Core
 import Inject
+import Domain
 
 final class AppCoordinator: BaseCoordinator<Void> {
     let window: UIWindow?
@@ -30,7 +31,7 @@ final class AppCoordinator: BaseCoordinator<Void> {
     override func start() -> Observable<Void> {
         setup(with: window)
         showSplash()
-
+        bindAuthExpire()
         return Observable.never()
     }
 
@@ -62,10 +63,10 @@ final class AppCoordinator: BaseCoordinator<Void> {
         let login = LoginCoordinator(navigationController)
 
         coordinate(to: login)
-            .subscribe(onNext: {
+            .subscribe(onNext: { [weak self] in
                 switch $0 {
                 case .finish:
-                    self.showTab()
+                    self?.showTab()
                 }
             })
             .disposed(by: disposeBag)
@@ -82,5 +83,36 @@ final class AppCoordinator: BaseCoordinator<Void> {
                 }
             })
             .disposed(by: disposeBag)
+    }
+    
+    private func bindAuthExpire() {
+        AppListener.shared.authExpiredListener
+            .withUnretained(self)
+            .subscribe(onNext: { this, _ in
+                
+                let alert = UIAlertController(title: "인증이 만료되었습니다.", message: "로그아웃됩니다.", preferredStyle: .alert)
+                
+                let okAction = UIAlertAction(title: "확인", style: .default, handler: { _ in
+                    DIContainer.shared.resolve(SignOutUseCase.self)
+                        .signOut()
+                        .asObservable()
+                        .subscribe(onNext: { _ in
+                            this.resetToLoginScreen()
+                        })
+                        .disposed(by: this.disposeBag)
+                })
+                
+                alert.addAction(okAction)
+                
+                this.window?.rootViewController?.present(alert, animated: true)
+                
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    private func resetToLoginScreen() {
+        removeAllChildCoordinatorsWithRecursion()
+        navigationController.viewControllers = []
+        showLogin()
     }
 }
