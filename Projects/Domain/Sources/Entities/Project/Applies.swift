@@ -23,7 +23,7 @@ public struct Applies {
             } else if state == "ACCEPT" {
                 self = .accept
             } else {
-                self = .waiting
+                self = .reject
             }
         }
     }
@@ -36,8 +36,9 @@ public struct Applies {
     public let contact: String
     public let state: AppliesState
     public let leaderMessage: String
+    public let leaderResponseAt: String
 
-    public init(id: Int, projectId: Int, user: Profile, part: String, message: String, contact: String, state: String, leaderMessage: String?) {
+    public init(id: Int, projectId: Int, user: Profile, part: String, message: String, contact: String, state: String, leaderMessage: String?, leaderResponseAt: String?) {
         self.id = id
         self.projectId = projectId
         self.user = user
@@ -46,5 +47,6 @@ public struct Applies {
         self.contact = contact
         self.state = .init(state: state)
         self.leaderMessage = leaderMessage ?? ""
+        self.leaderResponseAt = leaderResponseAt ?? ""
     }
 }

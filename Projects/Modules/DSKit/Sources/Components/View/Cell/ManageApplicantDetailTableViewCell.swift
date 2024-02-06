@@ -26,8 +26,9 @@ public final class ManageApplicantDetailTableViewCell: UITableViewCell, CellIden
         let introduction: String
         let contact: String
         let message: String
+        let leaderResponseAt: String
         
-        public init(applyState: ApplyState, nickname: String, profile: String, temperature: Double, responseRate: Int, parts: [(category: String, part: String)], introduction: String, contact: String, message: String) {
+        public init(applyState: ApplyState, nickname: String, profile: String, temperature: Double, responseRate: Int, parts: [(category: String, part: String)], introduction: String, contact: String, message: String, leaderResponseAt: String) {
             self.applyState = applyState
             self.nickname = nickname
             self.profile = profile
@@ -37,6 +38,7 @@ public final class ManageApplicantDetailTableViewCell: UITableViewCell, CellIden
             self.introduction = introduction
             self.contact = contact
             self.message = message
+            self.leaderResponseAt = leaderResponseAt
         }
     }
 
@@ -306,6 +308,7 @@ public final class ManageApplicantDetailTableViewCell: UITableViewCell, CellIden
         self.labelContact.text = item.contact
         self.textViewIntroduction.text = item.message
         self.applyState = item.applyState
+        self.labelReviewdDate.text = item.leaderResponseAt.toFormattedDateString()
     }
     
     public override func prepareForReuse() {

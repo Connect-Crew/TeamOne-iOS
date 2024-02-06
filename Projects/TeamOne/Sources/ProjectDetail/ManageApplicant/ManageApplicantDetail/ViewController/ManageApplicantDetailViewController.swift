@@ -166,7 +166,8 @@ final class ManageApplicantDetailViewController: ViewController {
                         parts: item.user.parts.map { (category: $0.category, part: $0.part)},
                         introduction: item.user.introduction,
                         contact: item.contact,
-                        message: item.message
+                        message: item.message,
+                        leaderResponseAt: item.leaderResponseAt
                     )
                     
                     cell.initSetting(item: cellItem, row: row)
