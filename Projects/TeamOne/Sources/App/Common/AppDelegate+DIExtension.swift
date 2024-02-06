@@ -288,6 +288,12 @@ extension AppDelegate {
                 appRepository: res.resolve(AppRepositoryProtocol.self)!
             )
         })
+        
+        container.register(interface: KickUserFromProjectUseCase.self, implement: { res in
+            return KickUserFromProject(
+                projectRepository: res.resolve(ProjectRepositoryProtocol.self)!
+            )
+        })
 
         // MARK: - ViewModel
 

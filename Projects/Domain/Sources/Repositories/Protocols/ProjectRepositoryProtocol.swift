@@ -36,4 +36,6 @@ public protocol ProjectRepositoryProtocol {
     func updateState(projectId: Int, state: ProjectState) -> Single<Void>
     
     func getMyProjects() -> Single<[MyProjects]>
+    
+    func kickUserFromProject(projectId: Int, userId: Int, reasons: [User_ExpelReason]) -> Single<ProjectMember>
 }

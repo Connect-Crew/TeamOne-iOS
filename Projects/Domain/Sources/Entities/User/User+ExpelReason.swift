@@ -10,37 +10,55 @@ import Foundation
 
 public enum User_ExpelReason {
     
-    case foulLanguage
-    case lowParticipation
-    case conflicWithTeamMembers
-    case voluntaryWithdrawal
-    case inappropriateContent
-    case other(String)
+    case abuse
+    case bad_Participation
+    case dissension
+    case givenUp
+    case obscenity
+    case etc(String)
     
     public var description: String {
         switch self {
-        case .foulLanguage:
+        case .abuse:
             return "욕설 / 비하발언"
-        case .lowParticipation:
+        case .bad_Participation:
             return "참여율 저조\n(응답률, 접속률, 투표 진행 등)"
-        case .conflicWithTeamMembers:
+        case .dissension:
             return "팀원과의 불화"
-        case .voluntaryWithdrawal:
+        case .givenUp:
             return "자진 중도 포기"
-        case .inappropriateContent:
+        case .obscenity:
             return "19+ 음란성, 만남유도"
-        case .other:
+        case .etc:
             return "기타"
         }
     }
     
-    static func descriptionToCase(input: String) -> User_ExpelReason {
-        let first = User_ExpelReason.allCases.first(where: { $0.description == input })
-        
-        if let first = first {
-            return first
-        } else {
-            fatalError("\(input)is Unknown Case")
+    public var toRequestTypeString: String {
+        switch self {
+        case .abuse: return "ABUSE"
+        case .bad_Participation: return "BAD_PARTICIPATION"
+        case .dissension: return "DISSENSION"
+        case .givenUp: return "GIVEN_UP"
+        case .obscenity: return "OBSCENITY"
+        case .etc: return "ETC"
+        }
+    }
+    
+    public var toRequestReasonString: String {
+        switch self {
+        case .abuse:
+            return "욕설/비하발언"
+        case .bad_Participation:
+            return "참여율저조"
+        case .dissension:
+            return "팀원과의 불화"
+        case .givenUp:
+            return "자진 중도 포기"
+        case .obscenity:
+            return "19+ 음란성, 만남유도"
+        case .etc(let reason):
+            return reason
         }
     }
 }
@@ -56,11 +74,11 @@ extension User_ExpelReason: Equatable {
 extension User_ExpelReason: CaseIterable {
     
     public static var allCases: [User_ExpelReason] = [
-        .conflicWithTeamMembers,
-        .foulLanguage,
-        .inappropriateContent,
-        .lowParticipation,
-        .voluntaryWithdrawal,
-        .other("")
+        .dissension,
+        .abuse,
+        .obscenity,
+        .bad_Participation,
+        .givenUp,
+        .etc("")
     ]
 }

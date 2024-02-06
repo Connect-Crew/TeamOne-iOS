@@ -50,6 +50,7 @@ final class ProjectDetailCoordinator: BaseCoordinator<ProjectDetailCoordinatorRe
             projectLikeUseCase: DIContainer.shared.resolve(ProjectLikeUseCaseProtocol.self),
             projectInfoUseCase: DIContainer.shared.resolve(ProjectInfoUseCase.self),
             projectUpdateStateUseCase: DIContainer.shared.resolve(ProjectUpdateStateUseCase.self),
+            kickUserFromProjectUseCase: DIContainer.shared.resolve(KickUserFromProjectUseCase.self),
             project: project
         )
         
@@ -108,7 +109,7 @@ final class ProjectDetailCoordinator: BaseCoordinator<ProjectDetailCoordinatorRe
         )
         
         coordinate(to: modify)
-            .subscribe(onNext: { [weak self] in
+            .subscribe(onNext: {
                 switch $0 {
                 case .created:
                     Self.refresh.onNext(())

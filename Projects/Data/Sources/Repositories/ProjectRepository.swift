@@ -124,6 +124,18 @@ public struct ProjectRepository: ProjectRepositoryProtocol {
         return projectDataSource.getMyProjects()
             .map { $0.map { $0.toDomain() } }
     }
+    
+    public func kickUserFromProject(projectId: Int, userId: Int, reasons: [User_ExpelReason]) -> Single<ProjectMember> {
+        
+        let request = KickUserFromProjectRequestDTO(
+            project: projectId,
+            userId: userId,
+            reasons: reasons
+        )
+        
+        return projectDataSource.kickUserFromProject(request: request)
+            .map { $0.toDomain() }
+    }
 }
 
 extension ProjectRepository {
