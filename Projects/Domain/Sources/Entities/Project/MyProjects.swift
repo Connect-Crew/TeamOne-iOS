@@ -9,19 +9,19 @@
 import Foundation
 
 public struct MyProjects: Codable {
-    let id: Int
-    let title: String
-    let thumbnail: String?
-    let region: String
-    let online: Bool
-    let careerMin, careerMax: String
-    let createdAt: String
-    let state: String
-    let favorite: Int
-    let myFavorite: Bool
-    let category: [String]
-    let goal: String
-    let recruitStatus: [RecruitStatus]
+    public let id: Int
+    public let title: String
+    public let thumbnail: String?
+    public let region: String
+    public let online: Bool
+    public let careerMin, careerMax: String
+    public let createdAt: String
+    public let state: String
+    public let favorite: Int
+    public let myFavorite: Bool
+    public let category: [String]
+    public let goal: String
+    public let recruitStatus: [RecruitStatus]
     
     public init(id: Int, title: String, thumbnail: String?, region: String, online: Bool, careerMin: String, careerMax: String, createdAt: String, state: String, favorite: Int, myFavorite: Bool, category: [String], goal: String, recruitStatus: [RecruitStatus]) {
         self.id = id

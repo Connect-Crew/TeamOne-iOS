@@ -26,6 +26,8 @@ final class MyProjectMainView: UIView {
         $0.setImage(.image(dsimage: .backButtonImage), for: .normal)
     }
     
+    private var collectionView: UICollectionView!
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         
@@ -38,6 +40,8 @@ final class MyProjectMainView: UIView {
     
     private func layout() {
         addSubview(headerView)
+        
+        collectionView = UICollectionView(frame: .zero, collectionViewLayout: createLayout())
         
         headerView.snp.makeConstraints { make in
             make.top.equalTo(safeAreaLayoutGuide)
@@ -57,5 +61,17 @@ final class MyProjectMainView: UIView {
         headerTitle.snp.makeConstraints { make in
             make.center.equalToSuperview()
         }
+        
+        addSubview(collectionView)
+        collectionView.snp.makeConstraints { make in
+            make.top.equalTo(headerView.snp.bottom)
+            make.left.right.bottom.equalToSuperview()
+        }
+    }
+    
+    private func createLayout() -> UICollectionViewLayout {
+        
+        
+        return UICollectionViewLayout()
     }
 }
