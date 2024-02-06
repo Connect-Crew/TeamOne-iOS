@@ -13,7 +13,7 @@ public protocol ProjectRepositoryProtocol {
 
     func baseInformation() -> Observable<BaseProjectInfoParameters>
 
-    func list(lastId: Int?, size: Int, goal: String?, career: String?, region: String?, online: String?, part: String?, skills: String?, states: String?, category: String?, search: String?) -> Observable<[SideProjectListElement]>
+    func list(lastId: Int?, size: Int, goal: String?, career: String?, region: String?, online: String?, part: String?, skills: String?, states: String?, category: String?, search: String?) -> Single<[SideProjectListElement]>
 
     func like(projectId: Int) -> Observable<Like>
 

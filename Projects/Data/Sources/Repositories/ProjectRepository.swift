@@ -27,7 +27,7 @@ public struct ProjectRepository: ProjectRepositoryProtocol {
             }
     }
 
-    public func list(lastId: Int?, size: Int, goal: String?, career: String?, region: String?, online: String?, part: String?, skills: String?, states: String?, category: String?, search: String?) -> Observable<[SideProjectListElement]> {
+    public func list(lastId: Int?, size: Int, goal: String?, career: String?, region: String?, online: String?, part: String?, skills: String?, states: String?, category: String?, search: String?) -> Single<[SideProjectListElement]> {
         let request = ProjectListRequestDTO(
             lastId: lastId, size: "\(size)", goal: goal,
             career: career,

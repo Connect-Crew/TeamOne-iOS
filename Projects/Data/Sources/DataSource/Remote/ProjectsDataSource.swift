@@ -18,7 +18,7 @@ public protocol ProjectsDataSouceProtocol {
     
     func baseInformation() -> Observable<BaseProjectInformationResponseDTO>
     
-    func list(_ request: ProjectListRequestDTO) -> Observable<[ProjectListResponseDTO]>
+    func list(_ request: ProjectListRequestDTO) -> Single<[ProjectListResponseDTO]>
     
     func like(_ request: ProjectFavoriteRequestDTO) -> Observable<ProjectFavoriteResponseDTO>
     
@@ -57,7 +57,7 @@ public struct ProjectsDataSource: ProjectsDataSouceProtocol {
         return provider.request(ProjectsTarget.baseInformation)
     }
     
-    public func list(_ request: ProjectListRequestDTO) -> Observable<[ProjectListResponseDTO]> {
+    public func list(_ request: ProjectListRequestDTO) -> Single<[ProjectListResponseDTO]> {
         
         return provider.request(ProjectsTarget.list(request: request))
     }
