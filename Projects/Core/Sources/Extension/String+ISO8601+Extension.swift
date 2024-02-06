@@ -90,4 +90,27 @@ public extension String {
         formatter.formatOptions = [.withFullDate, .withTime, .withDashSeparatorInDate, .withColonSeparatorInTime]
         return formatter.date(from: self)
     }
+    
+    /**
+     "2023-11-04T11:45:54" 형식의 ISO8601 포맷 문자열에 사용됩니다.
+     - Parameter : self
+     - returns: yyyy.mm.dd 형식의 String
+     */
+    func toFormattedDateString() -> String {
+        let inputFormatter = DateFormatter()
+        inputFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
+        inputFormatter.locale = Locale(identifier: "ko_KR")
+        inputFormatter.timeZone = TimeZone(secondsFromGMT: 0)
+        
+        let outputFormatter = DateFormatter()
+        outputFormatter.dateFormat = "yyyy.MM.dd"
+        outputFormatter.locale = Locale(identifier: "ko_KR")
+        outputFormatter.timeZone = TimeZone(secondsFromGMT: 0)
+        
+        if let date = inputFormatter.date(from: self) {
+            return outputFormatter.string(from: date)
+        } else {
+            return "Invalid Date"
+        }
+    }
 }
