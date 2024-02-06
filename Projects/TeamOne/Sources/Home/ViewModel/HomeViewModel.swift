@@ -56,6 +56,7 @@ final class HomeViewModel: ViewModel {
     
     let isEnd = BehaviorSubject<Bool>(value: false)
     let lastID = BehaviorSubject<Int?>(value: nil)
+    var isLoading = false
     
     let navigation = PublishSubject<HomeNavigation>()
     var disposeBag = DisposeBag()
@@ -106,10 +107,15 @@ final class HomeViewModel: ViewModel {
             refresh,
             HomeCoordinator.deletedProject.asObservable()
         )
+        .withUnretained(self)
+        .filter { this, _ in
+            this.isLoading == false
+        }
         .withLatestFrom(input.parts)
         .map { [weak self] in
             self?.lastID.onNext(nil)
             self?.isEnd.onNext(false)
+            self?.isLoading = true
             return $0
         }
         .withUnretained(self)
@@ -121,12 +127,13 @@ final class HomeViewModel: ViewModel {
             .catch { error in
                 
                 viewModel.error.accept(error)
-                
+                viewModel.isLoading = false
                 return .never()
             }
         }
         .do(onNext: { [weak self] list in
             self?.setPagingInformation(list: list)
+            self?.isLoading = false
         })
         .bind(to: projects)
         .disposed(by: disposeBag)
@@ -134,12 +141,18 @@ final class HomeViewModel: ViewModel {
         input
             .didScrolledEnd
             .withLatestFrom(isEnd)
-            .filter { $0 == false }
+            .withUnretained(self)
+            .filter { this, isEnd in
+                isEnd == false && this.isLoading == false
+            }
             .withLatestFrom(
                 Observable.combineLatest(lastID.asObservable(), input.parts)
             )
             .withUnretained(self)
             .flatMap { viewModel, params in
+                
+                viewModel.isLoading = true
+                
                 return viewModel.projectListUseCase.list(
                     lastId: params.0,
                     size: 30, goal: nil,
@@ -159,13 +172,14 @@ final class HomeViewModel: ViewModel {
                 .catch { error in
                     
                     viewModel.error.accept(error)
-                    
+                    viewModel.isLoading = false
                     return .never()
                 }
             }
             .subscribe(onNext: { [weak self] updatedProjects in
                 self?.projects.onNext(updatedProjects)
                 self?.lastID.onNext(updatedProjects.last?.id)
+                self?.isLoading = false
             })
             .disposed(by: disposeBag)
         
