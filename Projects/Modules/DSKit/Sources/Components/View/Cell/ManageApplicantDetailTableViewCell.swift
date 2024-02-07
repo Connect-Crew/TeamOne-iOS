@@ -104,7 +104,7 @@ public final class ManageApplicantDetailTableViewCell: UITableViewCell, CellIden
         $0.setLabel(text: "김찬호", typo: .body4, color: .teamOne.grayscaleEight)
     }
     
-    private let imageViewHodey = ImageView_Honey(type: .small)
+    private let imageViewHodey = ImageView_Honey()
     
     private let labelPart = UILabel().then {
         $0.setLabel(text: "잭스", typo: .caption2, color: .teamOne.grayscaleFive)

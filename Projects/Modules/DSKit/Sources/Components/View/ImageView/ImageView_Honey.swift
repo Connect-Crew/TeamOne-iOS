@@ -9,127 +9,55 @@
 import UIKit
 
 /// 프로젝트에 사용되는 꿀통 ImageView입니다.
-/// 생성 후 setHoney 메서드를 호출해야 이미지가 세팅됩니다.
-/// 생성자에 지정한 크기대로 컴포넌트의 크기가 설정됩니다.
 /// 크기에 대한 오토레이아웃을 따로 지정하지 않아도 됩니다.
 public final class ImageView_Honey: UIImageView {
     
-    public enum HoneyType {
-        case small
-        case large
-        
-        static func setLevel(temparature: Double?) -> Int {
-            return 1
-        }
-    }
-    
-    public enum HoneySmallType {
+    public enum HoneyLevel {
         case one
         case two
         case three
         case four
+        case five
+        case six
+        case seven
         
-        var honeyImage: UIImage? {
+        var image: UIImage? {
             switch self {
-            case .one:
-                return .image(dsimage: .honeySmall1)
-            case .two:
-                return .image(dsimage: .honeySmall2)
-            case .three:
-                return .image(dsimage: .honeySmall3)
-            case .four:
-                return .image(dsimage: .honeySmall4)
+            case .one: return .image(dsimage: .lv1)
+            case .two: return .image(dsimage: .lv2)
+            case .three: return .image(dsimage: .lv3)
+            case .four: return .image(dsimage: .lv4)
+            case .five: return .image(dsimage: .lv5)
+            case .six: return .image(dsimage: .lv6)
+            case .seven: return .image(dsimage: .lv7)
             }
         }
         
-        init(temparature: Double?) {
-            let level = HoneyType.setLevel(temparature: temparature)
-            
-            switch level {
-            case 1:
-                self = .one
-            case 2:
-                self = .two
-            case 3:
-                self = .three
-            case 4:
-                self = .four
-            default:
-                fatalError()
-            }
+        static func toLevel(temparature: Double?) -> HoneyLevel {
+            return .one
         }
     }
     
-    public enum HoneyLargeType {
-        case one
-        case two
-        case three
-        case four
-        
-        var honeyImage: UIImage? {
-            switch self {
-            case .one:
-                return .image(dsimage: .honeyLarge1)
-            case .two:
-                return .image(dsimage: .honeyLarge2)
-            case .three:
-                return .image(dsimage: .honeyLarge3)
-            case .four:
-                return .image(dsimage: .honeyLarge4)
-            }
-        }
-        
-        init(temparature: Double?) {
-            let level = HoneyType.setLevel(temparature: temparature)
-            
-            switch level {
-            case 1:
-                self = .one
-            case 2:
-                self = .two
-            case 3:
-                self = .three
-            case 4:
-                self = .four
-            default:
-                fatalError()
-            }
+    private var type: HoneyLevel = .one {
+        didSet {
+            self.image = type.image
         }
     }
     
-    private let type: HoneyType
-    private var temparature: Double?
-    
-    /// 꿀통 이미지뷰를 생성하는 생성자입니다.
-    /// type은 large, small 두 가지가 있습니다.
-    /// type은 피그마에 해당 컴포넌트를 클릭하면 나타납니다.
-    public init(type: HoneyType) {
-        self.type = type
+    public init() {
         super.init(frame: .zero)
-        
-        setHoney(temparature: 36.5)
+        initLayout()
+        self.image = type.image
     }
     
     public func setHoney(temparature: Double?) {
-        
-        self.temparature = temparature
-        
-        switch type {
-        case .small:
-            setSmallImage()
-        case .large:
-            setLargeImage()
+        self.type = HoneyLevel.toLevel(temparature: temparature)
+    }
+    
+    private func initLayout() {
+        self.snp.makeConstraints {
+            $0.width.height.equalTo(16)
         }
-    }
-    
-    private func setSmallImage() {
-        let type = HoneySmallType.init(temparature: temparature)
-        self.image = type.honeyImage
-    }
-    
-    private func setLargeImage() {
-        let type = HoneyLargeType.init(temparature: temparature)
-        self.image = type.honeyImage
     }
     
     required init?(coder: NSCoder) {

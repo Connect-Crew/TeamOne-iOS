@@ -36,9 +36,7 @@ final class MyProfileCard: UIView {
         $0.image = .image(dsimage: .baseProfile)
     }
     let nameView = UIView()
-    let honeyPotImageView = ImageView_Honey(type: .small).then {
-        $0.setHoney(temparature: 10)
-    }
+    let honeyPotImageView = ImageView_Honey()
     
     let nameLabel = UILabel().then {
         $0.numberOfLines = 1
