@@ -1,14 +1,13 @@
 //
-//  Button_IsEnabled_Dropout.swift
-//  TeamOne
+//  Button+IsEnabled_Dropout.swift
+//  DSKit
 //
 //  Created by 강창혁 on 2/9/24.
 //  Copyright © 2024 TeamOne. All rights reserved.
 //
 
+import Foundation
 import UIKit
-import SnapKit
-import DSKit
 
 public class Button_IsEnabled_Dropout: UIButton {
 
