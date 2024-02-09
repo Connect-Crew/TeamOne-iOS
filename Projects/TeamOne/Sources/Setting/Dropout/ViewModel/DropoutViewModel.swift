@@ -18,6 +18,15 @@ enum DropoutNavigation {
     case back
 }
 
+enum CheckList {
+    case noProject
+    case noUser
+    case noTeam
+    case noManner
+    case newAccount
+    case etc
+}
+
 final class DropoutViewModel: ViewModel {
     
     private let noProjectIsSeleted = BehaviorSubject<Bool>(value: false)
@@ -30,12 +39,7 @@ final class DropoutViewModel: ViewModel {
     
     struct Input {
         let tapBack: Observable<Void>
-        let noProjectCheck: Observable<Void>
-        let noUserCheck: Observable<Void>
-        let noTeamMemberCheck: Observable<Void>
-        let noMannerCheck: Observable<Void>
-        let newAccountCheck: Observable<Void>
-        let etcCheck: Observable<Void>
+        let checkListSubject : PublishSubject<CheckList>
         let etcText: Observable<String>
         let dropoutResult: PublishSubject<Bool>
     }
@@ -58,44 +62,39 @@ final class DropoutViewModel: ViewModel {
     
     func transform(input: Input) -> Output {
         
-        input.tapBack
-            .withUnretained(self)
-            .subscribe(onNext: { this, _ in
-                this.navigation.onNext(.back)
-            })
-            .disposed(by: disposeBag)
+        self.tapBackObservable(input.tapBack)
         
-        input.noProjectCheck
+        input.checkListSubject.filter { $0 == .noProject }
             .withLatestFrom(noProjectIsSeleted)
             .map { !$0 }
             .bind(to: noProjectIsSeleted)
             .disposed(by: disposeBag)
         
-        input.noTeamMemberCheck
-            .withLatestFrom(noTeamIsSeleted)
-            .map { !$0 }
-            .bind(to: noTeamIsSeleted)
-            .disposed(by: disposeBag)
-        
-        input.noUserCheck
+        input.checkListSubject.filter { $0 == .noUser }
             .withLatestFrom(noUserIsSeleted)
             .map { !$0 }
             .bind(to: noUserIsSeleted)
             .disposed(by: disposeBag)
         
-        input.noMannerCheck
+        input.checkListSubject.filter { $0 == .noTeam }
+            .withLatestFrom(noTeamIsSeleted)
+            .map { !$0 }
+            .bind(to: noTeamIsSeleted)
+            .disposed(by: disposeBag)
+        
+        input.checkListSubject.filter { $0 == .noManner }
             .withLatestFrom(noMannerIsSeleted)
             .map { !$0 }
             .bind(to: noMannerIsSeleted)
             .disposed(by: disposeBag)
         
-        input.newAccountCheck
+        input.checkListSubject.filter { $0 == .newAccount }
             .withLatestFrom(newAccountIsSeleted)
             .map { !$0 }
             .bind(to: newAccountIsSeleted)
             .disposed(by: disposeBag)
         
-        input.etcCheck
+        input.checkListSubject.filter { $0 == .etc }
             .withLatestFrom(etcIsSeleted)
             .map { !$0 }
             .bind(to: etcIsSeleted)
@@ -151,4 +150,16 @@ final class DropoutViewModel: ViewModel {
         )
     }
     
+}
+
+extension DropoutViewModel {
+    
+    func tapBackObservable(_ input: Observable<Void>) {
+        input
+            .withUnretained(self)
+            .subscribe(onNext: { this, _ in
+                this.navigation.onNext(.back)
+            })
+            .disposed(by: disposeBag)
+    }
 }

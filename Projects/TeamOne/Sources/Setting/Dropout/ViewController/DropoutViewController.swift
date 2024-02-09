@@ -47,16 +47,42 @@ final class DropoutViewController: ViewController {
     }
     
     override func bind() {
+        let checkListSubject = PublishSubject<CheckList>()
+        
+        mainView.dropoutReasonView.noProjectCheckBox.rx.tap
+            .map { return CheckList.noProject}.asObservable()
+            .bind(to: checkListSubject)
+            .disposed(by: disposeBag)
+        
+        mainView.dropoutReasonView.noUserCheckBox.rx.tap
+            .map { return CheckList.noUser}.asObservable()
+            .bind(to: checkListSubject)
+            .disposed(by: disposeBag)
+        
+        mainView.dropoutReasonView.noTeamCheckBox.rx.tap
+            .map { return CheckList.noTeam}.asObservable()
+            .bind(to: checkListSubject)
+            .disposed(by: disposeBag)
+        
+        mainView.dropoutReasonView.noMannerCheckBox.rx.tap
+            .map { return CheckList.noManner}.asObservable()
+            .bind(to: checkListSubject)
+            .disposed(by: disposeBag)
+        
+        mainView.dropoutReasonView.newAccountCheckBox.rx.tap
+            .map { return CheckList.newAccount}.asObservable()
+            .bind(to: checkListSubject)
+            .disposed(by: disposeBag)
+        
+        mainView.dropoutReasonView.etcCheckBox.rx.tap
+            .map { return CheckList.etc}.asObservable()
+            .bind(to: checkListSubject)
+            .disposed(by: disposeBag)
         
         guard let dropoutResult = dropoutSuccessItem.resultSubject else { return }
         let input = DropoutViewModel.Input(
             tapBack: mainView.backButton.rx.tap.asObservable(),
-            noProjectCheck: mainView.dropoutReasonView.noProjectCheckBox.rx.tap.asObservable(),
-            noUserCheck: mainView.dropoutReasonView.noUserCheckBox.rx.tap.asObservable(),
-            noTeamMemberCheck: mainView.dropoutReasonView.noTeamCheckBox.rx.tap.asObservable(),
-            noMannerCheck: mainView.dropoutReasonView.noMannerCheckBox.rx.tap.asObservable(),
-            newAccountCheck: mainView.dropoutReasonView.newAccountCheckBox.rx.tap.asObservable(),
-            etcCheck: mainView.dropoutReasonView.etcCheckBox.rx.tap.asObservable(),
+            checkListSubject: checkListSubject,
             etcText: mainView.dropoutReasonView.etcReasonTextField.rx.text.orEmpty.asObservable(),
             dropoutResult: dropoutResult
         )
@@ -82,7 +108,6 @@ final class DropoutViewController: ViewController {
             .drive(mainView.dropoutReasonView.etcCheckBox.rx.isSelected)
             .disposed(by: disposeBag)
         
-        output.etcIsSeleted
         output.etcTextFieldIshidden
             .drive(mainView.dropoutReasonView.etcStackView.rx.isHidden)
             .disposed(by: disposeBag)
