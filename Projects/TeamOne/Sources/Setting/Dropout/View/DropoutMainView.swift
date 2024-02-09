@@ -18,7 +18,7 @@ import DSKit
 
 final class DropoutMainView: UIView {
     
-    private let headerView = UIView()
+    private let navigationView = UIView()
     private let headerTitle = UILabel().then {
         $0.setLabel(text: "탈퇴하기", typo: .body1, color: .teamOne.grayscaleEight)
     }
@@ -26,8 +26,18 @@ final class DropoutMainView: UIView {
         $0.setImage(.image(dsimage: .backButtonImage), for: .normal)
     }
     
-    private let label = UILabel().then {
-        $0.setLabel(text: "test", typo: .body2, color: .teamOne.grayscaleEight)
+    let headerView = DropoutHeaderView()
+    let dropoutReasonView = DropoutReasonView()
+    
+    private let dropoutButton = UIButton().then {
+        $0.setButton(text: "탈퇴하기", typo: .button1, color: .teamOne.white)
+        $0.clipsToBounds = true
+        $0.layer.cornerRadius = 8
+        $0.backgroundColor = .teamOne.point
+    }
+    
+    private let descriptionLabel = UILabel().then {
+        $0.setLabel(text: "항상 건승하길 바라겠습니다. :)", typo: .caption1, color: .teamOne.grayscaleFive)
     }
     
     override init(frame: CGRect) {
@@ -40,16 +50,16 @@ final class DropoutMainView: UIView {
     }
     
     private func layout() {
-        addSubview(headerView)
+        addSubview(navigationView)
         
-        headerView.snp.makeConstraints { make in
+        navigationView.snp.makeConstraints { make in
             make.top.equalTo(safeAreaLayoutGuide)
             make.left.right.equalToSuperview()
             make.height.equalTo(44)
         }
         
-        headerView.addSubview(backButton)
-        headerView.addSubview(headerTitle)
+        navigationView.addSubview(backButton)
+        navigationView.addSubview(headerTitle)
         
         backButton.snp.makeConstraints { make in
             make.width.height.equalTo(24)
@@ -60,10 +70,31 @@ final class DropoutMainView: UIView {
         headerTitle.snp.makeConstraints { make in
             make.center.equalToSuperview()
         }
-        addSubview(label)
-        label.snp.makeConstraints {
-            $0.centerY.centerX.equalToSuperview()
+        
+        addSubview(headerView)
+        
+        headerView.snp.makeConstraints { make in
+            make.top.equalTo(navigationView.snp.bottom).offset(15)
+            make.leading.trailing.equalToSuperview()
+        }
+        addSubview(dropoutReasonView)
+        dropoutReasonView.snp.makeConstraints { make in
+            make.top.equalTo(headerView.snp.bottom).offset(25)
+            make.leading.trailing.equalToSuperview()
+        }
+        
+        addSubview(descriptionLabel)
+        descriptionLabel.snp.makeConstraints { make in
+            make.bottom.equalToSuperview().inset(63)
+            make.centerX.equalToSuperview()
+        }
+        
+        addSubview(dropoutButton)
+        dropoutButton.snp.makeConstraints { make in
+            make.bottom.equalTo(descriptionLabel.snp.top).offset(-9)
+            make.centerX.equalToSuperview()
+            make.width.equalTo(253)
+            make.height.equalTo(50)
         }
     }
-    
 }
