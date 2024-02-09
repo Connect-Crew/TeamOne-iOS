@@ -17,7 +17,7 @@ public protocol GetAppliesUseCase {
 public struct GetApplies: GetAppliesUseCase {
     
     private let projectRepository: ProjectRepositoryProtocol
-
+    
     public init(projectRepository: ProjectRepositoryProtocol) {
         self.projectRepository = projectRepository
     }
@@ -25,6 +25,15 @@ public struct GetApplies: GetAppliesUseCase {
     public func getApplies(projectId: Int, part: String) -> Single<[Applies]> {
         
         return projectRepository.getApplies(projectId: projectId, part: part)
+            .map { $0.sorted(by: { apply1, apply2 in
+                switch (apply1.state, apply2.state) {
+                case (.waiting, _): return true
+                case (_, .waiting): return false
+                default:
+                    let date1 = apply1.leaderResponseAt.toDate() ?? .distantPast
+                    let date2 = apply2.leaderResponseAt.toDate() ?? .distantPast
+                    
+                    return date1 < date2
+                } } ) }
     }
 }
-

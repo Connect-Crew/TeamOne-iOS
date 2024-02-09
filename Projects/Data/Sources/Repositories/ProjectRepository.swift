@@ -27,7 +27,7 @@ public struct ProjectRepository: ProjectRepositoryProtocol {
             }
     }
 
-    public func list(lastId: Int?, size: Int, goal: String?, career: String?, region: String?, online: String?, part: String?, skills: String?, states: String?, category: String?, search: String?) -> Observable<[SideProjectListElement]> {
+    public func list(lastId: Int?, size: Int, goal: String?, career: String?, region: String?, online: String?, part: String?, skills: String?, states: String?, category: String?, search: String?) -> Single<[SideProjectListElement]> {
         let request = ProjectListRequestDTO(
             lastId: lastId, size: "\(size)", goal: goal,
             career: career,
@@ -123,6 +123,18 @@ public struct ProjectRepository: ProjectRepositoryProtocol {
     public func getMyProjects() -> Single<[MyProjects]> {
         return projectDataSource.getMyProjects()
             .map { $0.map { $0.toDomain() } }
+    }
+    
+    public func kickUserFromProject(projectId: Int, userId: Int, reasons: [User_ExpelReason]) -> Single<ProjectMember> {
+        
+        let request = KickUserFromProjectRequestDTO(
+            project: projectId,
+            userId: userId,
+            reasons: reasons
+        )
+        
+        return projectDataSource.kickUserFromProject(request: request)
+            .map { $0.toDomain() }
     }
 }
 

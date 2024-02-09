@@ -18,6 +18,7 @@ public struct GetAppliesResponseDTO: Codable {
     let contact: String?
     let state: String
     let leaderMessage: String?
+    let leaderResponseAt: String?
     
     func toDomain() -> Applies {
         return Applies(
@@ -28,7 +29,8 @@ public struct GetAppliesResponseDTO: Codable {
             message: self.message,
             contact: self.contact ?? "연락처 정보 없음",
             state: self.state,
-            leaderMessage: self.leaderMessage
+            leaderMessage: self.leaderMessage,
+            leaderResponseAt: self.leaderResponseAt
         )
     }
 }

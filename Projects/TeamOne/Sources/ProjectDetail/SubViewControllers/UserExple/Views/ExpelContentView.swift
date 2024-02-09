@@ -22,8 +22,8 @@ final class ExpelContentView: View {
         $0.setLabel(text: "내보내는 사유를 알려주세요.", typo: .body2, color: .teamOne.grayscaleSeven)
     }
     
-    private let buttonFoulLanguage = Button_CheckBox(
-        text: User_ExpelReason.foulLanguage.description,
+    private let buttonAbuse = Button_CheckBox(
+        text: User_ExpelReason.abuse.description,
         typo: .button2,
         textColor: .teamOne.grayscaleSeven,
         type: .checkBoxBlue
@@ -31,8 +31,8 @@ final class ExpelContentView: View {
         $0.checkedTextColor = .teamOne.mainColor
     }
     
-    private let buttonLowParticipation = Button_CheckBox(
-        text: User_ExpelReason.lowParticipation.description,
+    private let buttonBadParticipation = Button_CheckBox(
+        text: User_ExpelReason.bad_Participation.description,
         typo: .button2,
         textColor: .teamOne.grayscaleSeven,
         type: .checkBoxBlue
@@ -43,8 +43,8 @@ final class ExpelContentView: View {
         $0.titleLabel?.numberOfLines = 0
     }
     
-    private let buttonConflicWithTeamMembers = Button_CheckBox(
-        text: User_ExpelReason.conflicWithTeamMembers.description,
+    private let buttonDissension = Button_CheckBox(
+        text: User_ExpelReason.dissension.description,
         typo: .button2,
         textColor: .teamOne.grayscaleSeven,
         type: .checkBoxBlue
@@ -52,8 +52,8 @@ final class ExpelContentView: View {
         $0.checkedTextColor = .teamOne.mainColor
     }
     
-    private let buttonVoluntaryWithdrawal = Button_CheckBox(
-        text: User_ExpelReason.voluntaryWithdrawal.description,
+    private let buttonGivenUp = Button_CheckBox(
+        text: User_ExpelReason.givenUp.description,
         typo: .button2,
         textColor: .teamOne.grayscaleSeven,
         type: .checkBoxBlue
@@ -61,8 +61,8 @@ final class ExpelContentView: View {
         $0.checkedTextColor = .teamOne.mainColor
     }
     
-    private let buttonInappropriateContent = Button_CheckBox(
-        text: User_ExpelReason.inappropriateContent.description,
+    private let buttonObsecenity = Button_CheckBox(
+        text: User_ExpelReason.obscenity.description,
         typo: .button2,
         textColor: .teamOne.grayscaleSeven,
         type: .checkBoxBlue
@@ -70,8 +70,8 @@ final class ExpelContentView: View {
         $0.checkedTextColor = .teamOne.mainColor
     }
     
-    private let buttonOther = Button_CheckBox(
-        text: User_ExpelReason.other("").description,
+    private let buttonEtc = Button_CheckBox(
+        text: User_ExpelReason.etc("").description,
         typo: .button2,
         textColor: .teamOne.grayscaleSeven,
         type: .checkBoxBlue
@@ -79,7 +79,7 @@ final class ExpelContentView: View {
         $0.checkedTextColor = .teamOne.mainColor
     }
     
-    private let textFieldOther = UITextField().then {
+    private let textFieldEtc = UITextField().then {
         $0.font = .setFont(font: .button2)
         $0.textColor = .teamOne.grayscaleFive
         $0.isEnabled = false
@@ -114,19 +114,17 @@ final class ExpelContentView: View {
     
     /// 선택 상태
     private let selectedReason = BehaviorRelay<[User_ExpelReason]>(value: [])
-    
-    // TODO: - 취소, 신고버튼 처리, 폰트변경, 신고가능/불가능 상태 처리
-    
+        
     private lazy var warnningStackView = UIStackView(arrangedSubviews: [
         imageViewWainning,
-        labelWarnning,
+        labelWarnning
     ]).then {
         $0.spacing = 5
         $0.isHidden = true
     }
     
     private lazy var otherTextFieldStackView = UIStackView(arrangedSubviews: [
-        textFieldOther,
+        textFieldEtc,
         textFieldUnderbar,
         warnningStackView
     ]).then {
@@ -135,7 +133,7 @@ final class ExpelContentView: View {
     }
     
     private lazy var otherStackView = UIStackView(arrangedSubviews: [
-        buttonOther,
+        buttonEtc,
         otherTextFieldStackView
     ]).then {
         $0.axis = .horizontal
@@ -179,7 +177,7 @@ final class ExpelContentView: View {
             $0.width.height.equalTo(16)
         }
         
-        buttonOther.snp.makeConstraints {
+        buttonEtc.snp.makeConstraints {
             $0.width.equalTo(55)
         }
     }
@@ -198,11 +196,11 @@ final class ExpelContentView: View {
             .disposed(by: disposeBag)
         
         let checkboxes = [
-            buttonFoulLanguage: User_ExpelReason.foulLanguage,
-            buttonLowParticipation: User_ExpelReason.lowParticipation,
-            buttonConflicWithTeamMembers: User_ExpelReason.conflicWithTeamMembers,
-            buttonVoluntaryWithdrawal: User_ExpelReason.voluntaryWithdrawal,
-            buttonInappropriateContent: User_ExpelReason.inappropriateContent
+            buttonAbuse: User_ExpelReason.abuse,
+            buttonBadParticipation: User_ExpelReason.bad_Participation,
+            buttonDissension: User_ExpelReason.dissension,
+            buttonGivenUp: User_ExpelReason.givenUp,
+            buttonObsecenity: User_ExpelReason.obscenity
         ]
         
         for (button, reason) in checkboxes {
@@ -240,9 +238,9 @@ final class ExpelContentView: View {
 
                 // .other 케이스가 있는지 확인하고, 연관값이 비어있는지 검사
                 if let otherReason = reasons.first(where: {
-                    if case .other = $0 { return true }
+                    if case .etc = $0 { return true }
                     else { return false }
-                }), case .other(let value) = otherReason {
+                }), case .etc(let value) = otherReason {
                     return !value.isEmpty
                 }
                 
@@ -255,14 +253,14 @@ final class ExpelContentView: View {
     
     private func bindOther() {
         
-        buttonOther.rx.tap
+        buttonEtc.rx.tap
             .withUnretained(self)
-            .withLatestFrom(buttonOther.rx.isSelected)
+            .withLatestFrom(buttonEtc.rx.isSelected)
             .map { !$0 }
-            .bind(to: buttonOther.rx.isSelected)
+            .bind(to: buttonEtc.rx.isSelected)
             .disposed(by: disposeBag)
 
-        let isSelectedOther = buttonOther.rx.isSelected
+        let isSelectedOther = buttonEtc.rx.isSelected
         
         let selected = isSelectedOther
             .filter { $0 == true }
@@ -276,14 +274,14 @@ final class ExpelContentView: View {
             .withUnretained(self)
             .subscribe(onNext: { this, reasons in
                 
-                this.textFieldOther.isEnabled = false
-                this.textFieldOther.rx.text.onNext("")
+                this.textFieldEtc.isEnabled = false
+                this.textFieldEtc.rx.text.onNext("")
                 this.warnningStackView.isHidden = true
 
                 var newReasons = reasons
  
                 newReasons.removeAll { reason in
-                    if case .other = reason {
+                    if case .etc = reason {
                         return true
                     }
                     return false
@@ -299,17 +297,17 @@ final class ExpelContentView: View {
             .withUnretained(self)
             .subscribe(onNext: { this, reasons in
                 
-                this.textFieldOther.isEnabled = true
+                this.textFieldEtc.isEnabled = true
                 this.warnningStackView.isHidden = false
                 
                 var newReasons = reasons
-                newReasons.append(.other(""))
+                newReasons.append(.etc(""))
 
                 this.selectedReason.accept(newReasons)
             })
             .disposed(by: disposeBag)
         
-        textFieldOther.rx.text.orEmpty
+        textFieldEtc.rx.text.orEmpty
             .skip(1)
             .asSignal(onErrorJustReturn: "")
             .withUnretained(self)
@@ -326,9 +324,9 @@ final class ExpelContentView: View {
                 
                 // .other 케이스를 찾아서 업데이트
                 if let otherIndex = reasons.firstIndex(
-                    where: { if case .other = $0 { return true } else { return false } }) {
+                    where: { if case .etc = $0 { return true } else { return false } }) {
                     
-                    reasons[otherIndex] = .other(content)
+                    reasons[otherIndex] = .etc(content)
                 }
                 
                 // 변경된 이유들을 selectedReason에 반영
@@ -357,18 +355,18 @@ final class ExpelContentView: View {
     
     func updateSelect(with reasons: [User_ExpelReason]) {
         
-        buttonFoulLanguage.isSelected = reasons.contains(.foulLanguage)
-        buttonLowParticipation.isSelected = reasons.contains(.lowParticipation)
-        buttonConflicWithTeamMembers.isSelected = reasons.contains(.conflicWithTeamMembers)
-        buttonVoluntaryWithdrawal.isSelected = reasons.contains(.voluntaryWithdrawal)
-        buttonInappropriateContent.isSelected = reasons.contains(.inappropriateContent)
+        buttonAbuse.isSelected = reasons.contains(.abuse)
+        buttonBadParticipation.isSelected = reasons.contains(.bad_Participation)
+        buttonDissension.isSelected = reasons.contains(.dissension)
+        buttonGivenUp.isSelected = reasons.contains(.givenUp)
+        buttonObsecenity.isSelected = reasons.contains(.obscenity)
         
     }
     
     private func makeTitleStackView() -> UIStackView {
         
         return UIStackView(arrangedSubviews: [
-            labelTitle,
+            labelTitle
         ]).then {
             $0.layoutMargins = UIEdgeInsets(top: 20, left: 24, bottom: 20, right: 24)
             $0.isLayoutMarginsRelativeArrangement = true
@@ -379,11 +377,11 @@ final class ExpelContentView: View {
     private func makeContentStackView() -> UIStackView {
         
         return UIStackView(arrangedSubviews: [
-            buttonFoulLanguage,
-            buttonLowParticipation,
-            buttonConflicWithTeamMembers,
-            buttonVoluntaryWithdrawal,
-            buttonInappropriateContent,
+            buttonAbuse,
+            buttonBadParticipation,
+            buttonDissension,
+            buttonGivenUp,
+            buttonObsecenity,
             otherStackView
         ]).then {
             $0.layoutMargins = UIEdgeInsets(top: 0, left: 20, bottom: 20, right: 20)

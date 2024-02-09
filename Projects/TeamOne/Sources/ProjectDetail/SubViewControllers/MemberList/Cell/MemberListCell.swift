@@ -31,9 +31,7 @@ final class MemberListCell: UICollectionViewCell, CellIdentifiable {
         $0.setLabel(text: "김찬호", typo: .body4, color: .teamOne.grayscaleEight)
     }
     
-    private let imageViewHoney = ImageView_Honey(type: .small).then {
-        $0.setHoney(temparature: 36.5)
-    }
+    private let imageViewHoney = ImageView_Honey()
     
     private let labelIsLeader = UILabel().then {
         $0.setLabel(text: "리더", typo: .caption1, color: .teamOne.point)

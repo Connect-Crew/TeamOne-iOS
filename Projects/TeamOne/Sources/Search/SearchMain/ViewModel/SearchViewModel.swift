@@ -122,7 +122,7 @@ final class SearchViewModel: ViewModel {
         .flatMap({ this, keyword in
             return this.projectListUseCase.projectList(request: ProjectFilterRequest(size: 30, search: keyword))
                 .catch { _ in
-                    return .empty()
+                    return .never()
                 }
         })
         .filter {

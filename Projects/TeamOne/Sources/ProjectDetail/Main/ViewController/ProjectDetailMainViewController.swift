@@ -130,9 +130,9 @@ final class ProjectDetailMainViewController: ViewController {
     /// 프로젝트 신고하기
     let reportedContentSubject = PublishSubject<String>()
     /// 유저 내보내기
-    let expelProps = PublishRelay<UserExpelProps>()
     let expelSuccess = PublishRelay<Void>()
     let expelFailure = PublishRelay<Error>()
+    let expelProps = PublishRelay<(projectId: Int, userId: Int, reasons: [User_ExpelReason])>()
     
     let modifyTap = PublishRelay<Void>()
     let manageApplicantsTap = PublishRelay<Void>()
@@ -319,6 +319,8 @@ final class ProjectDetailMainViewController: ViewController {
             
     }
     
+    // MARK: - 유저 내보내기
+    
     func bindExpel(output: ProjectDetailMainViewModel.Output) {
         
         output.expelSuccess
@@ -343,9 +345,9 @@ final class ProjectDetailMainViewController: ViewController {
                 let expelVC = Inject.ViewControllerHost(UserExpelViewController(
                     project: project,
                     target: member,
-                    expelProps: this.expelProps,
                     expelSuccess: this.expelSuccess,
-                    expelFailure: this.expelFailure
+                    expelFailure: this.expelFailure,
+                    expelProps: this.expelProps
                 ))
                 
                 expelVC.modalPresentationStyle = .overFullScreen

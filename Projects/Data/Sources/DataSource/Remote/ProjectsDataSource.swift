@@ -18,7 +18,7 @@ public protocol ProjectsDataSouceProtocol {
     
     func baseInformation() -> Observable<BaseProjectInformationResponseDTO>
     
-    func list(_ request: ProjectListRequestDTO) -> Observable<[ProjectListResponseDTO]>
+    func list(_ request: ProjectListRequestDTO) -> Single<[ProjectListResponseDTO]>
     
     func like(_ request: ProjectFavoriteRequestDTO) -> Observable<ProjectFavoriteResponseDTO>
     
@@ -41,6 +41,8 @@ public protocol ProjectsDataSouceProtocol {
     func updateState(projectId: Int, state: String) -> Single<Void>
     
     func getMyProjects() -> Single<[MyProjectsResponseDTO]>
+    
+    func kickUserFromProject(request: KickUserFromProjectRequestDTO) -> Single<ProjectMemberResponseDTO>
 }
 
 public struct ProjectsDataSource: ProjectsDataSouceProtocol {
@@ -55,7 +57,7 @@ public struct ProjectsDataSource: ProjectsDataSouceProtocol {
         return provider.request(ProjectsTarget.baseInformation)
     }
     
-    public func list(_ request: ProjectListRequestDTO) -> Observable<[ProjectListResponseDTO]> {
+    public func list(_ request: ProjectListRequestDTO) -> Single<[ProjectListResponseDTO]> {
         
         return provider.request(ProjectsTarget.list(request: request))
     }
@@ -292,6 +294,10 @@ public struct ProjectsDataSource: ProjectsDataSouceProtocol {
     public func getMyProjects() -> Single<[MyProjectsResponseDTO]> {
         return provider.request(ProjectsTarget.getMyProjects)
     }
+    
+    public func kickUserFromProject(request: KickUserFromProjectRequestDTO) -> Single<ProjectMemberResponseDTO> {
+        return provider.request(ProjectsTarget.kickUserFromProject(request: request))
+    }
 }
 extension NetworkConstant {
     static let projectBasedURLString: String = "http://teamone.kro.kr:9080"
@@ -310,6 +316,7 @@ enum ProjectsTarget {
     case listAllApplicationsForProject(projectId: Int)
     case getApplies(request: GetAppliesRequestDTO)
     case updateState(projectId: Int, state: String)
+    case kickUserFromProject(request: KickUserFromProjectRequestDTO)
 }
 
 extension ProjectsTarget: TargetType {
@@ -322,7 +329,7 @@ extension ProjectsTarget: TargetType {
         switch self {
         case .list, .project, .baseInformation, .members, .listAllApplicationsForProject, .getApplies, .getMyProjects:
             return .get
-        case .like, .apply, .createProject, .report, .updateState:
+        case .like, .apply, .createProject, .report, .updateState, .kickUserFromProject:
             return .post
         }
     }
@@ -357,6 +364,8 @@ extension ProjectsTarget: TargetType {
             return .none
         case .getApplies(let request):
             return .query(request)
+        case .kickUserFromProject(let request):
+            return .body(request)
         }
     }
     
@@ -368,7 +377,7 @@ extension ProjectsTarget: TargetType {
             return JSONEncoding.default
         case .createProject:
             return JSONEncoding.default
-        case .getMyProjects:
+        case .getMyProjects, .kickUserFromProject:
             return JSONEncoding.default
         }
     }
@@ -389,6 +398,8 @@ extension ProjectsTarget: TargetType {
             return "/project/apply/\(request.projectId)/\(request.part)"
         case .updateState(let projectId, let state):
             return "/project/\(projectId)/state/\(state)/update"
+        case .kickUserFromProject:
+            return "/project/kick"
         }
     }
 }

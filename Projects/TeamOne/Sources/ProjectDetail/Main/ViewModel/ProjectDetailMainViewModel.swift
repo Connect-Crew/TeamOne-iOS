@@ -33,6 +33,7 @@ final class ProjectDetailMainViewModel: ViewModel {
     private let projectLikeUseCase: ProjectLikeUseCaseProtocol
     private let projectInfoUseCase: ProjectInfoUseCase
     private let projectUpdateStateUseCase: ProjectUpdateStateUseCase
+    private let kickUserFromProjectUseCase: KickUserFromProjectUseCase
     
     public init(
         projectReportUseCase: ProjectReportUseCase,
@@ -40,6 +41,7 @@ final class ProjectDetailMainViewModel: ViewModel {
         projectLikeUseCase: ProjectLikeUseCaseProtocol,
         projectInfoUseCase: ProjectInfoUseCase,
         projectUpdateStateUseCase: ProjectUpdateStateUseCase,
+        kickUserFromProjectUseCase: KickUserFromProjectUseCase,
         project: Project
     ) {
         self.projectReportUseCase = projectReportUseCase
@@ -47,6 +49,7 @@ final class ProjectDetailMainViewModel: ViewModel {
         self.projectLikeUseCase = projectLikeUseCase
         self.projectInfoUseCase = projectInfoUseCase
         self.projectUpdateStateUseCase = projectUpdateStateUseCase
+        self.kickUserFromProjectUseCase = kickUserFromProjectUseCase
         self.project = BehaviorRelay<Project>(value: project)
     }
 
@@ -59,7 +62,7 @@ final class ProjectDetailMainViewModel: ViewModel {
         let representProjectSelected: Observable<RepresentProject>
         let likeButtonTap: Observable<Void>
         let applyButtonTap: Observable<Void>
-        let expelProps: PublishRelay<UserExpelProps>
+        let expelProps: PublishRelay<(projectId: Int, userId: Int, reasons: [User_ExpelReason])>
         let modifyButtonTap: PublishRelay<Void>
         let manageApplicantsButtonTap: PublishRelay<Void>
         let deleteButtonTap: PublishRelay<Void>
@@ -342,10 +345,19 @@ final class ProjectDetailMainViewModel: ViewModel {
             .disposed(by: disposeBag)
     }
     
-    func transformUserExple(input: PublishRelay<UserExpelProps>) {
+    func transformUserExple(input: PublishRelay<(projectId: Int, userId: Int, reasons: [User_ExpelReason])>) {
         input
             .withUnretained(self)
-            .subscribe(onNext: { this, props in
+            .flatMap { this, props in
+                return this.kickUserFromProjectUseCase.kickUserFromProject(projectId: props.projectId, userId: props.userId, reasons: props.reasons)
+                    .catch { error in
+                        this.expelFailure.accept(error)
+                        
+                        return .never()
+                    }
+            }
+            .withUnretained(self)
+            .subscribe(onNext: { this, _ in
                 this.expelSuccess.accept(())
                 this.refresh.onNext(())
             })

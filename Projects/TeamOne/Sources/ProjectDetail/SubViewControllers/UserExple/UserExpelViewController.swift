@@ -40,7 +40,7 @@ final class UserExpelViewController: ViewController {
     private let expelSuccessResult = PublishSubject<Bool>()
     private let expelFailureResult = PublishSubject<Bool>()
     
-    let expelProps: PublishRelay<UserExpelProps>
+    public let expelProps: PublishRelay<(projectId: Int, userId: Int, reasons: [User_ExpelReason])>
     private let expelSuccess: PublishRelay<Void>
     private let expelFailure: PublishRelay<Error>
     
@@ -62,15 +62,15 @@ final class UserExpelViewController: ViewController {
     
     init(project: Project,
          target: ProjectMember,
-         expelProps: PublishRelay<UserExpelProps>,
          expelSuccess: PublishRelay<Void>,
-         expelFailure: PublishRelay<Error>
+         expelFailure: PublishRelay<Error>,
+         expelProps: PublishRelay<(projectId: Int, userId: Int, reasons: [User_ExpelReason])>
     ) {
         self.project = project
         self.target = target
-        self.expelProps = expelProps
         self.expelSuccess = expelSuccess
         self.expelFailure = expelFailure
+        self.expelProps = expelProps
         
         super.init(nibName: nil, bundle: nil)
     }
@@ -158,10 +158,10 @@ final class UserExpelViewController: ViewController {
         
         selectedTap
             .withUnretained(self)
-            .map { (this, reason) -> UserExpelProps in
-                return UserExpelProps(
-                    id: this.project,
-                    willExpelMember: this.target,
+            .map { (this, reason)  in
+                return (
+                    projectId: this.project.id,
+                    userId: this.target.profile.id,
                     reasons: reason
                 )
             }
