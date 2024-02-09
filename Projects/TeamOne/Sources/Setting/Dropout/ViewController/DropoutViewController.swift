@@ -81,6 +81,8 @@ final class DropoutViewController: ViewController {
         output.etcIsSeleted
             .drive(mainView.dropoutReasonView.etcCheckBox.rx.isSelected)
             .disposed(by: disposeBag)
+        
+        output.etcIsSeleted
         output.etcTextFieldIshidden
             .drive(mainView.dropoutReasonView.etcStackView.rx.isHidden)
             .disposed(by: disposeBag)
@@ -106,6 +108,7 @@ final class DropoutViewController: ViewController {
                 this.presentResultAlertView_Image_Title_Content(source: this, alert: this.dropoutSuccessItem)
             })
             .disposed(by: disposeBag)
+        
         
     }
 }
