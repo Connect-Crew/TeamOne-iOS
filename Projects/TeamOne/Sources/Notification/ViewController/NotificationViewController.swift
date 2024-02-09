@@ -28,7 +28,7 @@ final class NotificationViewController: ViewController {
         }
     )
     
-    lazy var feedbackSuccessItem = ResultAlertView_Image_Title_Content_Alert(
+    lazy var feedbackSuccessItem = `ResultAlertView_Image_Title_Content_Alert`(
         image: .complete,
         title: "의견이 전송되었습니다.",
         content: "여러분의 소중한 의견 감사드립니다 🙏",
@@ -90,4 +90,3 @@ final class NotificationViewController: ViewController {
             .disposed(by: disposeBag)
     }
 }
-

@@ -42,12 +42,32 @@ final class SettingCoordinator: BaseCoordinator<SettingCoordinatorResult> {
                     this.finish.onNext(.back)
                 case .logout:
                     this.finish.onNext(.finish)
+                case .dropout:
+                    this.showDropout()
                 }
             })
             .disposed(by: disposeBag)
         
         let viewController = Inject.ViewControllerHost(SettingViewController(viewModel: viewModel))
         
+        pushTabbar(viewController, animated: true)
+    }
+    
+    func showDropout() {
+        let viewModel = DropoutViewModel()
+        viewModel.navigation
+            .withUnretained(self)
+            .subscribe(onNext: { this, navi in
+                switch navi {
+                case .finish:
+                    this.popTabbar(animated: true)
+                case .back:
+                    this.popTabbar(animated: true)
+                }
+            })
+            .disposed(by: disposeBag)
+        
+        let viewController = Inject.ViewControllerHost(DropoutViewController(viewModel: viewModel))
         pushTabbar(viewController, animated: true)
     }
 }

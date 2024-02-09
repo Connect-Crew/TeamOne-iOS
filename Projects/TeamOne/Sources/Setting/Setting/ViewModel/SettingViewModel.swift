@@ -15,6 +15,7 @@ import Core
 enum SettingNavigation {
     case back
     case logout
+    case dropout
 }
 
 typealias SettingDataSource = [SettingSection: [SettingCellType]]
@@ -63,7 +64,8 @@ final class SettingViewModel: ViewModel {
                 switch type {
                 case .activityNotification(let isOn):
                     this.updateActivity(current: isOn)
-                case .dropout: break
+                case .dropout:
+                    this.navigation.onNext(.dropout)
                 case .logout: break
                 case .privacyPolicy: break
                 case .termsOfService: break
