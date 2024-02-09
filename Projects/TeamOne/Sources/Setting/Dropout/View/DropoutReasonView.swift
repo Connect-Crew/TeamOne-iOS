@@ -31,7 +31,7 @@ final class DropoutReasonView: UIView {
         )
     }
     
-    private let notParticipateCheckBox = Button_CheckBox(
+    let noProjectCheckBox = Button_CheckBox(
         text: "참여하고 싶은 프로젝트가 없어요.",
         typo: .button2,
         textColor: .teamOne.grayscaleSeven,
@@ -39,7 +39,7 @@ final class DropoutReasonView: UIView {
     ).then {
         $0.checkedTextColor = .teamOne.mainColor
     }
-    private let notUserCheckBox = Button_CheckBox(
+    let noUserCheckBox = Button_CheckBox(
         text: "유저가 많이 없어요.",
         typo: .button2,
         textColor: .teamOne.grayscaleSeven,
@@ -47,7 +47,7 @@ final class DropoutReasonView: UIView {
     ).then {
         $0.checkedTextColor = .teamOne.mainColor
     }
-    private let notTeamCheckBox = Button_CheckBox(
+    let noTeamCheckBox = Button_CheckBox(
         text: "팀원이 잘 안 구해져요.",
         typo: .button2,
         textColor: .teamOne.grayscaleSeven,
@@ -55,7 +55,7 @@ final class DropoutReasonView: UIView {
     ).then {
         $0.checkedTextColor = .teamOne.mainColor
     }
-    private let badMannerCheckBox = Button_CheckBox(
+    let noMannerCheckBox = Button_CheckBox(
         text: "비매너 유저가 있어요.",
         typo: .button2,
         textColor: .teamOne.grayscaleSeven,
@@ -64,7 +64,7 @@ final class DropoutReasonView: UIView {
         $0.checkedTextColor = .teamOne.mainColor
     }
     
-    private let newAccountCheckBox = Button_CheckBox(
+    let newAccountCheckBox = Button_CheckBox(
         text: "새 계정을 만들고 싶어요.",
         typo: .button2,
         textColor: .teamOne.grayscaleSeven,
@@ -74,17 +74,17 @@ final class DropoutReasonView: UIView {
     }
     
     private lazy var checkBoxStackView = UIStackView(arrangedSubviews: [
-        notParticipateCheckBox,
-        notUserCheckBox,
-        notTeamCheckBox,
-        badMannerCheckBox,
+        noProjectCheckBox,
+        noUserCheckBox,
+        noTeamCheckBox,
+        noMannerCheckBox,
         newAccountCheckBox
     ]).then {
         $0.axis = .vertical
         $0.spacing = 12
     }
     
-    private let etcCheckBox = Button_CheckBox(
+    let etcCheckBox = Button_CheckBox(
         text: "기타",
         typo: .button2,
         textColor: .teamOne.grayscaleSeven,
@@ -93,20 +93,18 @@ final class DropoutReasonView: UIView {
         $0.checkedTextColor = .teamOne.mainColor
     }
     
-    private let etcReasonTextField = TextField().then {
+    let etcReasonTextField = TextField().then {
         $0.font = UIFont.setFont(font: .button2)
         $0.textColor = .teamOne.grayscaleSeven
     }
     
-    private let etcTextFieldUnderLine = UIView().then {
-        $0.backgroundColor = .teamOne.grayscaleSeven
+    let etcTextFieldUnderLine = UIView().then {
+        $0.backgroundColor = .teamOne.point
     }
     
     let waringDescriptionView = WarningDescriptionView()
     
-    
-    
-    private lazy var etcStackView = UIStackView(arrangedSubviews: [etcReasonTextField, etcTextFieldUnderLine, waringDescriptionView]).then {
+    lazy var etcStackView = UIStackView(arrangedSubviews: [etcReasonTextField, etcTextFieldUnderLine, waringDescriptionView]).then {
         $0.axis = .vertical
         $0.spacing = 4
         $0.alignment = .leading

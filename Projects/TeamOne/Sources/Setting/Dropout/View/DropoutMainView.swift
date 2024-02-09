@@ -29,11 +29,10 @@ final class DropoutMainView: UIView {
     let headerView = DropoutHeaderView()
     let dropoutReasonView = DropoutReasonView()
     
-    private let dropoutButton = UIButton().then {
-        $0.setButton(text: "탈퇴하기", typo: .button1, color: .teamOne.white)
-        $0.clipsToBounds = true
-        $0.layer.cornerRadius = 8
-        $0.backgroundColor = .teamOne.point
+    let dropoutButton = Button_IsEnabled_Dropout(enabledString: "탈퇴하기", disabledString: "탈퇴하기").then {
+        $0.setRound(radius: 8)
+        $0.setFont(typo: .button2)
+        $0.isEnabled = false
     }
     
     private let descriptionLabel = UILabel().then {

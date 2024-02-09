@@ -60,7 +60,7 @@ final class SettingCoordinator: BaseCoordinator<SettingCoordinatorResult> {
             .subscribe(onNext: { this, navi in
                 switch navi {
                 case .finish:
-                    break
+                    this.popTabbar(animated: true)
                 case .back:
                     this.popTabbar(animated: true)
                 }
