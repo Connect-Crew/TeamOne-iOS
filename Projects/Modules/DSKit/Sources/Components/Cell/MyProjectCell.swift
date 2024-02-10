@@ -10,7 +10,7 @@ import UIKit
 import Then
 import SnapKit
 
-class MyProjectCell: UICollectionViewCell {
+public class MyProjectCell: UICollectionViewCell {
     
     private let thumnailImageView = UIImageView()
     
@@ -25,7 +25,7 @@ class MyProjectCell: UICollectionViewCell {
         $0.spacing = 4
     }
     
-    private let collectionView = UICollectionView()
+//    private let collectionView = UICollectionView()
     
     private var tagData = [String]()
     
@@ -76,18 +76,18 @@ class MyProjectCell: UICollectionViewCell {
             make.right.equalToSuperview().inset(12)
         }
         
-        contentView.addSubview(collectionView)
-        collectionView.snp.makeConstraints { make in
-            make.left.equalTo(thumnailImageView.snp.right).offset(8)
-            make.top.equalTo(locationPerioadContainerView.snp.bottom).offset(4)
-            make.right.equalToSuperview().inset(12)
-            make.bottom.equalToSuperview().inset(12)
-        }
+//        contentView.addSubview(collectionView)
+//        collectionView.snp.makeConstraints { make in
+//            make.left.equalTo(thumnailImageView.snp.right).offset(8)
+//            make.top.equalTo(locationPerioadContainerView.snp.bottom).offset(4)
+//            make.right.equalToSuperview().inset(12)
+//            make.bottom.equalToSuperview().inset(12)
+//        }
     }
     
     public func bind(_ model: MyProjectsDSModel) {
         
-        collectionView.delegate = self
+//        collectionView.delegate = self
         
         projectTitleLabel.setLabel(text: model.title, typo: .body4, color: .teamOne.grayscaleEight)
         locationPeriodLabel.setLabel(
@@ -96,19 +96,11 @@ class MyProjectCell: UICollectionViewCell {
             color: .teamOne.grayscaleSeven)
         
         tagData = model.category
-        self.collectionView.reloadData()
+//        self.collectionView.reloadData()
     }
     
 }
 
 extension MyProjectCell: UICollectionViewDelegateFlowLayout {
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-            // 셀의 크기 계산
-            // 예를 들어, 텍스트의 길이에 따라 너비가 결정되도록 할 수 있습니다.
-            let item = tagData[indexPath.row] // dataSource는 콘텐츠를 담고 있는 배열
-            let itemSize = item.size(withAttributes: [
-                NSAttributedString.Key.font : SansNeo.caption2
-            ])
-            return CGSize(width: itemSize.width + 16, height: 40) // 20은 좌우 패딩
-        }
+    
 }

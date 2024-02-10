@@ -26,7 +26,7 @@ final class MyProjectMainView: UIView {
         $0.setImage(.image(dsimage: .backButtonImage), for: .normal)
     }
     
-    private var collectionView: UICollectionView!
+    var collectionView: UICollectionView!
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -39,9 +39,12 @@ final class MyProjectMainView: UIView {
     }
     
     private func layout() {
-        addSubview(headerView)
         
         collectionView = UICollectionView(frame: .zero, collectionViewLayout: createLayout())
+        collectionView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        
+        
+        addSubview(headerView)
         
         headerView.snp.makeConstraints { make in
             make.top.equalTo(safeAreaLayoutGuide)
@@ -64,14 +67,54 @@ final class MyProjectMainView: UIView {
         
         addSubview(collectionView)
         collectionView.snp.makeConstraints { make in
-            make.top.equalTo(headerView.snp.bottom)
+            make.top.equalTo(headerView.snp.bottom).offset(20)
             make.left.right.bottom.equalToSuperview()
         }
     }
     
     private func createLayout() -> UICollectionViewLayout {
+        let sectionProvider = { (sectionIndex: Int, layoutEnvironment: NSCollectionLayoutEnvironment) -> NSCollectionLayoutSection? in
+            // item size
+            let itemSize = NSCollectionLayoutSize(
+                widthDimension: .fractionalWidth(1.0),
+                heightDimension: .estimated(91)
+            )
+            
+            let item = NSCollectionLayoutItem(layoutSize: itemSize)
+
+            let groupSize = NSCollectionLayoutSize(
+                widthDimension: .fractionalWidth(1.0),
+                heightDimension: itemSize.heightDimension
+            )
+            
+            let group = NSCollectionLayoutGroup.horizontal(
+                layoutSize: groupSize,
+                subitem: item,
+                count: 1
+            )
+            
+            let section = NSCollectionLayoutSection(group: group)
+            let headerSize = NSCollectionLayoutSize(
+                widthDimension: .fractionalWidth(1.0),
+                heightDimension: .estimated(34)
+            )
+            let headerSupplementary = NSCollectionLayoutBoundarySupplementaryItem(
+                layoutSize: headerSize,
+                elementKind: ElementKind.sectionHeader,
+                alignment: .top
+            )
+            section.boundarySupplementaryItems = [headerSupplementary]
+            
+            return section
+        }
         
+        let config = UICollectionViewCompositionalLayoutConfiguration()
         
-        return UICollectionViewLayout()
+        let layout = UICollectionViewCompositionalLayout(
+            sectionProvider: sectionProvider,
+            configuration: config
+        )
+        
+        return layout
     }
 }

@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct MyProjects: Codable {
+public struct MyProjects: Codable, Hashable {
     public let id: Int
     public let title: String
     public let thumbnail: String?
