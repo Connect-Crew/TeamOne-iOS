@@ -83,7 +83,6 @@ final class MyProjectMainView: UIView {
             
             item.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 24, bottom: 0, trailing: 24)
             
-
             let groupSize = NSCollectionLayoutSize(
                 widthDimension: .fractionalWidth(1.0),
                 heightDimension: itemSize.heightDimension
