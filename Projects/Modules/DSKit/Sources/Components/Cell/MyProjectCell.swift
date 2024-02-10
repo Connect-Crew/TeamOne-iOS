@@ -10,11 +10,15 @@ import UIKit
 import Then
 import SnapKit
 
+import Core
+
 public class MyProjectCell: UICollectionViewCell {
     
     private let thumnailImageView = UIImageView().then {
-        $0.image = .image(dsimage: .logo)
         $0.layer.cornerRadius = 6
+        $0.clipsToBounds = true
+        $0.backgroundColor = .clear
+        $0.image = .image(dsimage: .logo)
     }
     
     private let projectTitleLabel = UILabel()
@@ -96,6 +100,8 @@ public class MyProjectCell: UICollectionViewCell {
     public func bind(_ model: MyProjectsDSModel) {
         
 //        collectionView.delegate = self
+        
+        thumnailImageView.setTeamOneImage(path: model.thumbnail)
         
         projectTitleLabel.setLabel(text: model.title, typo: .body4, color: .teamOne.grayscaleEight)
         locationPeriodLabel.setLabel(
