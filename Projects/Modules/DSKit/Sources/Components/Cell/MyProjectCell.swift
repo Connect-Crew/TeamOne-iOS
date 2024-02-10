@@ -12,12 +12,17 @@ import SnapKit
 
 public class MyProjectCell: UICollectionViewCell {
     
-    private let thumnailImageView = UIImageView()
+    private let thumnailImageView = UIImageView().then {
+        $0.image = .image(dsimage: .logo)
+        $0.layer.cornerRadius = 6
+    }
     
     private let projectTitleLabel = UILabel()
     
     private let locationPerioadContainerView = UIView()
-    private let locationImageView = UIImageView()
+    private let locationImageView = UIImageView().then {
+        $0.image = .image(dsimage: .place)
+    }
     private let locationPeriodLabel = UILabel()
     
     private let rightStackView = UIStackView().then {
@@ -39,6 +44,9 @@ public class MyProjectCell: UICollectionViewCell {
     }
     
     private func layout() {
+        
+        self.layer.cornerRadius = 8
+        self.setBaseShadow(radius: 8)
         
         addSubview(thumnailImageView)
         

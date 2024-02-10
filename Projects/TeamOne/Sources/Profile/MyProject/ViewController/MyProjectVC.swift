@@ -145,6 +145,19 @@ extension MyProjectVC: UICollectionViewDelegate {
             }
         }
         
+        let footerRegistration = UICollectionView.SupplementaryRegistration<MyProjectFooterView>(
+            elementKind: ElementKind.sectionFooter
+        ) { (supplementaryView, _, indexPath) in
+            switch Section(rawValue: indexPath.section) {
+            case .progress:
+                supplementaryView.useFooter(true)
+            case .completed:
+                supplementaryView.useFooter(false)
+            case .none:
+                break
+            }
+        }
+        
         let cellRegistration = UICollectionView.CellRegistration<MyProjectCell, MyProjects> { cell, _, itemIdentifier in
             
             cell.bind(itemIdentifier.toDS())
@@ -157,9 +170,18 @@ extension MyProjectVC: UICollectionViewDelegate {
             return collectionView.dequeueConfiguredReusableCell(using: cellRegistration, for: indexPath, item: identifier)
         }
         
-        dataSource.supplementaryViewProvider = { collectionView, _, indexPath in
-            return collectionView.dequeueConfiguredReusableSupplementary(using: headerRegistration, for: indexPath)
+        dataSource.supplementaryViewProvider = { collectionView, kind, indexPath in
+            if kind == ElementKind.sectionHeader {
+                return collectionView.dequeueConfiguredReusableSupplementary(using: headerRegistration, for: indexPath)
+            } else if kind == ElementKind.sectionFooter {
+                return collectionView.dequeueConfiguredReusableSupplementary(using: footerRegistration, for: indexPath)
+            }
+            return nil
         }
+        
+//        dataSource.supplementaryViewProvider = { collectionView, _, indexPath in
+//            return collectionView.dequeueConfiguredReusableSupplementary(using: footerRegistration, for: indexPath)
+//        }
     }
     
     func createCell(for item: MyProjects, indexPath: IndexPath, collectionView: UICollectionView) -> UICollectionViewCell? {

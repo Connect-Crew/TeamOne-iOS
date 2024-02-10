@@ -43,7 +43,6 @@ final class MyProjectMainView: UIView {
         collectionView = UICollectionView(frame: .zero, collectionViewLayout: createLayout())
         collectionView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         
-        
         addSubview(headerView)
         
         headerView.snp.makeConstraints { make in
@@ -81,6 +80,9 @@ final class MyProjectMainView: UIView {
             )
             
             let item = NSCollectionLayoutItem(layoutSize: itemSize)
+            
+            item.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 24, bottom: 0, trailing: 24)
+            
 
             let groupSize = NSCollectionLayoutSize(
                 widthDimension: .fractionalWidth(1.0),
@@ -94,16 +96,33 @@ final class MyProjectMainView: UIView {
             )
             
             let section = NSCollectionLayoutSection(group: group)
+            
+            section.contentInsets = NSDirectionalEdgeInsets(top: 8, leading: 0, bottom: 8, trailing: 0)
+            section.interGroupSpacing = 12
+            
             let headerSize = NSCollectionLayoutSize(
                 widthDimension: .fractionalWidth(1.0),
                 heightDimension: .estimated(34)
             )
+            
             let headerSupplementary = NSCollectionLayoutBoundarySupplementaryItem(
                 layoutSize: headerSize,
                 elementKind: ElementKind.sectionHeader,
                 alignment: .top
             )
-            section.boundarySupplementaryItems = [headerSupplementary]
+            
+            let footerSize = NSCollectionLayoutSize(
+                widthDimension: .fractionalWidth(1.0),
+                heightDimension: .estimated(16)
+            )
+            
+            let footerSupplementary = NSCollectionLayoutBoundarySupplementaryItem(
+                layoutSize: footerSize,
+                elementKind: ElementKind.sectionFooter,
+                alignment: .bottom
+            )
+            
+            section.boundarySupplementaryItems = [headerSupplementary, footerSupplementary]
             
             return section
         }
