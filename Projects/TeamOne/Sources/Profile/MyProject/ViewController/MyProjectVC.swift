@@ -13,6 +13,8 @@ import Core
 import RxSwift
 import RxCocoa
 import Then
+import Domain
+import DSKit
 
 final class MyProjectVC: ViewController {
     
@@ -20,8 +22,24 @@ final class MyProjectVC: ViewController {
     
     private let mainView = MyProjectMainView()
     
-    // MARK: - LifeCycle
+    private enum Section: Int, CaseIterable {
+        case progress
+        case completed
+        
+        var toString: String {
+            switch self {
+            case .progress:
+                return "진행중"
+            case .completed:
+                return "완료한 프로젝트"
+            }
+        }
+    }
     
+    private var dataSource: UICollectionViewDiffableDataSource<Section, MyProjects>!
+    private var myProjects = [MyProjects]()
+    
+    // MARK: - LifeCycle
     override func loadView() {
         self.view = mainView
     }
@@ -29,6 +47,11 @@ final class MyProjectVC: ViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
+        
+        mainView.collectionView.delegate = self
+        
+        configureDataSource()
+
     }
     
     // MARK: - Inits
@@ -49,5 +72,117 @@ final class MyProjectVC: ViewController {
         )
         
         let output = viewModel.transform(input: input)
+        
+        output.projectList
+            .drive(onNext: { [weak self] list in
+                guard let self else { return }
+                self.myProjects = list
+                self.apply()
+                
+            })
+            .disposed(by: disposeBag)
+    }
+}
+
+extension MyProjectVC: UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        print("select : \(myProjects)")
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+        guard kind == ElementKind.sectionHeader else {
+            return UICollectionReusableView()
+        }
+        let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: MyProjectHeaderView.withReuseIdentifier, for: indexPath) as! MyProjectHeaderView
+        
+        if indexPath.section == 0 {
+            headerView.setTitle("진행중")
+        } else {
+            headerView.setTitle("완료된 프로젝트")
+        }
+        return headerView
+    }
+    
+    private func apply() {
+        var snapshot = NSDiffableDataSourceSnapshot<Section, MyProjects>()
+        let sectionItems = Section.allCases
+        
+        snapshot.appendSections(sectionItems)
+        
+        sectionItems.forEach {
+            switch $0 {
+            case .progress:
+                let progressProject = myProjects.filter { $0.state.contains("진행") }
+                snapshot.appendItems(progressProject, toSection: .progress)
+            case .completed:
+                let completedProject = myProjects.filter { $0.state.contains("완료") }
+                snapshot.appendItems(completedProject, toSection: .completed)
+            }
+        }
+        
+        self.dataSource.apply(snapshot)
+    }
+    
+    private func configureDataSource() {
+        let headerRegistration = UICollectionView.SupplementaryRegistration<MyProjectHeaderView>(
+            elementKind: ElementKind.sectionHeader
+        ) { (supplementaryView, _, indexPath) in
+            
+            switch Section(rawValue: indexPath.section) {
+            case .progress:
+                supplementaryView.setTitle(Section.progress.toString)
+            case .completed:
+                supplementaryView.setTitle(Section.completed.toString)
+            case .none:
+                break
+            }
+        }
+        
+        let footerRegistration = UICollectionView.SupplementaryRegistration<MyProjectFooterView>(
+            elementKind: ElementKind.sectionFooter
+        ) { (supplementaryView, _, indexPath) in
+            switch Section(rawValue: indexPath.section) {
+            case .progress:
+                supplementaryView.useFooter(true)
+            case .completed:
+                supplementaryView.useFooter(false)
+            case .none:
+                break
+            }
+        }
+        
+        let cellRegistration = UICollectionView.CellRegistration<MyProjectCell, MyProjects> { cell, _, itemIdentifier in
+            
+            cell.delegate = self
+            
+            cell.bind(itemIdentifier.toDS())
+            
+        }
+        
+        dataSource = UICollectionViewDiffableDataSource<Section, MyProjects>(
+            collectionView: mainView.collectionView
+        ) { (collectionView, indexPath, identifier) in
+            return collectionView.dequeueConfiguredReusableCell(using: cellRegistration, for: indexPath, item: identifier)
+        }
+        
+        dataSource.supplementaryViewProvider = { collectionView, kind, indexPath in
+            if kind == ElementKind.sectionHeader {
+                return collectionView.dequeueConfiguredReusableSupplementary(using: headerRegistration, for: indexPath)
+            } else if kind == ElementKind.sectionFooter {
+                return collectionView.dequeueConfiguredReusableSupplementary(using: footerRegistration, for: indexPath)
+            }
+            return nil
+        }
+    }
+}
+
+extension MyProjectVC: UpdateCellDelegate {
+    func update() {
+        self.mainView.collectionView.layoutIfNeeded()
+        self.mainView.collectionView.performBatchUpdates(nil, completion: { _ in
+            self.mainView.collectionView.snp.updateConstraints { make in
+                make.height.equalTo(self.mainView.collectionView.contentSize.height)
+            }
+        })
     }
 }

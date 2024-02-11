@@ -14,7 +14,7 @@ public enum Environment {
 public extension Project {
     enum Environment {
         public static let workspaceName = "TeamOne"
-        public static let deploymentTarget = DeploymentTarget.iOS(targetVersion: "13.0", devices: [.iphone])
+        public static let deploymentTarget = DeploymentTarget.iOS(targetVersion: "15.0", devices: [.iphone])
         public static let platform = Platform.iOS
         public static let bundlePrefix = "com.connectCrew"
     }

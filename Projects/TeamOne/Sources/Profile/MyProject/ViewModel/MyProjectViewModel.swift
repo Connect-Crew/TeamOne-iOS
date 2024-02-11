@@ -29,7 +29,7 @@ final class MyProjectViewModel: ViewModel {
     }
     
     struct Output {
-        
+        let projectList: Driver<[MyProjects]>
     }
     
     var disposeBag: DisposeBag = .init()
@@ -56,17 +56,13 @@ final class MyProjectViewModel: ViewModel {
                     .asResult()
             }
         
-        result
-            .subscribe(onNext: { result in
-                switch result {
-                case .success(let success):
-                    print(success)
-                case .failure(let failure):
-                    print(failure)
-                }
-            })
-            .disposed(by: disposeBag)
+        let projectList = result
+            .compactMap { result -> [MyProjects]? in
+                guard case .success(let data) = result else { return nil }
+                return data
+            }
+            .asDriver(onErrorJustReturn: [])
         
-        return Output()
+        return Output(projectList: projectList)
     }
 }

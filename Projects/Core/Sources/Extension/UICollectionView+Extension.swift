@@ -24,3 +24,9 @@ public extension UICollectionViewCell {
         return String(describing: self)
     }
 }
+
+public extension UICollectionReusableView {
+    static var withReuseIdentifier: String {
+        return String(describing: self)
+    }
+}
