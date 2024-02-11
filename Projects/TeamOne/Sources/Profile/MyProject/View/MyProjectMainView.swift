@@ -68,6 +68,7 @@ final class MyProjectMainView: UIView {
         collectionView.snp.makeConstraints { make in
             make.top.equalTo(headerView.snp.bottom).offset(20)
             make.left.right.bottom.equalToSuperview()
+            make.height.equalTo(500)
         }
     }
     

@@ -12,7 +12,17 @@ import SnapKit
 
 import Core
 
+public protocol UpdateCellDelegate: AnyObject {
+    func update()
+}
+
 public class MyProjectCell: UICollectionViewCell {
+    
+    private enum Section {
+        case main
+    }
+    
+    typealias Item = HashTagDSModel
     
     private let thumnailImageView = UIImageView().then {
         $0.layer.cornerRadius = 6
@@ -34,12 +44,18 @@ public class MyProjectCell: UICollectionViewCell {
         $0.spacing = 4
     }
     
-//    private let collectionView = UICollectionView()
+    var collectionViewHeightConstraint: Constraint?
     
-    private var tagData = [String]()
+    public weak var delegate: UpdateCellDelegate?
+    
+    var collectionView: UICollectionView!
+    private var dataSource: UICollectionViewDiffableDataSource<Section, Item>!
+    
+    private var tagData = [HashTagDSModel]()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
+        
         layout()
     }
     
@@ -48,6 +64,9 @@ public class MyProjectCell: UICollectionViewCell {
     }
     
     private func layout() {
+        
+        collectionView = UICollectionView(frame: .zero, collectionViewLayout: createLayout())
+        configureDataSource()
         
         self.layer.cornerRadius = 8
         self.setBaseShadow(radius: 8)
@@ -88,18 +107,18 @@ public class MyProjectCell: UICollectionViewCell {
             make.right.equalToSuperview().inset(12)
         }
         
-//        contentView.addSubview(collectionView)
-//        collectionView.snp.makeConstraints { make in
-//            make.left.equalTo(thumnailImageView.snp.right).offset(8)
-//            make.top.equalTo(locationPerioadContainerView.snp.bottom).offset(4)
-//            make.right.equalToSuperview().inset(12)
-//            make.bottom.equalToSuperview().inset(12)
-//        }
+        addSubview(collectionView)
+        collectionView.snp.makeConstraints { make in
+            make.left.equalTo(thumnailImageView.snp.right).offset(8)
+            make.top.equalTo(locationPerioadContainerView.snp.bottom).offset(4)
+            make.right.equalToSuperview().inset(12)
+            make.bottom.equalToSuperview().inset(12)
+//            self.collectionViewHeightConstraint = make.height.equalTo(200).constraint
+            make.height.equalTo(200)
+        }
     }
     
     public func bind(_ model: MyProjectsDSModel) {
-        
-//        collectionView.delegate = self
         
         thumnailImageView.setTeamOneImage(path: model.thumbnail)
         
@@ -109,12 +128,104 @@ public class MyProjectCell: UICollectionViewCell {
             typo: .caption2,
             color: .teamOne.grayscaleSeven)
         
-        tagData = model.category
-//        self.collectionView.reloadData()
+        var hashTagData = [HashTagDSModel]()
+        
+        hashTagData.append(HashTagDSModel(
+            title: model.state,
+            tagColor: model.state.contains("진행") ? .pink : .black
+        ))
+        
+        hashTagData.append(HashTagDSModel(
+            title: model.careerMin,
+            tagColor: .pink
+        ))
+        
+        model.category.forEach { title in
+            hashTagData.append(HashTagDSModel(
+                title: title,
+                tagColor: .gray
+            ))
+        }
+        
+        hashTagData.append(HashTagDSModel(
+            title: model.goal,
+            tagColor: .gray
+        ))
+        
+        tagData = hashTagData
+        self.applySnapshot()
     }
     
 }
 
-extension MyProjectCell: UICollectionViewDelegateFlowLayout {
+extension MyProjectCell {
+    private func createLayout() -> UICollectionViewCompositionalLayout {
+        
+        let layout = UICollectionViewCompositionalLayout { (sectionIndex: Int,
+                                                            layoutEnvironment: NSCollectionLayoutEnvironment) -> NSCollectionLayoutSection? in
+            
+            let itemSize = NSCollectionLayoutSize(widthDimension: .estimated(50),
+                                                  heightDimension: .estimated(17))
+            
+            let item = NSCollectionLayoutItem(layoutSize: itemSize)
+            
+            let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1),
+                                                   heightDimension: .estimated(17))
+            
+            let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
+            group.interItemSpacing = .fixed(4)
+            
+            let section = NSCollectionLayoutSection(group: group)
+            
+            section.interGroupSpacing = 4
+            
+            return section
+        }
+        
+        return layout
+    }
     
+    private func applySnapshot() {
+        var snapshot = NSDiffableDataSourceSnapshot<Section, Item>()
+        
+        snapshot.appendSections([.main])
+        snapshot.appendItems(tagData, toSection: .main)
+        
+        self.dataSource.apply(snapshot) {
+            self.collectionView.performBatchUpdates(nil) { [weak self] _ in
+                self?.updateCollectionViewHeight()
+            }
+        }
+    }
+    
+    private func configureDataSource() {
+        
+        let cellRegistration = UICollectionView.CellRegistration<HashTagCell, HashTagDSModel> { cell, indexPath, itemIdentifier in
+            
+            cell.initSetting(tag: self.tagData[indexPath.item])
+        }
+        
+        dataSource = UICollectionViewDiffableDataSource<Section, Item>(
+            collectionView: collectionView
+        ) { (collectionView, indexPath, identifier) in
+            return collectionView.dequeueConfiguredReusableCell(using: cellRegistration, for: indexPath, item: identifier)
+        }
+        
+    }
+    func createCell(for item: Item, indexPath: IndexPath, collectionView: UICollectionView) -> UICollectionViewCell? {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: HashTagCell.defaultReuseIdentifier, for: indexPath) as! HashTagCell
+        cell.initSetting(tag: self.tagData[indexPath.item])
+        return cell
+    }
+    
+    func updateCollectionViewHeight() {
+        
+        DispatchQueue.main.async {
+            self.collectionView.layoutIfNeeded()
+            self.collectionView.snp.updateConstraints { make in
+                make.height.equalTo(self.collectionView.contentSize.height)
+            }
+            self.delegate?.update()
+        }
+    }
 }

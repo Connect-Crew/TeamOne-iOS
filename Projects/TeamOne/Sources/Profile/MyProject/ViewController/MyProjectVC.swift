@@ -50,13 +50,6 @@ final class MyProjectVC: ViewController {
         
         mainView.collectionView.delegate = self
         
-        dataSource = UICollectionViewDiffableDataSource<Section, MyProjects>(collectionView: mainView.collectionView,
-                                                                       cellProvider: { [weak self] collectionView, indexPath, item in
-            guard let this = self else { return UICollectionViewCell() }
-            
-            return this.createCell(for: item, indexPath: indexPath, collectionView: collectionView)
-        })
-        
         configureDataSource()
 
     }
@@ -160,6 +153,8 @@ extension MyProjectVC: UICollectionViewDelegate {
         
         let cellRegistration = UICollectionView.CellRegistration<MyProjectCell, MyProjects> { cell, _, itemIdentifier in
             
+            cell.delegate = self
+            
             cell.bind(itemIdentifier.toDS())
             
         }
@@ -178,15 +173,16 @@ extension MyProjectVC: UICollectionViewDelegate {
             }
             return nil
         }
-        
-//        dataSource.supplementaryViewProvider = { collectionView, _, indexPath in
-//            return collectionView.dequeueConfiguredReusableSupplementary(using: footerRegistration, for: indexPath)
-//        }
     }
-    
-    func createCell(for item: MyProjects, indexPath: IndexPath, collectionView: UICollectionView) -> UICollectionViewCell? {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MyProjectCell.defaultReuseIdentifier, for: indexPath) as! MyProjectCell
-        
-        return cell
+}
+
+extension MyProjectVC: UpdateCellDelegate {
+    func update() {
+        self.mainView.collectionView.layoutIfNeeded()
+        self.mainView.collectionView.performBatchUpdates(nil, completion: { _ in
+            self.mainView.collectionView.snp.updateConstraints { make in
+                make.height.equalTo(self.mainView.collectionView.contentSize.height)
+            }
+        })
     }
 }
