@@ -70,13 +70,15 @@ final class ProfileDetailMainView: View {
             editButton
         ]
     ).then {
-        $0.layoutMargins = UIEdgeInsets(top: 20, left: 0, bottom: 20, right: 0)
+        $0.layoutMargins = UIEdgeInsets(top: 20, left: 24, bottom: 20, right: 24)
         $0.isLayoutMarginsRelativeArrangement = true
         $0.alignment = .center
         $0.axis = .vertical
         $0.spacing = 4
         $0.setCustomSpacing(8, after: profileImageView)
     }
+    
+    private let participationStatusView = ParticiPationStatusView()
     
     init() {
         super.init(frame: .zero)
@@ -93,6 +95,7 @@ final class ProfileDetailMainView: View {
         layoutNavBar()
         layoutScrollView()
         layoutProfileStackView()
+        layoutParticipationStatusView()
     }
     
     private func layoutNavBar() {
@@ -117,11 +120,22 @@ final class ProfileDetailMainView: View {
         scrollView.contentView.addSubview(profileStackView)
         
         profileStackView.snp.makeConstraints {
-            $0.edges.equalToSuperview()
+            $0.top.leading.trailing.equalToSuperview()
         }
         
         profileImageView.snp.makeConstraints {
             $0.width.height.equalTo(48)
+        }
+    }
+    
+    private func layoutParticipationStatusView() {
+        scrollView.contentView.addSubview(participationStatusView)
+        
+        participationStatusView.snp.makeConstraints {
+            $0.top.equalTo(profileStackView.snp.bottom)
+            $0.leading.equalToSuperview().offset(24)
+            $0.trailing.equalToSuperview().inset(24)
+            $0.bottom.equalToSuperview()
         }
     }
     
