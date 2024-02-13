@@ -69,6 +69,11 @@ final class MyProfileCard: UIView {
         $0.distribution = .fillEqually
     }
     
+    var profileButtonTap: Observable<Void> {
+        return profileButton.rx.tap
+            .throttle(.seconds(1), latest: true, scheduler: MainScheduler.instance)
+    }
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         
