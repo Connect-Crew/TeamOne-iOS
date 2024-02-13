@@ -19,7 +19,7 @@ enum FavoriteProjectNavigation {
 final class FavoriteProjectViewModel: ViewModel {
     
     struct Input {
-        
+        let backButtonTap: Observable<Void>
     }
     
     struct Output {
@@ -31,7 +31,16 @@ final class FavoriteProjectViewModel: ViewModel {
     
     func transform(input: Input) -> Output {
         
+        transformBack(tap: input.backButtonTap)
+        
         return Output()
+    }
+    
+    private func transformBack(tap: Observable<Void>) {
+        tap
+            .map { .back }
+            .bind(to: navigation)
+            .disposed(by: disposeBag)
     }
 }
 

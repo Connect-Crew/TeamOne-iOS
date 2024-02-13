@@ -11,6 +11,7 @@ import Core
 import RxSwift
 import RxCocoa
 import Then
+import DSKit
 
 final class FavoriteProjectVC: ViewController {
     
@@ -27,6 +28,7 @@ final class FavoriteProjectVC: ViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
+        mainView.collectionView.dataSource = self
     }
     
     // MARK: - Inits
@@ -41,9 +43,27 @@ final class FavoriteProjectVC: ViewController {
     }
     
     override func bind() {
-        let input = FavoriteProjectViewModel.Input()
+        let input = FavoriteProjectViewModel.Input(
+            backButtonTap: mainView.backButtonTap
+        )
         
         let output = viewModel.transform(input: input)
     }
 }
 
+extension FavoriteProjectVC: UICollectionViewDataSource {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        3
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        
+        guard let cell = collectionView.dequeueCell(FavoriteProjectCell.self, for: indexPath) else {
+            return UICollectionViewCell()
+        }
+        
+        return cell
+    }
+    
+    
+}
