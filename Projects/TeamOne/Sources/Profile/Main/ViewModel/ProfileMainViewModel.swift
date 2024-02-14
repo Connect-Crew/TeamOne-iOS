@@ -17,6 +17,7 @@ enum ProfileNavigation {
     case finish
     case setting
     case myProject
+    case favoriteProject
 }
 
 final class ProfileMainViewModel: ViewModel {
@@ -60,7 +61,7 @@ final class ProfileMainViewModel: ViewModel {
                 case .submittedProject:
                     break
                 case .favoriteProject:
-                    break
+                    this.navigation.onNext(.favoriteProject)
                 }
             })
             .disposed(by: disposeBag)
