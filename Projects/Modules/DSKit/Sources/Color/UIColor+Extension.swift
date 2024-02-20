@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import SwiftUI
 
 public extension UIColor {
     convenience init(r: CGFloat, g: CGFloat, b: CGFloat, a: CGFloat) {
@@ -31,4 +32,5 @@ public struct TeamOneColor {
     public let white = UIColor(r: 253, g: 253, b: 253, a: 1)
     public let bgColor = UIColor(r: 249, g: 250, b: 252, a: 1)
     public let transparent = UIColor(r: 0, g: 0, b: 0, a: 0.7)
+    
 }

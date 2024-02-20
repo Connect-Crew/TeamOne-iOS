@@ -9,6 +9,7 @@
 import Foundation
 import CoreGraphics
 import UIKit
+import SwiftUI
 
 public struct Fonts {
     public static func fontInitialize() {
@@ -59,5 +60,9 @@ public struct Fonts {
             print("Failed to register font: \(error!.takeRetainedValue())")
             return
         }
+    }
+    
+    public static func toFont(font: SansNeo) -> Font {
+        return Font(UIFont.setFont(font: font))
     }
 }
