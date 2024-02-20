@@ -29,6 +29,11 @@ final class ProfileDetailVC: ViewController {
         view.backgroundColor = .white
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        mainView.lazyBind()
+    }
+    
     // MARK: - Inits
     
     init(viewModel: ProfileDetailViewModel) {
@@ -41,9 +46,13 @@ final class ProfileDetailVC: ViewController {
     }
     
     override func bind() {
-        let input = ProfileDetailViewModel.Input()
+        let input = ProfileDetailViewModel.Input(
+            tapBackButton: mainView.navBar.backButttonTap
+        )
         
         let output = viewModel.transform(input: input)
+        
+        mainView.bind(output: output)
     }
 }
 

@@ -19,11 +19,11 @@ enum ProfileDetailNavigation {
 final class ProfileDetailViewModel: ViewModel {
     
     struct Input {
-        
+        let tapBackButton: Observable<Void>
     }
     
     struct Output {
-        
+        let representProject: Observable<[Void]>
     }
     
     var disposeBag: DisposeBag = .init()
@@ -31,7 +31,18 @@ final class ProfileDetailViewModel: ViewModel {
     
     func transform(input: Input) -> Output {
         
-        return Output()
+        transformBack(tap: input.tapBackButton)
+        
+        return Output(
+            representProject: Observable.just([(), (), (), ()])
+        )
+    }
+    
+    private func transformBack(tap: Observable<Void>) {
+        tap
+            .map { .back }
+            .bind(to: navigation)
+            .disposed(by: disposeBag)
     }
 }
 
