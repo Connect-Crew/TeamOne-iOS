@@ -27,10 +27,11 @@ public extension UIView {
      - Parameters:
         - height: CGFloat
      */
-    func setDivider(height: CGFloat, color: UIColor = .teamOne.grayscaleTwo) {
+    func setDivider(height: CGFloat, width: CGFloat = 1, color: UIColor = .teamOne.grayscaleTwo) {
         self.backgroundColor = color
         self.snp.makeConstraints {
             $0.height.equalTo(height)
+            $0.width.equalTo(width)
         }
     }
 
@@ -39,10 +40,11 @@ public extension UIView {
      - Parameters:
         - width: CGFloat
      */
-    func setDivider(width: CGFloat, color: UIColor = .teamOne.grayscaleTwo) {
+    func setDivider(width: CGFloat, height: CGFloat = 1, color: UIColor = .teamOne.grayscaleTwo) {
         self.backgroundColor = color
         self.snp.makeConstraints {
             $0.width.equalTo(width)
+            $0.height.equalTo(height)
         }
     }
 
