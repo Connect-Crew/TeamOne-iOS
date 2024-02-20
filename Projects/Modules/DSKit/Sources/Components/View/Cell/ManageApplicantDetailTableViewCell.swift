@@ -300,7 +300,8 @@ public final class ManageApplicantDetailTableViewCell: UITableViewCell, CellIden
         self.row = row
         self.profileImageView.setTeamOneImage(path: item.profile)
         self.labelName.text = item.nickname
-        self.imageViewHodey.setHoney(temparature: item.temperature)
+        // TODO: - 레벨 내려오면 변경된 레벨 적용
+//        self.imageViewHodey.setHoney(temparature: item.temperature)
         self.labelPart.text = item.parts.map {
             return "\($0.category)/\($0.part)"
         }.joined(separator: ", ")
