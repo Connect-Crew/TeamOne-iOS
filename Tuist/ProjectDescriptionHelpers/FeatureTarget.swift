@@ -14,7 +14,19 @@ public enum FeatureTarget {
     case staticFramework
     case unitTest           // Unit Test
     case demo               // Feature Excutable Test
+    case testing
+    case interface
 
+    public static var microFeature: [Self] {
+        return [
+            .dynamicFramework,
+            .interface,
+            .demo,
+            .testing,
+            .unitTest
+        ]
+    }
+    
     public var hasFramework: Bool {
         switch self {
         case .dynamicFramework, .staticFramework: return true

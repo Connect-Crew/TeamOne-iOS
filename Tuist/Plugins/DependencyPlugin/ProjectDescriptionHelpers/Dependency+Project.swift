@@ -7,9 +7,14 @@
 
 import ProjectDescription
 
-typealias Dep = TargetDependency
+public typealias Dep = TargetDependency
 
 public extension Dep {
+    
+    struct Features {
+        public struct Report {}
+    }
+    
     struct Modules {}
 }
 
@@ -38,4 +43,20 @@ public extension Dep.Modules {
     )
 }
 
+// MARK: - Features
+public extension Dep.Features {
+    static func project(name: String, group: String) -> Dep { .project(target: "\(group)\(name)", path: .relativeToFeature("\(group)\(name)")) }
+    
+    static let BaseFeatureDependency = TargetDependency.project(target: "BaseFeatureDependency", path: .relativeToFeature("BaseFeatureDependency"))
+    
+    static let RootFeature = TargetDependency.project(target: "RootFeature", path: .relativeToFeature("RootFeature"))
+    
+}
 
+//MARK: Splash
+public extension Dep.Features.Report {
+    static let group = "Report"
+    
+    static let Feature = Dep.Features.project(name: "Feature", group: group)
+    static let Interface = Dep.project(target: "\(group)FeatureInterface", path: .relativeToFeature("\(group)Feature"))
+}

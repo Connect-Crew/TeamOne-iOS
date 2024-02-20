@@ -4,7 +4,7 @@ import ProjectDescriptionHelpers
 import DependencyPlugin
 
 let project = Project.makeModule(
-    name: "{{ name }}",
+    name: "ReportFeature",
     targets: Set(FeatureTarget.microFeature),
     interfaceDependencies: [
         .Features.BaseFeatureDependency

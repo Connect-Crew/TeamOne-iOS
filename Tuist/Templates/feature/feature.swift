@@ -38,9 +38,9 @@ let template = Template(
                   templatePath: "empty.stencil"),
         
         // MARK: Example
-            .file(path: "Projects/Features/\(nameAttribute)/Deomo/Resources/.gitkeep",
+            .file(path: "Projects/Features/\(nameAttribute)/Demo/Resources/.gitkeep",
                   templatePath: "empty.stencil"),
-            .file(path: "Projects/Features/\(nameAttribute)/Deomo/Sources/AppDelegate.swift",
+            .file(path: "Projects/Features/\(nameAttribute)/Demo/Sources/AppDelegate.swift",
                   templatePath: "appDelegate.stencil"),
             .file(path: "Projects/Features/\(nameAttribute)/Deomo/Sources/SceneDelegate.swift",
                   templatePath: "sceneDelegate.stencil"),

@@ -1,8 +1,8 @@
 //
 //  Project.swift
-//  ProjectDescriptionHelpers
+//  DependencyPlugin
 //
-//  Created by 강현준 on 2023/10/06.
+//  Created by Junyoung Lee on 2023/08/11.
 //
 
 import ProjectDescription
@@ -10,10 +10,10 @@ import ProjectDescriptionHelpers
 import DependencyPlugin
 
 let project = Project.makeModule(
-    name: "TeamOneNetwork",
-    targets: [.staticFramework],
+    name: "BaseFeatureDependency",
+    targets: [.dynamicFramework],
     internalDependencies: [
-        .domain
+        .domain,
+        .Modules.dsKit
     ]
 )
-
