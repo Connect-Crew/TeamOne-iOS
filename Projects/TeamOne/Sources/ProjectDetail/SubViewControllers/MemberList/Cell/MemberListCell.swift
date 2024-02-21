@@ -167,7 +167,8 @@ final class MemberListCell: UICollectionViewCell, CellIdentifiable {
         let member = member else { return }
         
         self.imageViewProfile.setTeamOneImage(path: member.profile.profile)
-        self.imageViewHoney.setHoney(temparature: member.profile.temperature)
+        // TODO: - exp 내려오면 적용
+//        self.imageViewHoney.setLevel(exp: <#T##Int#>)
         self.labelName.text = member.profile.nickname
         self.labelIsLeader.isHidden = !member.isLeader
         self.labelPart.text = member.parts.joined(separator: ",")

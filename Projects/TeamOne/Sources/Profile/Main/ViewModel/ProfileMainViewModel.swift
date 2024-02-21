@@ -17,6 +17,7 @@ enum ProfileNavigation {
     case finish
     case setting
     case myProject
+    case profileDetail
     case favoriteProject
 }
 
@@ -25,6 +26,7 @@ final class ProfileMainViewModel: ViewModel {
     struct Input {
         let tapSetting: Observable<SettingType>
         let tapMyProfile: Observable<MyProjectType>
+        let tapProfileDetail: Observable<Void>
     }
     
     struct Output {
@@ -38,6 +40,7 @@ final class ProfileMainViewModel: ViewModel {
         
         transformTapSetting(tap: input.tapSetting)
         transformTapMyProject(input.tapMyProfile)
+        transformTapProfileDetail(tap: input.tapProfileDetail)
         
         return Output()
     }
@@ -64,6 +67,13 @@ final class ProfileMainViewModel: ViewModel {
                     this.navigation.onNext(.favoriteProject)
                 }
             })
+            .disposed(by: disposeBag)
+    }
+    
+    private func transformTapProfileDetail(tap: Observable<Void>) {
+        tap
+            .map { .profileDetail }
+            .bind(to: navigation)
             .disposed(by: disposeBag)
     }
 }

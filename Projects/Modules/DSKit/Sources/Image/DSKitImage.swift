@@ -180,6 +180,8 @@ public enum DSKitImage {
     case myProject
     case submittedProject
     case favoriteProject
+    
+    case ralo
 
     
     var toName: String {
@@ -391,6 +393,7 @@ public enum DSKitImage {
         case .favoriteProject:
             return "heart"
 
+        case .ralo: return "ralo"
         }
     }
 }

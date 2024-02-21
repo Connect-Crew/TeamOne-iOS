@@ -30,6 +30,10 @@ final class MyProfileView: UIView {
         $0.setDivider(height: 1, color: .teamOne.grayscaleTwo)
     }
     
+    var profileButtonTap: Observable<Void> {
+        return profileCardView.profileButtonTap
+    }
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         

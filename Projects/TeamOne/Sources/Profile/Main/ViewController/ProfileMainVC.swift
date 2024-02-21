@@ -46,7 +46,8 @@ final class ProfileMainVC: ViewController {
         let input = ProfileMainViewModel.Input(
             tapSetting: mainView.settingView.settingType
                 .throttle(.seconds(1), latest: true, scheduler: MainScheduler.instance),
-            tapMyProfile: mainView.myProjectView.myProjectType.asObserver()
+            tapMyProfile: mainView.myProjectView.myProjectType.asObserver(),
+            tapProfileDetail: mainView.profileButtonTap
         )
         
         let output = viewModel.transform(input: input)
