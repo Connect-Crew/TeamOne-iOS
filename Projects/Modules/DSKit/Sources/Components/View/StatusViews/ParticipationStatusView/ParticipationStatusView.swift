@@ -14,9 +14,9 @@ import Then
 public final class ParticiPationStatusView: View {
     
     private lazy var contentView = UIStackView(arrangedSubviews: [
-        activeStatusViwe,
-        completedStatusViwe,
-        representativeStatusViwe
+        activeStatusView,
+        completedStatusView,
+        representativeStatusView
     ]).then {
         $0.distribution = .fillEqually
     }
@@ -29,25 +29,25 @@ public final class ParticiPationStatusView: View {
         $0.setDivider(width: 1)
     }
     
-    private let activeStatusViwe = ParticipationStatusSuvView(title: "참가중")
-    private let completedStatusViwe = ParticipationStatusSuvView(title: "참가완료")
-    private let representativeStatusViwe = ParticipationStatusSuvView(title: "대표 프로젝트")
+    private let activeStatusView = ParticipationStatusSuvView(title: "참가중")
+    private let completedStatusView = ParticipationStatusSuvView(title: "참가완료")
+    private let representativeStatusView = ParticipationStatusSuvView(title: "대표 프로젝트")
     
     public var activateProjectCount: Int = 0 {
         didSet {
-            activeStatusViwe.countLabel.text = "\(activateProjectCount)"
+            activeStatusView.countLabel.text = "\(activateProjectCount)"
         }
     }
     
     public var completedProjectCount: Int = 0 {
         didSet {
-            completedStatusViwe.countLabel.text = "\(completedProjectCount)"
+            completedStatusView.countLabel.text = "\(completedProjectCount)"
         }
     }
     
     public var representativeProjectCount: Int = 0 {
         didSet {
-            representativeStatusViwe.countLabel.text = "\(representativeProjectCount)"
+            representativeStatusView.countLabel.text = "\(representativeProjectCount)"
         }
     }
     
@@ -81,13 +81,13 @@ public final class ParticiPationStatusView: View {
         self.addSubview(firstDivider)
         
         firstDivider.snp.makeConstraints {
-            $0.leading.equalTo(activeStatusViwe.snp.trailing)
+            $0.leading.equalTo(activeStatusView.snp.trailing)
         }
         
         self.addSubview(secondDivider)
         
         secondDivider.snp.makeConstraints {
-            $0.leading.equalTo(completedStatusViwe.snp.trailing)
+            $0.leading.equalTo(completedStatusView.snp.trailing)
         }
         
         [firstDivider, secondDivider].forEach {
