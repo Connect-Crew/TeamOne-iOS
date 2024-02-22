@@ -24,12 +24,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     let notificationCenter = UNUserNotificationCenter.current()
     let notificationOption: UNAuthorizationOptions = [.alert, .badge, .sound]
+    
+    override init() {
+        super.init()
+        
+        FirebaseApp.configure()
+    }
 
     func application(_ application: UIApplication,
                      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
 
         RxKakaoSDK.initSDK(appKey: AppKey.kakaoNativeAppKey)
-        FirebaseApp.configure()
 
         #if DEV
         print("Develop")
