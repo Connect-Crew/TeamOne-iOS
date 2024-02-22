@@ -9,6 +9,10 @@ import ProjectDescription
 
 extension ProjectDescription.Path {
     
+    static func relativeToFeature(_ path: String) -> Self {
+        return .relativeToRoot("Projects/Features/\(path)")
+    }
+    
     static func relativeToModules(_ path: String) -> Self {
         return .relativeToRoot("Projects/Modules/\(path)")
     }

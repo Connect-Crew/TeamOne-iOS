@@ -69,8 +69,13 @@ public extension Project {
 
         // MARK: - Unit Tests
         if targets.contains(.unitTest) {
-            let deps: [TargetDependency] = [.target(name: name)]
-
+            let settings = baseSettings
+            
+            let targets: [TargetDependency] = [
+                .target(name: "\(name)Testing"),
+                .target(name: "\(name)")
+            ]
+            
             let target = Target(
                 name: "\(name)Tests",
                 platform: platform,
@@ -80,19 +85,88 @@ public extension Project {
                 infoPlist: .default,
                 sources: ["Tests/Sources/**/*.swift"],
                 resources: [.glob(pattern: "Tests/Resources/**", excluding: [])],
-                dependencies: [
-                    deps,
-                    [
-
-                    ]
-                ].flatMap { $0 },
-                settings: .settings(base: SettingsDictionary().setCodeSignManual(), configurations: XCConfig.tests)
+                scripts: [],
+                dependencies: targets,
+                settings: .settings(base: settings, configurations: XCConfig.framework)
             )
+            
+            projectTargets.append(target)
         }
-
+        
+        // MARK: - Feature Interface
+        if targets.contains(.interface) {
+            let settings = baseSettings
+            
+            let target = Target(
+                name: "\(name)Interface",
+                platform: platform,
+                product: .framework,
+                bundleId: "\(Environment.bundlePrefix).\(name)Interface",
+                deploymentTarget: deploymentTarget,
+                infoPlist: .default,
+                sources: ["Interface/Sources/**/*.swift"],
+                scripts: [],
+                dependencies: interfaceDependencies,
+                settings: .settings(base: settings, configurations: XCConfig.framework)
+            )
+            
+            projectTargets.append(target)
+        }
+        
+        // MARK: - Demo
+        if targets.contains(.demo) {
+            let baseSettings: SettingsDictionary = .baseSettings.setCodeSignManual()
+            
+            let deps: [TargetDependency] = [
+                .target(name: name),
+                .target(name: "\(name)Testing")
+            ]
+            
+            let target = Target(
+                name: "\(name)Demo",
+                platform: platform,
+                product: .app,
+                bundleId: "\(Environment.bundlePrefix).\(name)Demo",
+                deploymentTarget: deploymentTarget,
+                infoPlist: .extendingDefault(with: infoPlist),
+                sources: ["Demo/Sources/**/*.swift"],
+                resources: [.glob(pattern: "Demo/Resources/**", excluding: [])],
+                dependencies: [
+                    deps
+                ].flatMap { $0 },
+                settings: .settings(base: baseSettings, configurations: XCConfig.framework)
+            )
+            
+            projectTargets.append(target)
+        }
+        
+        // MARK: - Testing
+        if targets.contains(.testing) {
+            let settings = baseSettings
+            
+            let target = Target(
+                name: "\(name)Testing",
+                platform: platform,
+                product: .framework,
+                bundleId: "\(Environment.bundlePrefix).\(name)Testing",
+                deploymentTarget: deploymentTarget,
+                infoPlist: .default,
+                sources: ["Testing/Sources/**/*.swift"],
+                scripts: [],
+                dependencies: [.target(name: "\(name)Interface")],
+                settings: .settings(base: settings, configurations: XCConfig.framework)
+            )
+            
+            projectTargets.append(target)
+        }
+        
         // MARK: - Framework
         if targets.contains(where: { $0.hasFramework }) {
 
+            let deps: [TargetDependency] = targets.contains(.interface)
+            ? [.target(name: "\(name)Interface")]
+            : []
+            
             let settings = baseSettings
 
             let target = Target(
@@ -104,7 +178,7 @@ public extension Project {
                 infoPlist: .default,
                 sources: ["Sources/**/*.swift"],
                 resources: hasResources ? [.glob(pattern: "Resources/**", excluding: [])] : [],
-                dependencies: internalDependencies + externalDependencies,
+                dependencies: deps + internalDependencies + externalDependencies,
                 settings: .settings(base: settings, configurations: XCConfig.framework)
             )
 

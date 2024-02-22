@@ -11,10 +11,11 @@ import DependencyPlugin
 
 let project = Project.makeModule(
     name: "TeamOne",
-    targets: [.app, .unitTest],
+    targets: [.app],
     internalDependencies: [
         .domain,
         .Modules.dsKit,
-        .data
+        .data,
+        .Features.RootFeature
     ]
 )

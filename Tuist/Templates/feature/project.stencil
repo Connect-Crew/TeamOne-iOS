@@ -1,0 +1,13 @@
+
+import ProjectDescription
+import ProjectDescriptionHelpers
+import DependencyPlugin
+
+let project = Project.makeModule(
+    name: "{{ name }}",
+    targets: Set(FeatureTarget.microFeature),
+    interfaceDependencies: [
+        .Features.BaseFeatureDependency
+    ]
+)
+
