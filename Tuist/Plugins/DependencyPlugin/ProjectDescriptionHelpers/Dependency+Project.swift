@@ -13,6 +13,7 @@ public extension Dep {
     
     struct Features {
         public struct Report {}
+        public struct Splash {}
     }
     
     struct Modules {}
@@ -50,12 +51,20 @@ public extension Dep.Features {
     static let BaseFeatureDependency = TargetDependency.project(target: "BaseFeatureDependency", path: .relativeToFeature("BaseFeatureDependency"))
     
     static let RootFeature = TargetDependency.project(target: "RootFeature", path: .relativeToFeature("RootFeature"))
+    static let SplashFeature = TargetDependency.project(target: "SplashFeature", path: .relativeToFeature("SplashFeature"))
     
 }
 
 //MARK: Splash
 public extension Dep.Features.Report {
     static let group = "Report"
+    
+    static let Feature = Dep.Features.project(name: "Feature", group: group)
+    static let Interface = Dep.project(target: "\(group)FeatureInterface", path: .relativeToFeature("\(group)Feature"))
+}
+
+public extension Dep.Features.Splash {
+    static let group = "Splash"
     
     static let Feature = Dep.Features.project(name: "Feature", group: group)
     static let Interface = Dep.project(target: "\(group)FeatureInterface", path: .relativeToFeature("\(group)Feature"))

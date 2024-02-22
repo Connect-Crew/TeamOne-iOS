@@ -13,6 +13,7 @@ let project = Project.makeModule(
     name: "RootFeature",
     targets: [.dynamicFramework],
     internalDependencies: [
-        .Features.Report.Feature
+        .Features.Report.Feature,
+        .Features.Splash.Feature
     ]
 )
