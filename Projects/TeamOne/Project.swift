@@ -13,8 +13,6 @@ let project = Project.makeModule(
     name: "TeamOne",
     targets: [.app],
     internalDependencies: [
-        .domain,
-        .Modules.dsKit,
         .data,
         .Features.RootFeature
     ]
