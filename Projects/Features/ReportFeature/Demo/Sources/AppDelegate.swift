@@ -1,5 +1,6 @@
 
 import UIKit
+import Firebase
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -12,7 +13,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func applicationWillResignActive(_ application: UIApplication) {
-        
+        FirebaseApp.configure()
     }
 
     func applicationDidEnterBackground(_ application: UIApplication) {
