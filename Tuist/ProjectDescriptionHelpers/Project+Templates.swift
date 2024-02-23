@@ -186,11 +186,11 @@ public extension Project {
         }
 
         // MARK: - Scheme
-        //        let additionalSchemes = targets.contains(.demo)
-        //                ? [Scheme.makeScheme(configs: configurationName, name: name),
-        //                   Scheme.makeDemoScheme(configs: configurationName, name: name)]
-        //                : [Scheme.makeScheme(configs: configurationName, name: name)]
-        //                schemes += additionalSchemes
+        let additionalSchemes = targets.contains(.demo)
+        ? [Scheme.makeScheme(configs: configurationName, name: name),
+           Scheme.makeDemoScheme(configs: configurationName, name: name)]
+        : [Scheme.makeScheme(configs: configurationName, name: name)]
+        schemes += additionalSchemes
 
         var scheme = targets.contains(.app)
         ? appSchemes
