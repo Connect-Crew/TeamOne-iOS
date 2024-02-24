@@ -59,6 +59,11 @@ final class ProfileDetailMainView: View {
     
     private let editButton = Button_Edit()
     
+    var editButtonTap: Observable<Void> {
+        return editButton.rx.tap
+            .throttle(.seconds(1), latest: true, scheduler: MainScheduler.instance)
+    }
+    
     private lazy var nameHoneyStackView = makeNameHoneyStackView()
     
     private lazy var profileStackView = UIStackView(

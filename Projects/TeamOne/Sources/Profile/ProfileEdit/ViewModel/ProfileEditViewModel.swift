@@ -1,49 +1,46 @@
 //
-//  ProfileDetailViewModel.swift
+//  ProfileEditViewModel.swift
 //  TeamOne
 //
-//  Created by 강현준 on 2/13/24.
+//  Created by 강창혁 on 2/24/24.
 //  Copyright © 2024 TeamOne. All rights reserved.
 //
 
-import Domain
 import Foundation
-import RxSwift
-import RxCocoa
-import Core
 
-enum ProfileDetailNavigation {
-    case profileEdit
+import Core
+import RxSwift
+
+enum ProfileEditNavigation {
+    case editComplete
     case back
 }
 
-final class ProfileDetailViewModel: ViewModel {
+final class ProfileEditViewModel: ViewModel {
     
     struct Input {
         let tapBackButton: Observable<Void>
-        let tapProfileEditButton: Observable<Void>
+        let tapEditCompleteButton: Observable<Void>
     }
     
     struct Output {
-        let representProject: Observable<[Void]>
+        
     }
     
     var disposeBag: DisposeBag = .init()
-    let navigation = PublishSubject<ProfileDetailNavigation>()
+    let navigation = PublishSubject<ProfileEditNavigation>()
     
     func transform(input: Input) -> Output {
         
-        transformEdit(tap: input.tapProfileEditButton)
+        transformEdit(tap: input.tapEditCompleteButton)
         transformBack(tap: input.tapBackButton)
         
-        return Output(
-            representProject: Observable.just([(), (), (), ()])
-        )
+        return Output()
     }
     
     private func transformEdit(tap: Observable<Void>) {
         tap
-            .map { .profileEdit }
+            .map { .editComplete }
             .bind(to: navigation)
             .disposed(by: disposeBag)
     }
@@ -54,5 +51,5 @@ final class ProfileDetailViewModel: ViewModel {
             .bind(to: navigation)
             .disposed(by: disposeBag)
     }
+    
 }
-

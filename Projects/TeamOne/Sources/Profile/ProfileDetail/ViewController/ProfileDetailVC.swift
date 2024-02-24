@@ -47,7 +47,8 @@ final class ProfileDetailVC: ViewController {
     
     override func bind() {
         let input = ProfileDetailViewModel.Input(
-            tapBackButton: mainView.navBar.backButttonTap
+            tapBackButton: mainView.navBar.backButttonTap,
+            tapProfileEditButton: mainView.editButtonTap
         )
         
         let output = viewModel.transform(input: input)
