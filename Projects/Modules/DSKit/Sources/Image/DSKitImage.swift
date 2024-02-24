@@ -112,6 +112,10 @@ public enum DSKitImage {
     case leaderResponseRate
     case defaultIntroduceImage
     
+    // MARK: - ProfileEdit
+    
+    case profileEdit
+    
     // MARK: - Common
     
     case complete
@@ -308,6 +312,7 @@ public enum DSKitImage {
         case .baseProfile: return "baseProfile"
         case .leaderResponseRate: return "leaderResponseRate"
         case .defaultIntroduceImage: return "defaultIntroduceImage"
+        case .profileEdit: return "profileEdit"
             
             // MARK: - 로그인
             
