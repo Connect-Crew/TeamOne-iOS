@@ -28,7 +28,8 @@ let project = Project.makeModule(
         .SPM.FirebaseMessaging,
         .SPM.GoogleSignIn,
         .SPM.Alamofire,
-        .SPM.SDWebImage
+        .SPM.SDWebImage,
+        .SPM.ComposableArchitecture
     ]
 )
 

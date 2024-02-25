@@ -12,8 +12,8 @@ import UIKit
 /// 크기에 대한 오토레이아웃을 따로 지정하지 않아도 됩니다.
 public final class ImageView_Honey: UIImageView {
     
-    public enum HoneyLevel {
-        case one
+    public enum HoneyLevel: Int {
+        case one = 1
         case two
         case three
         case four
@@ -33,8 +33,17 @@ public final class ImageView_Honey: UIImageView {
             }
         }
         
-        static func toLevel(temparature: Double?) -> HoneyLevel {
-            return .one
+        static func expToLevel(exp: Int) -> HoneyLevel {
+            switch exp {
+            case 0...8: return .one
+            case 9...17: return .two
+            case 18...34: return .three
+            case 45...50: return .four
+            case 51...85: return .five
+            case 86...114: return .six
+            case 144...Int.max: return .seven
+            default: return .one
+            }
         }
     }
     
@@ -50,8 +59,8 @@ public final class ImageView_Honey: UIImageView {
         self.image = type.image
     }
     
-    public func setHoney(temparature: Double?) {
-        self.type = HoneyLevel.toLevel(temparature: temparature)
+    public func setLevel(exp: Int) {
+        self.type = HoneyLevel.expToLevel(exp: exp)
     }
     
     private func initLayout() {

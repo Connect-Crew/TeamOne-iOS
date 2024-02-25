@@ -29,6 +29,10 @@ final class ProfileMainView: UIView {
     let myProjectView = MyProjectView()
     let settingView = SettingView()
     
+    var profileButtonTap: Observable<Void> {
+        return myProfileView.profileButtonTap
+    }
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         

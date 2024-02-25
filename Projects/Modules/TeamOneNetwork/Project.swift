@@ -11,7 +11,7 @@ import DependencyPlugin
 
 let project = Project.makeModule(
     name: "TeamOneNetwork",
-    targets: [.unitTest,.staticFramework],
+    targets: [.staticFramework],
     internalDependencies: [
         .domain
     ]

@@ -17,7 +17,7 @@ public extension UILabel {
         - type: Font
         - color: TextColor
      */
-    func setLabel(text: String, typo: SansNeo, color: UIColor) {
+    func setLabel(text: String?, typo: SansNeo, color: UIColor) {
         self.text = text
         self.font = .setFont(font: typo)
         self.textColor = color
