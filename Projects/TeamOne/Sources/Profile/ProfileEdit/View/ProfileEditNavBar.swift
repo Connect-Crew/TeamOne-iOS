@@ -80,6 +80,6 @@ final class ProfileEditNavBar: View {
     override func layoutSubviews() {
         super.layoutSubviews()
         
-        self.applyShadow(offsetX: 0, offsetY: 4, blurRadius: 8, color: .init(r: 189, g: 189, b: 189, a: 1), opacity: 0.3, positions: [.bottom])
+        self.backgroundColor = .white
     }
 }

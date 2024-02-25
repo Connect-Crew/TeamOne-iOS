@@ -17,6 +17,10 @@ import RxCocoa
 
 final class TaskSelectView: View {
     
+    private let careerYears = [
+        "준비생", "신입", "1년", "2년", "3년", "4년", "5년", "6년", "7년", "8년", "9년", "10년 이상",
+    ]
+    
     let headerLabel = UILabel()
     
     private let mainTaskLabel = UILabel()
@@ -47,11 +51,16 @@ final class TaskSelectView: View {
     private let subTaskSelectButton = Button_DropBoxResult(frame: .zero).then {
         $0.noneSelectedText = "직무 소분류 선택"
     }
+    private let careerSelectButton = Button_DropBoxResult(frame: .zero).then {
+        $0.noneSelectedText = "경력선택"
+        $0.isHidden = true
+    }
     
     private lazy var selectedMainTask = PublishSubject<(String, Int)>()
     private lazy var selectedsubTask = PublishSubject<(String, Int)>()
+    private lazy var selectedCareer = PublishSubject<(String, Int)>()
     lazy var selectedTaskPart = BehaviorSubject<Parts?>(value: nil)
-    
+    private var selectedCarrerYear: String? = ""
     private lazy var taskStackView = UIStackView(
         arrangedSubviews: [mainTaskSelectButton, subTaskSelectButton]
     ).then {
@@ -60,7 +69,15 @@ final class TaskSelectView: View {
         $0.distribution = .fillEqually
     }
     
+    private lazy var mainStackView = UIStackView(
+        arrangedSubviews: [taskStackView, taskDropBox, careerSelectButton, careerDropBox]
+    ).then {
+        $0.axis = .vertical
+        $0.spacing = 4
+    }
+    
     let taskDropBox = BaseDropBox()
+    let careerDropBox = BaseDropBox()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -92,14 +109,9 @@ final class TaskSelectView: View {
             $0.centerY.equalTo(headerLabel)
             $0.trailing.equalToSuperview().inset(24)
         }
-        self.addSubview(taskStackView)
-        taskStackView.snp.makeConstraints {
+        self.addSubview(mainStackView)
+        mainStackView.snp.makeConstraints {
             $0.top.equalTo(headerLabel.snp.bottom).offset(17)
-            $0.leading.trailing.equalToSuperview().inset(24)
-        }
-        self.addSubview(taskDropBox)
-        taskDropBox.snp.makeConstraints {
-            $0.top.equalTo(taskStackView.snp.bottom).offset(8)
             $0.leading.trailing.equalToSuperview().inset(24)
             $0.bottom.equalToSuperview().inset(20)
         }
@@ -113,11 +125,16 @@ final class TaskSelectView: View {
             .bind { this, _ in
                 this.descriptionStackView.isHidden = true
                 this.deleteButton.isHidden = true
+                this.careerSelectButton.isHidden = true
                 let main = this.mainTaskSelectButton
                 let sub = this.subTaskSelectButton
+                let career = this.careerSelectButton
                 
                 sub.isDropDownOpend = false
                 sub.isSelected = false
+                
+                career.isDropDownOpend = false
+                career.isSelected = false
                 
                 guard main.isDropDownOpend == false else {
                     
@@ -183,8 +200,45 @@ final class TaskSelectView: View {
                 subTaskButton.isSelected = true
                 subTaskButton.selectedText = result.0
                 
-                guard let mainTask = mainTaskButton.selectedText,
-                      let subTask = subTaskButton.selectedText else { return }
+                this.careerSelectButton.isHidden = false
+                
+            })
+            .disposed(by: disposeBag)
+        
+        careerSelectButton.button.rx.tap
+            .withUnretained(self)
+            .bind { this, _ in
+                
+                guard this.careerSelectButton.isDropDownOpend == false else {
+                    this.careerDropBox.closeDropBox()
+                    this.careerSelectButton.isDropDownOpend = false
+                    return
+                }
+                
+                this.careerDropBox.openDropBox(
+                    dataSource: this.careerYears,
+                    onSelectSubject: this.selectedCareer
+                )
+                this.careerSelectButton.isDropDownOpend = true
+
+            }
+            .disposed(by: disposeBag)
+        
+        selectedCareer
+            .withUnretained(self)
+            .subscribe(onNext: { this, result in
+                this.careerSelectButton.isDropDownOpend = false
+                this.careerSelectButton.isSelected = true
+                this.careerSelectButton.selectedText = result.0
+                guard let mainTask = this.mainTaskSelectButton.selectedText,
+                      let subTask = this.subTaskSelectButton.selectedText else { return }
+                
+                this.careerTaskLabel.setLabel(
+                    text: result.0,
+                    typo: .caption1,
+                    color: .teamOne.mainColor
+                )
+                this.selectedCarrerYear = result.0
                 
                 let key = KM.shared.key(name: subTask)
                 let part = Parts(key: key, part: subTask, category: mainTask)
@@ -198,20 +252,27 @@ final class TaskSelectView: View {
                 guard let result else {
                     this.descriptionStackView.isHidden = true
                     this.deleteButton.isHidden = true
+                    this.careerSelectButton.isHidden = true
                     this.mainTaskSelectButton.isSelected = false
                     this.mainTaskSelectButton.isDropDownOpend = false
                     this.subTaskSelectButton.isSelected = false
                     this.subTaskSelectButton.isDropDownOpend = false
+                    this.careerSelectButton.isSelected = false
+                    this.careerSelectButton.isDropDownOpend = false
                     return
                 }
-                this.mainTaskLabel.setLabel(text: result.category, typo: .caption1, color: .teamOne.mainColor)
-                this.careerTaskLabel.setLabel(text: result.part, typo: .caption1, color: .teamOne.mainColor)
+                this.mainTaskLabel.setLabel(text: result.category + "·" + result.part, typo: .caption1, color: .teamOne.mainColor)
+                
                 this.mainTaskSelectButton.isSelected = true
                 this.mainTaskSelectButton.selectedText = result.category
                 this.subTaskSelectButton.isSelected = true
                 this.subTaskSelectButton.selectedText = result.part
                 this.descriptionStackView.isHidden = false
                 this.deleteButton.isHidden = false
+                
+                this.careerSelectButton.isHidden = false
+                this.careerSelectButton.isSelected = true
+                this.careerSelectButton.selectedText = this.selectedCarrerYear
             })
             .disposed(by: disposeBag)
     }
