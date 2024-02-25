@@ -1,8 +1,8 @@
 //
-//  ReportRow.swift
-//  TeamOne
+//  ReportButton.swift
+//  ReportFeature
 //
-//  Created by Junyoung on 2/16/24.
+//  Created by Junyoung on 2/25/24.
 //  Copyright © 2024 TeamOne. All rights reserved.
 //
 
@@ -24,7 +24,7 @@ struct ReportButton: View {
             
             Text(title)
                 .font(Fonts.toFont(font: .button2))
-                .foregroundColor(Color(.teamOne.grayscaleSeven))
+                .foregroundColor(Color(.grayscaleSeven))
             
             Spacer()
         }
