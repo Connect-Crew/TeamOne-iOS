@@ -14,6 +14,7 @@ struct ReportData: Identifiable {
     
     let title: String
     var isSelected: Bool
+    var type: ReportType
 }
 
 enum ReportType: CaseIterable {
@@ -51,13 +52,13 @@ enum ReportType: CaseIterable {
 @ObservableState
 struct ReportState {
     var reportModel: [ReportData] = [
-        ReportData(title: "욕설 / 비하발언", isSelected: false),
-        ReportData(title: "참여율 저조\n(응답률, 접속률, 투표 진행 등)", isSelected: false),
-        ReportData(title: "프로젝트 생성, 채팅 등 도배", isSelected: false),
-        ReportData(title: "홍보성 컨텐츠", isSelected: false),
-        ReportData(title: "부적절한 닉네임 / 프로필 사진", isSelected: false),
-        ReportData(title: "개인 사생활 침해", isSelected: false),
-        ReportData(title: "19+ 음란성, 만남 유도", isSelected: false),
-        ReportData(title: "기타", isSelected: false)
+        ReportData(title: ReportType.adultContent.title, isSelected: false, type: .abusiveLanguage),
+        ReportData(title: ReportType.lowParticipation.title, isSelected: false, type: .lowParticipation),
+        ReportData(title: ReportType.spamming.title, isSelected: false, type: .spamming),
+        ReportData(title: ReportType.promotionalContent.title, isSelected: false, type: .promotionalContent),
+        ReportData(title: ReportType.inappropriateNicknameOrProfilePhoto.title, isSelected: false, type: .inappropriateNicknameOrProfilePhoto),
+        ReportData(title: ReportType.privacyInvasion.title, isSelected: false, type: .privacyInvasion),
+        ReportData(title: ReportType.adultContent.title, isSelected: false, type: .adultContent),
+        ReportData(title: ReportType.other.title, isSelected: false, type: .other)
     ]
 }
