@@ -26,6 +26,8 @@ public class ReportVC: UIViewController {
     public override func viewDidLoad() {
         super.viewDidLoad()
         
+        mainView.mainViewContainer.adjustForKeyboard(disposeBag: disposeBag)
+        
         if let reactor = self.reactor {
             self.bind(reactor: reactor)
         }
