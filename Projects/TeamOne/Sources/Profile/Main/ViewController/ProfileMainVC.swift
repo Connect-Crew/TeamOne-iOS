@@ -52,9 +52,17 @@ final class ProfileMainVC: ViewController {
         
         let output = viewModel.transform(input: input)
         
-        mainView.myProjectView.myProjectType
-            .subscribe(onNext: { type in
-                print(type.toName)
+        output.tapSubmittedProject
+            .observe(on: MainScheduler.instance)
+            .withUnretained(self)
+            .subscribe(onNext: { this, _ in
+                let reportVC = ReportVC()
+                let reportReactor = ReportReactor()
+                
+                reportVC.reactor = reportReactor
+                reportVC.modalPresentationStyle = .overFullScreen
+                
+                this.present(reportVC, animated: false)
             })
             .disposed(by: disposeBag)
     }
