@@ -16,5 +16,5 @@ public enum ReportType {
     case inappropriateNicknameOrProfilePhoto
     case privacyInvasion
     case adultContent
-    case other(String)
+    case other
 }

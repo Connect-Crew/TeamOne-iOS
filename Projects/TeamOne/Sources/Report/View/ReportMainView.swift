@@ -37,33 +37,33 @@ final class ReportMainView: UIView {
         $0.spacing = 12
     }
     
-    let abusiveLanguage = Button_CheckBox(text: "욕설 / 비하발언", typo: .button2, textColor: .grayscaleSeven, type: .checkBoxBlue).then {
+    let abusiveLanguageButton = Button_CheckBox(text: "욕설 / 비하발언", typo: .button2, textColor: .grayscaleSeven, type: .checkBoxBlue).then {
         $0.checkedTextColor = .teamOne.mainColor
     }
     
-    let lowParticipation = Button_CheckBox(text: "참여율 저조\n(응답률, 접속률, 투표 진행 등)", typo: .button2, textColor: .grayscaleSeven, type: .checkBox).then {
+    let lowParticipationButton = Button_CheckBox(text: "참여율 저조\n(응답률, 접속률, 투표 진행 등)", typo: .button2, textColor: .grayscaleSeven, type: .checkBoxBlue).then {
         $0.checkedTextColor = .teamOne.mainColor
         $0.titleLabel?.numberOfLines = 0
         $0.titleLabel?.lineBreakMode = .byWordWrapping
     }
     
-    let spamming = Button_CheckBox(text: "프로젝트 생성, 채팅 등 도배", typo: .button2, textColor: .grayscaleSeven, type: .checkBox).then {
+    let spammingButton = Button_CheckBox(text: "프로젝트 생성, 채팅 등 도배", typo: .button2, textColor: .grayscaleSeven, type: .checkBoxBlue).then {
         $0.checkedTextColor = .teamOne.mainColor
     }
     
-    let promotionalContent = Button_CheckBox(text: "홍보성 컨텐츠", typo: .button2, textColor: .grayscaleSeven, type: .checkBox).then {
+    let promotionalContentButton = Button_CheckBox(text: "홍보성 컨텐츠", typo: .button2, textColor: .grayscaleSeven, type: .checkBoxBlue).then {
         $0.checkedTextColor = .teamOne.mainColor
     }
     
-    let inappropriateNicknameOrProfilePhoto = Button_CheckBox(text: "부적절한 닉네임 / 프로필 사진", typo: .button2, textColor: .grayscaleSeven, type: .checkBox).then {
+    let inappropriateNicknameOrProfilePhotoButton = Button_CheckBox(text: "부적절한 닉네임 / 프로필 사진", typo: .button2, textColor: .grayscaleSeven, type: .checkBoxBlue).then {
         $0.checkedTextColor = .teamOne.mainColor
     }
     
-    let privacyInvasion = Button_CheckBox(text: "개인 사생활 침해", typo: .button2, textColor: .grayscaleSeven, type: .checkBox).then {
+    let privacyInvasionButton = Button_CheckBox(text: "개인 사생활 침해", typo: .button2, textColor: .grayscaleSeven, type: .checkBoxBlue).then {
         $0.checkedTextColor = .teamOne.mainColor
     }
     
-    let adultContent = Button_CheckBox(text: "19+ 음란성, 만남 유도", typo: .button2, textColor: .grayscaleSeven, type: .checkBox).then {
+    let adultContentButton = Button_CheckBox(text: "19+ 음란성, 만남 유도", typo: .button2, textColor: .grayscaleSeven, type: .checkBoxBlue).then {
         $0.checkedTextColor = .teamOne.mainColor
     }
     
@@ -79,12 +79,13 @@ final class ReportMainView: UIView {
         $0.layer.cornerRadius = 2
     }
     
-    let other = Button_CheckBox(text: "기타", typo: .button2, textColor: .grayscaleSeven, type: .checkBox)
+    let otherButton = Button_CheckBox(text: "기타", typo: .button2, textColor: .grayscaleSeven, type: .checkBoxBlue).then {
+        $0.checkedTextColor = .teamOne.mainColor
+    }
     
     let errorView = UIView()
     let errorImageView = UIImageView().then {
         $0.image = .image(dsimage: .warning)
-        $0.frame = CGRect(x: 0, y: 0, width: 16, height: 16)
     }
     let errorText = UILabel()
     
@@ -117,6 +118,7 @@ final class ReportMainView: UIView {
         backgroundColor = UIColor(r: 66, g: 66, b: 66, a: 0.6)
         mainViewContainer.backgroundColor = UIColor(r: 253, g: 253, b: 253, a: 1)
         errorView.isHidden = true
+        otherTextField.isEnabled = false
         
         addSubviews()
         makeLayouts()
@@ -131,18 +133,18 @@ extension ReportMainView {
         errorView.addSubview(errorImageView)
         errorView.addSubview(errorText)
         
-        otherView.addSubview(other)
+        otherView.addSubview(otherButton)
         otherView.addSubview(otherTextField)
         otherView.addSubview(otherTextUnderLineView)
         
         [
-            abusiveLanguage,
-            lowParticipation,
-            spamming,
-            promotionalContent,
-            inappropriateNicknameOrProfilePhoto,
-            privacyInvasion,
-            adultContent,
+            abusiveLanguageButton,
+            lowParticipationButton,
+            spammingButton,
+            promotionalContentButton,
+            inappropriateNicknameOrProfilePhotoButton,
+            privacyInvasionButton,
+            adultContentButton,
             otherView,
             errorView
         ].forEach {
@@ -169,14 +171,14 @@ extension ReportMainView {
             make.left.right.equalToSuperview().inset(24)
         }
         
-        other.snp.makeConstraints { make in
+        otherButton.snp.makeConstraints { make in
             make.left.top.bottom.equalToSuperview()
             make.width.equalTo(54)
         }
         
         otherTextField.snp.makeConstraints { make in
             make.right.top.bottom.equalToSuperview()
-            make.left.equalTo(other.snp.right).offset(10)
+            make.left.equalTo(otherButton.snp.right).offset(10)
         }
         
         otherTextUnderLineView.snp.makeConstraints { make in
@@ -188,6 +190,20 @@ extension ReportMainView {
         reportStackView.snp.makeConstraints { make in
             make.top.equalTo(reportTitle.snp.bottom).offset(20)
             make.left.right.equalToSuperview().inset(20)
+        }
+        
+        errorView.snp.makeConstraints { make in
+            make.height.equalTo(16)
+        }
+        
+        errorImageView.snp.makeConstraints { make in
+            make.left.top.bottom.equalToSuperview()
+            make.height.width.equalTo(16)
+        }
+        
+        errorText.snp.makeConstraints { make in
+            make.left.equalTo(errorImageView.snp.right).offset(2)
+            make.top.bottom.right.equalToSuperview()
         }
         
         bottomStackView.snp.makeConstraints { make in
@@ -203,8 +219,10 @@ extension ReportMainView {
         reportTitle.setLabel(text: "\(name) 님의 신고 사유를 알려주세요.", typo: .body2, color: .grayscaleEight)
     }
     
-    func setErrorState(error: Bool, msg: String) {
+    func setErrorState(error: Bool, msg: String = "") {
         errorView.isHidden = !error
+        
+        errorText.setLabel(text: msg, typo: .caption2, color: .point)
     }
     
     func setOtherState(_ state: OtherState) {
