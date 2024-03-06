@@ -21,6 +21,8 @@ final class ProfileEditMainView: View {
     
     private let scrollView = BaseScrollView()
     
+    // MARK: - 프로필 이미지
+    
     private let editProfileImageBackground = UIView()
     
     private let editProfileImageButton = UIButton().then {
@@ -32,6 +34,8 @@ final class ProfileEditMainView: View {
         $0.axis = .vertical
         $0.spacing = 8
     }
+    
+    // MARK: - 닉네임
     
     private let nickNameHeaderLabel = UILabel().then {
         $0.setLabel(text: "닉네임", typo: .body4, color: .black)
@@ -59,6 +63,8 @@ final class ProfileEditMainView: View {
     
     private let inputNickNameView = UIView()
     
+    // MARK: - 소개
+    
     private let introduceHeaderLabel = UILabel().then {
         $0.setLabel(text: "소개", typo: .body4, color: .black)
     }
@@ -69,10 +75,13 @@ final class ProfileEditMainView: View {
         $0.setFont(typo: .button2)
         $0.setLayer(width: 0.5, color: .teamOne.grayscaleFive)
         $0.setRound(radius: 8)
+        $0.maxTextCount = 150
         $0.backgroundColor = .white
     }
     
     private let inputIntroduceView = UIView()
+    
+    // MARK: - 직무 선택 1,2
     
     private let firstTaskSelectView = TaskSelectView().then {
         $0.headerLabel.setLabel(text: "직무 1", typo: .body4, color: .black)
@@ -85,6 +94,14 @@ final class ProfileEditMainView: View {
     
     let selectedTask = PublishSubject<[Parts?]>()
     
+    // MARK: - 포트폴리오
+    
+    let portfolioSelectView = PortfolioSelectView().then {
+        $0.backgroundColor = .white
+    }
+    
+    // MARK: - Init
+    
     init() {
         super.init(frame: .zero)
         layout()
@@ -95,6 +112,8 @@ final class ProfileEditMainView: View {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    // MARK: - bind
     
     private func bindTask() {
         firstTaskSelectView.selectedTaskPart
@@ -112,8 +131,8 @@ final class ProfileEditMainView: View {
                     this.secondTaskSelectView.isHidden = true
                     return
                 }
+                this.firstTaskSelectView.selectedCarrerYear = this.secondTaskSelectView.selectedCarrerYear
                 this.firstTaskSelectView.selectedTaskPart.onNext(secondTask)
-                
                 this.secondTaskSelectView.isHidden = true
                 this.secondTaskSelectView.selectedTaskPart.onNext(nil)
             }
@@ -127,6 +146,8 @@ final class ProfileEditMainView: View {
             .disposed(by: disposeBag)
     }
     
+    // MARK: - Layout
+    
     private func layout() {
         layoutNavBar()
         layoutScrollView()
@@ -135,6 +156,7 @@ final class ProfileEditMainView: View {
         layoutInputNickNameView()
         layoutInputIntroduceView()
         layoutTaskSelectView()
+        layoutPortfolioSelectView()
     }
     
     private func layoutNavBar() {
@@ -221,5 +243,9 @@ final class ProfileEditMainView: View {
         
         baseStackView.addArrangedSubview(firstTaskSelectView)
         baseStackView.addArrangedSubview(secondTaskSelectView)
+    }
+    
+    private func layoutPortfolioSelectView() {
+        baseStackView.addArrangedSubview(portfolioSelectView)
     }
 }

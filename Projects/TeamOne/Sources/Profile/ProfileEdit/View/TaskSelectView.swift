@@ -18,7 +18,7 @@ import RxCocoa
 final class TaskSelectView: View {
     
     private let careerYears = [
-        "준비생", "신입", "1년", "2년", "3년", "4년", "5년", "6년", "7년", "8년", "9년", "10년 이상",
+        "준비생", "신입", "1년", "2년", "3년", "4년", "5년", "6년", "7년", "8년", "9년", "10년 이상"
     ]
     
     let headerLabel = UILabel()
@@ -60,7 +60,7 @@ final class TaskSelectView: View {
     private lazy var selectedsubTask = PublishSubject<(String, Int)>()
     private lazy var selectedCareer = PublishSubject<(String, Int)>()
     lazy var selectedTaskPart = BehaviorSubject<Parts?>(value: nil)
-    private var selectedCarrerYear: String? = ""
+    var selectedCarrerYear: String? = ""
     private lazy var taskStackView = UIStackView(
         arrangedSubviews: [mainTaskSelectButton, subTaskSelectButton]
     ).then {
@@ -262,6 +262,7 @@ final class TaskSelectView: View {
                     return
                 }
                 this.mainTaskLabel.setLabel(text: result.category + "·" + result.part, typo: .caption1, color: .teamOne.mainColor)
+                this.careerTaskLabel.setLabel(text: this.selectedCarrerYear, typo: .caption1, color: .teamOne.mainColor)
                 
                 this.mainTaskSelectButton.isSelected = true
                 this.mainTaskSelectButton.selectedText = result.category
