@@ -115,6 +115,12 @@ public enum DSKitImage {
     // MARK: - ProfileEdit
     
     case profileEdit
+    case chain
+    case blueChain
+    case file
+    case blueFile
+    case attachFile
+    case grayFile
     
     // MARK: - Common
     
@@ -313,6 +319,12 @@ public enum DSKitImage {
         case .leaderResponseRate: return "leaderResponseRate"
         case .defaultIntroduceImage: return "defaultIntroduceImage"
         case .profileEdit: return "profileEdit"
+        case .chain: return "chain"
+        case .file: return "file"
+        case .blueFile: return "bluefile"
+        case .attachFile: return "attachfile"
+        case .blueChain: return "bluechain"
+        case .grayFile: return "grayfile"
             
             // MARK: - 로그인
             
