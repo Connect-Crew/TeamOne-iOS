@@ -23,6 +23,8 @@ enum ProfileNavigation {
 
 final class ProfileMainViewModel: ViewModel {
     
+    private let tapSubmittedProject = PublishSubject<Void>()
+    
     struct Input {
         let tapSetting: Observable<SettingType>
         let tapMyProfile: Observable<MyProjectType>
@@ -30,7 +32,7 @@ final class ProfileMainViewModel: ViewModel {
     }
     
     struct Output {
-        
+        let tapSubmittedProject: Observable<Void>
     }
     
     var disposeBag: DisposeBag = .init()
@@ -42,7 +44,7 @@ final class ProfileMainViewModel: ViewModel {
         transformTapMyProject(input.tapMyProfile)
         transformTapProfileDetail(tap: input.tapProfileDetail)
         
-        return Output()
+        return Output(tapSubmittedProject: tapSubmittedProject)
     }
     
     func transformTapSetting(tap: Observable<SettingType>) {
@@ -62,7 +64,7 @@ final class ProfileMainViewModel: ViewModel {
                 case .myProject:
                     this.navigation.onNext(.myProject)
                 case .submittedProject:
-                    break
+                    this.tapSubmittedProject.onNext(())
                 case .favoriteProject:
                     this.navigation.onNext(.favoriteProject)
                 }

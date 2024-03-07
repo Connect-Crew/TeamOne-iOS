@@ -21,7 +21,7 @@ let spm = SwiftPackageManagerDependencies([
     .remote(url: "https://github.com/google/GoogleSignIn-iOS", requirement: .exact("6.1.0")),
     .remote(url: "https://github.com/Alamofire/Alamofire", requirement: .upToNextMajor(from: "5.0.0")),
     .remote(url: "https://github.com/SDWebImage/SDWebImage", requirement: .upToNextMajor(from: "5.18.8")),
-    .remote(url: "https://github.com/pointfreeco/swift-composable-architecture", requirement: .exact("1.8.2")),
+    .remote(url: "https://github.com/ReactorKit/ReactorKit.git", requirement: .exact("3.2.0")),
 ], baseSettings: Settings.settings(
     configurations: XCConfig.framework
 ))
