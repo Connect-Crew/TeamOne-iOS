@@ -30,7 +30,6 @@ public extension TargetDependency.SPM {
     static let FirebaseDynamicLinks = TargetDependency.external(name: "FirebaseDynamicLinks")
     static let GoogleSignIn = TargetDependency.external(name: "GoogleSignIn")
     static let SDWebImage = TargetDependency.external(name: "SDWebImage")
-    static let ComposableArchitecture = TargetDependency.external(name: "ComposableArchitecture")
     static let ReactorKit = TargetDependency.external(name: "ReactorKit")
 }
 

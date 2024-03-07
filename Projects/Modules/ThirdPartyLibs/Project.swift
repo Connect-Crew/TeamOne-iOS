@@ -29,7 +29,6 @@ let project = Project.makeModule(
         .SPM.GoogleSignIn,
         .SPM.Alamofire,
         .SPM.SDWebImage,
-        .SPM.ComposableArchitecture,
         .SPM.ReactorKit
     ]
 )
