@@ -11,7 +11,7 @@ import DependencyPlugin
 
 let project = Project.makeModule(
     name: "Core",
-    targets: [.dynamicFramework],
+    targets: [.staticFramework],
     internalDependencies: [
         .Modules.thirdPartyLibs
     ],

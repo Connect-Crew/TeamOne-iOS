@@ -14,8 +14,7 @@ let project = Project.makeModule(
     targets: [.app],
     internalDependencies: [
         .data,
-        .Features.RootFeature,
-        .Features.Splash.Feature,
-        .Features.Report.Feature
+        .Modules.dsKit,
+        .domain
     ]
 )

@@ -158,7 +158,7 @@ final class ProfileEditViewController: ViewController {
         files.enumerated().forEach { index, data in
             guard let (fileName, fileData) = data else { return }
             if index == 1 {
-                mainView.portfolioSelectView.firsfil
+//                mainView.portfolioSelectView.firsfil
             } else {
                 
             }

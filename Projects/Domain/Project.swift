@@ -11,7 +11,7 @@ import DependencyPlugin
 
 let project = Project.makeModule(
     name: "Domain",
-    targets: [.dynamicFramework],
+    targets: [.staticFramework],
     internalDependencies: [
         .core
     ]

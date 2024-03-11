@@ -11,7 +11,7 @@ import DependencyPlugin
 
 let project = Project.makeModule(
     name: "DSKit",
-    targets: [.dynamicFramework],
+    targets: [.staticFramework],
     internalDependencies: [
         .core
     ],
