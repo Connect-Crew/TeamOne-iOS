@@ -369,10 +369,6 @@ final class PortfolioSelectView: View {
         
     }
     
-    private func bindPortfolioFileNameReceived() {
-        
-    }
-    
     private func bindPortfolioCompleteView() {
         
         portfolioCompleteView.deleteButton.rx.tap
@@ -382,6 +378,39 @@ final class PortfolioSelectView: View {
                 this.linkInputView.isHidden = false
                 this.linkInputView.nameInputView.nameTextField.text = nil
                 this.linkInputView.URLInputView.linkURLTextfield.text = nil
+            }
+            .disposed(by: disposeBag)
+        
+        firstFilePortfolioCompleteView.deleteButton.rx.tap
+            .withUnretained(self)
+            .bind { this, _ in
+                this.firstFilePortfolioCompleteView.isHidden = true
+                this.firstFileInputView.isHidden = false
+                this.firstFileInputView.selectedFileView.isHidden = true
+                this.firstFileInputView.nameInputView.isHidden = true
+                this.firstFileInputView.fileFetchView.isHidden = false
+            }
+            .disposed(by: disposeBag)
+        
+        secondFilePortfolioCompleteView.deleteButton.rx.tap
+            .withUnretained(self)
+            .bind { this, _ in
+                this.secondFilePortfolioCompleteView.isHidden = true
+                this.secondFileInputView.isHidden = false
+                this.secondFileInputView.selectedFileView.isHidden = true
+                this.secondFileInputView.nameInputView.isHidden = true
+                this.secondFileInputView.fileFetchView.isHidden = false
+            }
+            .disposed(by: disposeBag)
+        
+        thridFilePortfolioCompleteView.deleteButton.rx.tap
+            .withUnretained(self)
+            .bind { this, _ in
+                this.thridFilePortfolioCompleteView.isHidden = true
+                this.thirdFileInputView.isHidden = false
+                this.thirdFileInputView.selectedFileView.isHidden = true
+                this.thirdFileInputView.nameInputView.isHidden = true
+                this.thirdFileInputView.fileFetchView.isHidden = false
             }
             .disposed(by: disposeBag)
     }
