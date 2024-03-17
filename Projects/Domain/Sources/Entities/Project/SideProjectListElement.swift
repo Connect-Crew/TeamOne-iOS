@@ -60,7 +60,7 @@ public struct SideProjectListElement: Hashable {
     public var myFavorite: Bool
     public let category: [String]
     public let goal: Goal
-    public let leaderParts: Parts
+    public let leaderParts: Parts?
     public let recruitStatus: [RecruitStatus]
     public var HashTags: [HashTag] = []
 
@@ -69,7 +69,7 @@ public struct SideProjectListElement: Hashable {
         region: String, isOnline: Bool, careerMin: String,
         careerMax: String, createdAt: String, state: String,
         favorite: Int, myFavorite: Bool, category: [String],
-        goal: String, leaderParts: Parts, recruitStatus: [RecruitStatus]
+        goal: String, leaderParts: Parts?, recruitStatus: [RecruitStatus]
     ) {
         self.id = id
         self.title = title
@@ -95,7 +95,7 @@ public struct SideProjectListElement: Hashable {
         region: String, isOnline: IsOnline, careerMin: Career,
         careerMax: Career, createdAt: String, state: ProjectState,
         favorite: Int, myFavorite: Bool, category: [String],
-        goal: Goal, leaderParts: Parts, recruitStatus: [RecruitStatus]
+        goal: Goal, leaderParts: Parts?, recruitStatus: [RecruitStatus]
     ) {
         self.id = id
         self.title = title

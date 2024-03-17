@@ -31,7 +31,7 @@ public struct ProjectListResponseDTO: Decodable {
             status.containLeader == true
         }.map { status -> Parts in
             status.toDomain()
-        }.first!
+        }.first
         
         // 리더의 직무가 제외된 모집 내용
         let exceptLeaerRecruitStatus = RecruitStatusResponseDTO.exceptLeaerPosition(status: self.recruitStatus)
