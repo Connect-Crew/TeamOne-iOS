@@ -53,11 +53,12 @@ final class ProfileEditViewController: ViewController {
             tapBackButton: mainView.navBar.backButttonTap,
             tapEditCompleteButton: mainView.navBar.completeButtonTap
         )
-        
         let _ = viewModel.transform(input: input)
     }
     
     private func bindPortfolioSelected() {
+        
+        //MARK: - 파일 가져오기 버튼 탭 했을때
         mainView.portfolioSelectView.firstFileInputView.fileFetchView.addFileButton.rx.tap
             .withUnretained(self)
             .bind { this, _ in
@@ -127,11 +128,14 @@ final class ProfileEditViewController: ViewController {
             }
             .disposed(by: disposeBag)
         
+        //MARK: - 삭제버튼 눌렀을 경우
+        
         mainView.portfolioSelectView.firstFileInputView.selectedFileView.deleteButton.rx.tap
             .withUnretained(self)
             .bind { this, _ in
                 this.firstFile = nil
                 this.files.remove(at: 0)
+                this.mainView.portfolioSelectView.firstFilePortfolioCompleteView.isHidden = true
             }
             .disposed(by: disposeBag)
         
@@ -139,7 +143,13 @@ final class ProfileEditViewController: ViewController {
             .withUnretained(self)
             .bind { this, _ in
                 this.secondFile = nil
-                this.files.remove(at: 1)
+                if this.files.count == 1 {
+                    this.files.remove(at: 0)
+                } else {
+                    this.files.remove(at: 1)
+                }
+                
+                this.mainView.portfolioSelectView.secondFilePortfolioCompleteView.isHidden = true
             }
             .disposed(by: disposeBag)
         
@@ -147,22 +157,85 @@ final class ProfileEditViewController: ViewController {
             .withUnretained(self)
             .bind { this, _ in
                 this.thridFile = nil
-                this.files.remove(at: 2)
+                if this.files.count == 1 {
+                    this.files.remove(at: 0)
+                } else if this.files.count == 2 {
+                    this.files.remove(at: 1)
+                } else {
+                    this.files.remove(at: 2)
+                }
+                this.mainView.portfolioSelectView.thridFilePortfolioCompleteView.isHidden = true
+            }
+            .disposed(by: disposeBag)
+        
+        mainView.portfolioSelectView.firstFilePortfolioCompleteView.deleteButton.rx.tap
+            .withUnretained(self)
+            .bind { this, _ in
+                this.firstFile = nil
+                this.mainView.portfolioSelectView.firstFilePortfolioCompleteView.isHidden = true
+            }
+            .disposed(by: disposeBag)
+        
+        mainView.portfolioSelectView.secondFilePortfolioCompleteView.deleteButton.rx.tap
+            .withUnretained(self)
+            .bind { this, _ in
+                this.secondFile = nil
+                if this.files.count == 1 {
+                    this.files.remove(at: 0)
+                } else {
+                    this.files.remove(at: 1)
+                }
+                this.mainView.portfolioSelectView.secondFilePortfolioCompleteView.isHidden = true
+            }
+            .disposed(by: disposeBag)
+        
+        mainView.portfolioSelectView.thridFilePortfolioCompleteView.deleteButton.rx.tap
+            .withUnretained(self)
+            .bind { this, _ in
+                this.thridFile = nil
+                if this.files.count == 1 {
+                    this.files.remove(at: 0)
+                } else if this.files.count == 2 {
+                    this.files.remove(at: 1)
+                } else {
+                    this.files.remove(at: 2)
+                }
+                this.mainView.portfolioSelectView.thridFilePortfolioCompleteView.isHidden = true
+            }
+            .disposed(by: disposeBag)
+        
+        //MARK: - 각 파일의 이름 입력이 끝난 경우 -> 파일 등록 완료
+        
+        mainView.portfolioSelectView.firstFileInputView.nameInputView.nameTextField.rx.controlEvent(.editingDidEnd)
+            .withUnretained(self)
+            .bind { this, _ in
+                this.mainView.portfolioSelectView.firstFileInputView.isHidden = true
+                this.mainView.portfolioSelectView.firstFilePortfolioCompleteView.linkNameLabel.text = this.mainView.portfolioSelectView.firstFileInputView.nameInputView.nameTextField.text
+                this.mainView.portfolioSelectView.firstFilePortfolioCompleteView.isHidden = false
+            }
+            .disposed(by: disposeBag)
+        
+        
+        
+        mainView.portfolioSelectView.secondFileInputView.nameInputView.nameTextField.rx.controlEvent(.editingDidEnd)
+            .withUnretained(self)
+            .bind { this, _ in
+                this.mainView.portfolioSelectView.secondFileInputView.isHidden = true
+                this.mainView.portfolioSelectView.secondFilePortfolioCompleteView.linkNameLabel.text = this.mainView.portfolioSelectView.secondFileInputView.nameInputView.nameTextField.text
+                this.mainView.portfolioSelectView.secondFilePortfolioCompleteView.isHidden = false
+                
+            }
+            .disposed(by: disposeBag)
+        
+        
+        
+        mainView.portfolioSelectView.thirdFileInputView.nameInputView.nameTextField.rx.controlEvent(.editingDidEnd)
+            .withUnretained(self)
+            .bind { this, _ in
+                this.mainView.portfolioSelectView.thirdFileInputView.isHidden = true
+                this.mainView.portfolioSelectView.thridFilePortfolioCompleteView.linkNameLabel.text = this.mainView.portfolioSelectView.thirdFileInputView.nameInputView.nameTextField.text
+                this.mainView.portfolioSelectView.thridFilePortfolioCompleteView.isHidden = false
             }
             .disposed(by: disposeBag)
     }
-    
-    private func configureFile(files: [(String?, Data?)?]) {
-        //이 파일들을 받아서 다시 순서대로 재설정하기
-        
-        files.enumerated().forEach { index, data in
-            guard let (fileName, fileData) = data else { return }
-            if index == 1 {
-//                mainView.portfolioSelectView.firsfil
-            } else {
-                
-            }
-        }
-    }
-    
 }
