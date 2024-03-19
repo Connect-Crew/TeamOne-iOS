@@ -8,6 +8,7 @@
 
 import RxSwift
 import RxCocoa
+import RxKeyboard
 import UIKit
 import Domain
 import SnapKit
@@ -106,6 +107,7 @@ final class ProfileEditMainView: View {
         super.init(frame: .zero)
         layout()
         bindTask()
+        bindPortfolioNameEntered()
         scrollView.backgroundColor = .teamOne.background
     }
     
@@ -144,6 +146,28 @@ final class ProfileEditMainView: View {
                 this.secondTaskSelectView.isHidden = true
             }
             .disposed(by: disposeBag)
+    }
+    
+    private func bindPortfolioNameEntered() {
+        RxKeyboard.instance.visibleHeight
+            .drive(onNext: { [scrollView] height in
+                scrollView.contentInset.bottom = height
+                scrollView.scrollRectToVisible(CGRect(x: 0, y: scrollView.contentSize.height - 1, width: 1, height: 1), animated: true)
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    func findFirstResponder(in view: UIView) -> UIView? {
+        for subview in view.subviews {
+            if subview.isFirstResponder {
+                return subview
+            }
+            
+            if let recursiveSubview = findFirstResponder(in: subview) {
+                return recursiveSubview
+            }
+        }
+        return nil
     }
     
     // MARK: - Layout

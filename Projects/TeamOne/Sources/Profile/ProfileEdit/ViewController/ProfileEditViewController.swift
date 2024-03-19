@@ -209,8 +209,13 @@ final class ProfileEditViewController: ViewController {
         mainView.portfolioSelectView.firstFileInputView.nameInputView.nameTextField.rx.controlEvent(.editingDidEnd)
             .withUnretained(self)
             .bind { this, _ in
+                guard this.mainView.portfolioSelectView.firstFileInputView.nameInputView.nameTextField.text != "" else {
+                    this.mainView.portfolioSelectView.firstFilePortfolioCompleteView.isHidden = true
+                    return
+                }
                 this.mainView.portfolioSelectView.firstFileInputView.isHidden = true
                 this.mainView.portfolioSelectView.firstFilePortfolioCompleteView.linkNameLabel.text = this.mainView.portfolioSelectView.firstFileInputView.nameInputView.nameTextField.text
+                this.mainView.portfolioSelectView.firstFilePortfolioCompleteView.linkAdressLabel.text = this.mainView.portfolioSelectView.firstFileInputView.selectedFileView.fileNameLabel.text
                 this.mainView.portfolioSelectView.firstFilePortfolioCompleteView.isHidden = false
             }
             .disposed(by: disposeBag)
@@ -220,10 +225,15 @@ final class ProfileEditViewController: ViewController {
         mainView.portfolioSelectView.secondFileInputView.nameInputView.nameTextField.rx.controlEvent(.editingDidEnd)
             .withUnretained(self)
             .bind { this, _ in
+                guard this.mainView.portfolioSelectView.secondFileInputView.nameInputView.nameTextField.text != "" else {
+                    this.mainView.portfolioSelectView.secondFilePortfolioCompleteView.isHidden = true
+                    return
+                }
+
                 this.mainView.portfolioSelectView.secondFileInputView.isHidden = true
                 this.mainView.portfolioSelectView.secondFilePortfolioCompleteView.linkNameLabel.text = this.mainView.portfolioSelectView.secondFileInputView.nameInputView.nameTextField.text
+                this.mainView.portfolioSelectView.firstFilePortfolioCompleteView.linkAdressLabel.text = this.mainView.portfolioSelectView.secondFileInputView.selectedFileView.fileNameLabel.text
                 this.mainView.portfolioSelectView.secondFilePortfolioCompleteView.isHidden = false
-                
             }
             .disposed(by: disposeBag)
         
@@ -232,8 +242,13 @@ final class ProfileEditViewController: ViewController {
         mainView.portfolioSelectView.thirdFileInputView.nameInputView.nameTextField.rx.controlEvent(.editingDidEnd)
             .withUnretained(self)
             .bind { this, _ in
+                guard this.mainView.portfolioSelectView.thirdFileInputView.nameInputView.nameTextField.text != "" else {
+                    this.mainView.portfolioSelectView.thridFilePortfolioCompleteView.isHidden = true
+                    return
+                }
                 this.mainView.portfolioSelectView.thirdFileInputView.isHidden = true
                 this.mainView.portfolioSelectView.thridFilePortfolioCompleteView.linkNameLabel.text = this.mainView.portfolioSelectView.thirdFileInputView.nameInputView.nameTextField.text
+                this.mainView.portfolioSelectView.firstFilePortfolioCompleteView.linkAdressLabel.text = this.mainView.portfolioSelectView.thirdFileInputView.selectedFileView.fileNameLabel.text
                 this.mainView.portfolioSelectView.thridFilePortfolioCompleteView.isHidden = false
             }
             .disposed(by: disposeBag)
