@@ -58,6 +58,9 @@ final class ProfileEditViewController: ViewController {
     
     private func bindPortfolioSelected() {
         
+        //MARK: - 키보드 표시에 따른 UI 설정
+        mainView.adjustForKeyboard(disposeBag: disposeBag)
+        
         //MARK: - 파일 가져오기 버튼 탭 했을때
         mainView.portfolioSelectView.firstFileInputView.fileFetchView.addFileButton.rx.tap
             .withUnretained(self)
@@ -209,14 +212,12 @@ final class ProfileEditViewController: ViewController {
         mainView.portfolioSelectView.firstFileInputView.nameInputView.nameTextField.rx.controlEvent(.editingDidEnd)
             .withUnretained(self)
             .bind { this, _ in
-                guard this.mainView.portfolioSelectView.firstFileInputView.nameInputView.nameTextField.text != "" else {
-                    this.mainView.portfolioSelectView.firstFilePortfolioCompleteView.isHidden = true
-                    return
-                }
-                this.mainView.portfolioSelectView.firstFileInputView.isHidden = true
-                this.mainView.portfolioSelectView.firstFilePortfolioCompleteView.linkNameLabel.text = this.mainView.portfolioSelectView.firstFileInputView.nameInputView.nameTextField.text
-                this.mainView.portfolioSelectView.firstFilePortfolioCompleteView.linkAdressLabel.text = this.mainView.portfolioSelectView.firstFileInputView.selectedFileView.fileNameLabel.text
-                this.mainView.portfolioSelectView.firstFilePortfolioCompleteView.isHidden = false
+                this.configureUINameEntered(
+                    inputView: this.mainView.portfolioSelectView.firstFileInputView,
+                    completeView: this.mainView.portfolioSelectView.firstFilePortfolioCompleteView,
+                    name: this.mainView.portfolioSelectView.firstFileInputView.nameInputView.nameTextField.text,
+                    fileName: this.mainView.portfolioSelectView.firstFileInputView.selectedFileView.fileNameLabel.text
+                )
             }
             .disposed(by: disposeBag)
         
@@ -225,15 +226,12 @@ final class ProfileEditViewController: ViewController {
         mainView.portfolioSelectView.secondFileInputView.nameInputView.nameTextField.rx.controlEvent(.editingDidEnd)
             .withUnretained(self)
             .bind { this, _ in
-                guard this.mainView.portfolioSelectView.secondFileInputView.nameInputView.nameTextField.text != "" else {
-                    this.mainView.portfolioSelectView.secondFilePortfolioCompleteView.isHidden = true
-                    return
-                }
-
-                this.mainView.portfolioSelectView.secondFileInputView.isHidden = true
-                this.mainView.portfolioSelectView.secondFilePortfolioCompleteView.linkNameLabel.text = this.mainView.portfolioSelectView.secondFileInputView.nameInputView.nameTextField.text
-                this.mainView.portfolioSelectView.firstFilePortfolioCompleteView.linkAdressLabel.text = this.mainView.portfolioSelectView.secondFileInputView.selectedFileView.fileNameLabel.text
-                this.mainView.portfolioSelectView.secondFilePortfolioCompleteView.isHidden = false
+                this.configureUINameEntered(
+                    inputView: this.mainView.portfolioSelectView.secondFileInputView,
+                    completeView: this.mainView.portfolioSelectView.secondFilePortfolioCompleteView,
+                    name: this.mainView.portfolioSelectView.secondFileInputView.nameInputView.nameTextField.text,
+                    fileName: this.mainView.portfolioSelectView.secondFileInputView.selectedFileView.fileNameLabel.text
+                )
             }
             .disposed(by: disposeBag)
         
@@ -242,15 +240,30 @@ final class ProfileEditViewController: ViewController {
         mainView.portfolioSelectView.thirdFileInputView.nameInputView.nameTextField.rx.controlEvent(.editingDidEnd)
             .withUnretained(self)
             .bind { this, _ in
-                guard this.mainView.portfolioSelectView.thirdFileInputView.nameInputView.nameTextField.text != "" else {
-                    this.mainView.portfolioSelectView.thridFilePortfolioCompleteView.isHidden = true
-                    return
-                }
-                this.mainView.portfolioSelectView.thirdFileInputView.isHidden = true
-                this.mainView.portfolioSelectView.thridFilePortfolioCompleteView.linkNameLabel.text = this.mainView.portfolioSelectView.thirdFileInputView.nameInputView.nameTextField.text
-                this.mainView.portfolioSelectView.firstFilePortfolioCompleteView.linkAdressLabel.text = this.mainView.portfolioSelectView.thirdFileInputView.selectedFileView.fileNameLabel.text
-                this.mainView.portfolioSelectView.thridFilePortfolioCompleteView.isHidden = false
+                this.configureUINameEntered(
+                    inputView: this.mainView.portfolioSelectView.thirdFileInputView,
+                    completeView: this.mainView.portfolioSelectView.thridFilePortfolioCompleteView,
+                    name: this.mainView.portfolioSelectView.thirdFileInputView.nameInputView.nameTextField.text,
+                    fileName: this.mainView.portfolioSelectView.thirdFileInputView.selectedFileView.fileNameLabel.text
+                )
             }
             .disposed(by: disposeBag)
+    }
+    
+    func configureUINameEntered(
+        inputView: PortfolioFileInputView,
+        completeView: PortfolioView,
+        name: String?,
+        fileName: String?
+    ) {
+        guard inputView.nameInputView.nameTextField.text != "" else {
+            completeView.isHidden = true
+            return
+        }
+        
+        inputView.isHidden = true
+        completeView.linkNameLabel.text = inputView.nameInputView.nameTextField.text
+        completeView.linkAdressLabel.text = inputView.selectedFileView.fileNameLabel.text
+        completeView.isHidden = false
     }
 }
