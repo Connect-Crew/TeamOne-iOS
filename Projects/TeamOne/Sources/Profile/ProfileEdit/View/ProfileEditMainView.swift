@@ -8,6 +8,7 @@
 
 import RxSwift
 import RxCocoa
+import RxKeyboard
 import UIKit
 import Domain
 import SnapKit
@@ -144,6 +145,19 @@ final class ProfileEditMainView: View {
                 this.secondTaskSelectView.isHidden = true
             }
             .disposed(by: disposeBag)
+    }
+    
+    func findFirstResponder(in view: UIView) -> UIView? {
+        for subview in view.subviews {
+            if subview.isFirstResponder {
+                return subview
+            }
+            
+            if let recursiveSubview = findFirstResponder(in: subview) {
+                return recursiveSubview
+            }
+        }
+        return nil
     }
     
     // MARK: - Layout
